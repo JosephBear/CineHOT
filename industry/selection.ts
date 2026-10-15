@@ -1,4 +1,4 @@
-// CinemaHOT 本地试运行：门槛沿用初始值，尚未用电影摄影人工样本校准。见 docs/cinemahot-calibration.md。
+// CinemaHOT 本地试运行：门槛沿用初始值，尚未用电影摄影人工样本校准。见 docs/quality/calibration.md。
 // 精选的门槛。评分标准本身写在 prompts/selection-score.md；这里只决定“多少分算入选”。
 // 每篇资料由评分模型独立打两次分（0–100），两次之和 ≥ 2 × 门槛才成为精选候选；
 // 确认新闻身份与新增价值后，由发布规则决定展示（见 docs/selection.md），卡片上显示两次的平均分。

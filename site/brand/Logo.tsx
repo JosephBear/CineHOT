@@ -1,11 +1,12 @@
-// CinemaHOT 的字标和胶片卷标记：页面用 Wordmark 画站名（size 是高度，单位像素），RingMark 是小标记，转起来就是加载动画。
-// 这里用站名排字；有自己的 Logo 时，把 Wordmark 换成你的 SVG（保持同样的参数）。
+// CinemaHOT 使用摄影系提供的完整原图与站名；RingMark 保留为加载动画。
 import { SITE } from "../site.ts";
 
 export function Wordmark({ size = 24, className = "", title = SITE.name }: { size?: number; className?: string; title?: string }) {
+  const stacked = size >= 24;
+  const imageSize = stacked ? Math.round(size * 4.2) : 28;
   return (
-    <span className={`inline-flex items-center font-black leading-none tracking-[-0.03em] ${className}`} style={{ fontSize: Math.round(size * 0.92) }} aria-label={title} role="img">
-      <RingMark className="mr-[0.3em] inline-block size-[1em] text-accent" />
+    <span className={`inline-flex shrink-0 items-center flex-col font-black leading-none tracking-[-0.03em] ${stacked ? "gap-1.5" : "gap-0.5"} ${className}`} style={{ fontSize: stacked ? Math.round(size * 0.92) : 12 }} aria-label={`${title} · 北京电影学院摄影系`} role="img">
+      <img src="/doc-logo-1d9e4beb.jpg" width={imageSize} height={imageSize} className="shrink-0 rounded-sm bg-white object-contain" alt="" aria-hidden="true" />
       <span aria-hidden="true">{SITE.name}</span>
     </span>
   );

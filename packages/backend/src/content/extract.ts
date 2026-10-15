@@ -124,14 +124,18 @@ export function readable(html: string, url: string, utcOffset?: string): Extract
   return { html: clean, text, images, via: "readability", publishedAt: parseLooseDate(article.publishedTime, utcOffset) };
 }
 
-export async function extractFromUrl(url: string, subject: string, utcOffset?: string): Promise<ExtractedBody | null> {
+export async function extractFromUrl(url: string, subject: string, utcOffset?: string, bodyUrlPrefixRewrite?: { from: string; to: string }): Promise<ExtractedBody | null> {
   if (isVideoPageUrl(url)) return null;
+  const fetchUrl = bodyUrlPrefixRewrite && url.startsWith(bodyUrlPrefixRewrite.from)
+    ? bodyUrlPrefixRewrite.to + url.slice(bodyUrlPrefixRewrite.from.length) : url;
+  const rewritten = fetchUrl !== url;
+  if (new URL(fetchUrl).origin !== new URL(url).origin) throw new Error("Body URL must use the same origin as the article");
   try {
-    const res = await guardedFetch(url, { timeoutMs: 20_000, maxBytes: 6 * 1024 * 1024 });
+    const res = await guardedFetch(fetchUrl, { timeoutMs: 20_000, maxBytes: 6 * 1024 * 1024, ...(rewritten ? { redirectPolicy: "same-origin" } as const : {}) });
     if (isVideoPageUrl(res.url)) return null;
     const type = res.headers.get("content-type") ?? "";
     if (res.status === 200 && /html/.test(type)) {
-      const got = readable(res.text(), res.url, utcOffset);
+      const got = readable(res.text(), rewritten ? url : res.url, utcOffset);
       if (got) return got;
     }
   } catch {
@@ -167,7 +171,7 @@ export async function extractArticleBody(articleId: string): Promise<"ok" | "unc
     FROM articles a JOIN sources s ON s.id = a.source_id WHERE a.id = ${articleId}`;
   if (!a || a.body_status === "ok") return "skipped";
   if (a.x_post?.tweetId) return extractXArticle(a.id, a.x_post.tweetId, a.revision);
-  const got = await extractFromUrl(a.url, `article:${a.id}`, articleUtcOffset(a.config));
+  const got = await extractFromUrl(a.url, `article:${a.id}`, articleUtcOffset(a.config), a.config.bodyUrlPrefixRewrite);
   if (!got) {
     return markUnconfirmed(articleId, a.revision);
   }

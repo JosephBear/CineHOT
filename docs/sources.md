@@ -256,3 +256,10 @@ Content-Type: application/json
 - `sourceId` 不存在时会自动建一个 `external` 信源，默认不进公开页面：到后台把它的参与方式改成 `editorial` 才会出现在站上。
 - 在后台暂停信源后，推送接口返回 409，不再接收新文章；恢复信源后可以继续推送。
 - 条目的 `raw._aihot.backfill` 为 `true` 时按历史回灌处理（不进入“今天”、不推送）。
+
+
+### CinemaHOT 的固定采集间隔与正文片段
+
+`site/site.ts` 的 `SOURCE_DEFAULTS.fixedIntervalMinutes` 当前为 `480`。每日间隔调整会保留此值；后台新增信源默认也使用此值。设为 `null` 恢复按产量自适应。失败重试不会早于信源的配置间隔；第三方请求预算耗尽仍按原机制等待配额恢复。
+
+Blackmagic 官方页面使用动态正文片段。其信源配置增加 `bodyUrlPrefixRewrite: {"from":"https://www.blackmagicdesign.com/media/release/","to":"https://www.blackmagicdesign.com/media/partial/release/"}`，仅改写正文下载地址。文章原文链接、相对链接基准和发布日期仍归属公开文章 URL。前缀必须为同源 HTTP(S) URL 并以 `/` 结尾；下载继续执行原有 SSRF 与重定向校验。已有部署需在后台更新该信源配置，仓库种子不会自动覆盖人工配置。

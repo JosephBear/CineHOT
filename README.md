@@ -1,42 +1,47 @@
 # CinemaHOT
 
-电影摄影信息聚合平台，关注官方厂商、机构、专业媒体和创作者。当前为**本地试运行版本**，尚未公开上线。自动采集、模型调用与外部推送默认关闭，精选门槛**尚未校准**。
+**当前版本：v0.1.0 · 本地试运行**
 
-当前 17 个信源保留原有名单，并补齐 ARRI、Blackmagic Design、Wandering DP、Team Deakins 与影视工业网。默认只展示摘要和原文链接。
+电影摄影信息聚合平台，关注官方厂商、机构、专业媒体和创作者。当前配置 17 个信源，包含影视工业网；公开页面默认展示摘要与原文链接。精选门槛尚未校准，校园部署尚未完成。
 
-- [本地启动与验证](docs/cinemahot-local.md)
-- [信源名单与适配依据](docs/cinemahot-sources.md)
-- [101 条真实文章待标注清单与校准流程](docs/cinemahot-calibration.md)
-- [品牌资源与离线生成](docs/cinemahot-brand.md)
-- [English](README.en.md)
+2026 年 10 月 15 日，本机已按授权开启每 480 分钟采集及 DeepSeek 模型试运行，滚动 24 小时最多 120 次请求。这些是本机私密配置和数据库设置；新部署的采集、模型和外部推送默认关闭，克隆仓库不会复制本机运行状态或新闻数据。
 
-## 本机运行
+## 从这里开始
 
-这台电脑已准备 Node 24.21.0、PostgreSQL 17.11（含 LZ4 与备份恢复工具）、本地数据库和私密 `.env`，详见本地说明。先启动数据库，再执行：
+| 要做的事 | 文件夹与入口 |
+|---|---|
+| 查看全部说明与项目结构 | [文档导航](docs/README.md) |
+| 本机启动、换电脑、校园访问 | [部署](docs/deployment/README.md) |
+| 增加、修改、暂停或检查信源 | [信源管理](docs/sources/README.md) |
+| 配置模型、查看费用、排查无内容 | [运行维护](docs/operations/README.md) |
+| 人工标注与精选校准 | [质量校准](docs/quality/calibration.md) |
+| 更换 Logo 与品牌资源 | [品牌](docs/branding/README.md) |
+| 查看本版内容与升级事项 | [v0.1.0 版本记录](docs/releases/v0.1.0.md) |
 
-```sh
-python3 /Users/josephus/Documents/ChatGPT/Cinema-hot/work/run-local.py
+## 项目文件夹
+
+```text
+CinemaHOT/
+├── VERSION                 当前版本号
+├── docs/                   使用、管理、部署和版本文档
+├── deploy/                 部署配置，含校园 Nginx 模板
+├── industry/               信源名单、分类、主题与提示词
+├── site/                   站名、Logo、页面文案和站内更新日志
+├── apps/                   网页、API 和后台 worker
+├── packages/               共享类型及后端采集、模型、发布逻辑
+├── scripts/                初始化、迁移、检查、备份与评测工具
+├── tests/                  自动化回归测试
+└── database/               数据库迁移
 ```
 
-浏览 `http://localhost:3000`。该启动器会启动 API、网页、worker，只监听本机并保持外部动作关闭。初始数据库只有信源配置，没有自动生成的精选内容。管理员密码位于本机私密 `.env`，不要提交该文件。
+首次部署按[部署指南](docs/deployment/README.md)执行。本机已有环境按[本地试运行](docs/deployment/local-trial.md)启动；本机工具路径不能直接用于另一台电脑。密钥写入私密 `.env`，数据库与 `.data/` 单独备份，不进入 Git。
 
-换电脑时按 [部署说明](docs/deploy.md) 准备 Node 24、PostgreSQL 17（需要 LZ4 和 pg_trgm）、项目依赖和 `.env`，运行迁移、信源初始化及前端构建；本机工作目录中的工具路径不具备跨电脑通用性。
+## 开发与验证
 
-## 功能与结构
-
-支持动态列表、精选、事件归组、主题、日报/周报/月报，以及 RSS、公开 API、Agent Markdown 和 MCP。模型只在后台任务中调用，读页面不产生模型请求。付费服务经过回执和预算控制；站内全文默认关闭。
-
-站点文案和资源在 `site/`，行业分类、主题、提示词与信源在 `industry/`。网页通过 HTTP 访问 API；公开出口统一使用后端发布层。
-
-- [精选与评测](docs/selection.md)
-- [架构](docs/architecture.md)
-- [采集信源](docs/sources.md)
-- [定制说明](docs/customize.md)
-- [部署与更新](docs/deploy.md)
-
-## 验证
+需要 Node.js 24 和 PostgreSQL 17（含 LZ4、pg_trgm）。将对应工具加入 PATH 后运行：
 
 ```sh
+npm ci
 npm run typecheck
 DATABASE_URL=postgres://postgres@127.0.0.1:55434/cinemahot_fixture_test npm test
 npm run test:standalone
@@ -45,12 +50,8 @@ TEST_CHROMIUM_CHANNEL=chrome PLAYWRIGHT_BROWSERS_PATH=/private/tmp/cinemahot-pla
 node scripts/smoke.ts --base http://localhost:3000
 ```
 
-先按本地说明设置当前终端的 Node、PostgreSQL 工具 PATH。测试使用独立测试数据库；付费服务仅连本地替身。海外实时采集仍需验证当前网络与项目代理，不能关闭 SSRF 防护来绕过私网地址拦截。
-
-## 当前边界
-
-`.data/labeling/` 已生成 101 条真实文章元数据供人工标注，尚无人工金标与真实模型评测；初始门槛 60/65/76 保持不变。公开上线前需要完成质量校准、联网采集验收、运营资料，以及由使用者确认使用规则和隐私说明。
+数据库地址和浏览器路径是本机示例，换环境时填写实际路径。测试库名称必须以 `_test` 或 `_ci` 结尾，不能使用运行库。测试中的付费服务仅连接本地替身。
 
 ## 开源来源
 
-基于 [AIHOT](https://github.com/KKKKhazix/AIHOT) 开源框架改造。保留 [MIT License](LICENSE) 及原作者版权说明；内部 `@aihot/*` 包名沿用框架命名。
+基于 [AIHOT](https://github.com/KKKKhazix/AIHOT) 改造，保留 [MIT License](LICENSE) 与原作者版权。内部 `@aihot/*` 包名沿用框架命名。另见 [English](README.en.md)。

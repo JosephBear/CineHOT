@@ -32,3 +32,8 @@ node scripts/check-cinemahot-sources.ts --ids web-arri-news,web-blackmagic-news,
 新增适配的 6 项回归测试、既有采集测试和下载页面重放均通过。真实页面分别解析出 ARRI 11 条、Blackmagic 历史存档 2213 条、Wandering DP 10 条、Team Deakins 378 条；这些是列表解析数量，首次入库仍受 8 条回灌上限约束。影视工业网使用实际网络采集取得 20 条完整日期的公开文章。
 
 本机海外域名 DNS 返回了 SSRF 防护拒绝的保留地址，直接运行核验脚本时会显示 `Blocked private address`。上述海外数据使用实际下载页面进行离线重放，不能据此声称本机后台采集已全部跑通。此项运行环境限制留到问题 5 处理，保留现有网络防护。
+
+
+## v0.1.0 运行更新
+
+17 个种子信源间隔统一为 480 分钟，首次回灌仍限制为 8 条；Blackmagic 增加官方同源正文片段规则。本机已完成一轮实际采集：16 个来源完成，ASC 返回 HTTP 403。历史 DNS 限制记录保留供追溯，当前项目代理及费用设置见[运行维护](../operations/README.md)。新增与维护操作见[信源管理](README.md)。

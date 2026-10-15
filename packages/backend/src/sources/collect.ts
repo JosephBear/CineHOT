@@ -1,5 +1,6 @@
 // Collection run for one source: fetch listing → filter → store material → enqueue processing.
 // A failed fetch never advances the success cursor; the source's health reflects consecutive failures.
+import { SOURCE_DEFAULTS } from "@aihot/site";
 import { sql, type Db } from "../db.ts";
 import { identityKeyFor, reuseExternalMaterialIdentities, STALE_ON_DISCOVERY_MS, upsertMaterial } from "../content/materials.ts";
 import { identityKeyForUrl } from "../lib/url.ts";
@@ -75,7 +76,7 @@ async function store(sourceId: string, candidates: CollectionCandidate[], backfi
 /**
  * The end of a fetch run, on the run and on its source. Success marks the source healthy and due again
  * one interval later. A failure counts toward "failing" (5 in a row) and waits longer after each one,
- * up to six hours; a full budget is not the source's failure: it waits 15 minutes and counts nothing.
+ * up to six hours, never sooner than its configured interval; a full budget is not the source's failure: it waits 15 minutes and counts nothing.
  */
 async function recordFetch(db: Db, sourceId: string, runId: number, run: { found: number; created: number; detail: object | null } & ({ cursor: Record<string, unknown> } | { error: string; budget: boolean })): Promise<void> {
   const detail = run.detail ? db.json(run.detail as never) : null;
@@ -93,7 +94,7 @@ async function recordFetch(db: Db, sourceId: string, runId: number, run: { found
       fail_count = CASE WHEN ${run.budget} THEN fail_count ELSE fail_count + 1 END,
       last_error = ${run.error},
       health = CASE WHEN ${run.budget} THEN health WHEN fail_count + 1 >= 5 THEN 'failing' ELSE 'degraded' END,
-      next_fetch_at = now() + make_interval(mins => CASE WHEN ${run.budget} THEN 15 ELSE LEAST(interval_minutes * (fail_count + 2), 360) END),
+      next_fetch_at = now() + make_interval(mins => CASE WHEN ${run.budget} THEN 15 ELSE GREATEST(interval_minutes, LEAST(interval_minutes * (fail_count + 2), 360)) END),
       updated_at = now()
     WHERE id = ${sourceId}`;
   await db`UPDATE fetch_runs SET status = 'failed', finished_at = now(), found_count = ${run.found}, new_count = ${run.created},
@@ -380,10 +381,16 @@ const X_SHARD_MINUTES: Record<string, number> = { editorial: 30, hot_signal: 60 
 const shardMinutes = (mode: string) => X_SHARD_MINUTES[mode] ?? 60;
 
 /**
- * Daily: adapt each source's interval to its recent output (active 15 min … quiet 120 min).
+ * Daily: preserve the site's fixed interval when configured, otherwise adapt to recent output (active 15 min … quiet 120 min).
  * hot_signal sources are allowed to be slower.
  */
 export async function adaptIntervals(): Promise<{ updated: number }> {
+  const fixed = SOURCE_DEFAULTS.fixedIntervalMinutes;
+  if (fixed !== null) {
+    const result = await sql`UPDATE sources SET interval_minutes = ${fixed}
+      WHERE enabled AND kind IN ('rss', 'web_list', 'json_list', 'x_search') AND interval_minutes <> ${fixed}`;
+    return { updated: result.count };
+  }
   const rows = await sql<Array<Pick<SourceRow, "id" | "participation_mode" | "kind" | "config" | "cursor"> & { paid_listing: boolean; per_day: number }>>`
     SELECT s.id, s.participation_mode, s.kind, s.config, s.cursor, coalesce(s.config->>'url', '') LIKE 'https://r.jina.ai/%' AS paid_listing,
       (SELECT count(*) FROM articles a WHERE a.source_id = s.id AND a.discovered_at > now() - interval '7 days' AND NOT a.backfill) / 7.0 AS per_day

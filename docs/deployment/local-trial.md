@@ -1,6 +1,6 @@
 # CinemaHOT 本地试运行
 
-当前用途是个人本地试运行，尚未公开上线。模型调用、自动采集和外部推送默认关闭；首次打开空站是正常状态，不会自动产生精选。精选门槛尚未用电影摄影人工样本校准。
+当前用途是个人本地试运行，尚未公开上线。仓库默认关闭模型、自动采集和外部推送；2026-10-15 本机已按授权开启采集与 DeepSeek 模型试运行，外部推送仍关闭。新建空数据库不会因打开网页而自动产生内容。精选门槛尚未用电影摄影人工样本校准。
 
 ## 这台电脑
 
@@ -26,7 +26,7 @@ cd /Users/josephus/Documents/ChatGPT/Cinema-hot
 python3 /Users/josephus/Documents/ChatGPT/Cinema-hot/work/run-local.py
 ```
 
-打开 `http://localhost:3000`。该启动器强制外部动作开关关闭，API 与网页仅监听本机。按 Ctrl-C 停止三个进程，日志在 `work/local-api.log`、`local-web.log`、`local-worker.log`。数据库独立运行，停止时执行 `pg_ctl -D work/postgres17-data stop -m fast`。
+打开 `http://localhost:3000`。该启动器读取私密 `.env` 中的采集和模型开关，强制推送关闭，API 与网页仅监听本机。按 Ctrl-C 停止三个进程，日志在 `work/local-api.log`、`local-web.log`、`local-worker.log`。数据库独立运行，停止时执行 `pg_ctl -D work/postgres17-data stop -m fast`。
 
 ## 后续修改后的检查
 
@@ -43,8 +43,10 @@ node scripts/smoke.ts --base http://localhost:3000
 
 浏览器测试默认使用 Playwright Chromium；这台电脑可指定 `TEST_CHROMIUM_CHANNEL=chrome` 使用已有 Google Chrome。WebKit 安装在上述临时目录，清理后需用项目自带 Playwright 重新安装 `webkit`。不改变任何测试断言。
 
-## 采集与模型的后续启用
+## 当前采集与模型配置
 
-当前网络曾把海外域名解析为 `198.18.x.x`，正常采集会被 SSRF 防护拒绝。需要先为项目配置实际可用的 `EGRESS_PROXY_URL`，再运行 `node scripts/check-cinemahot-sources.ts`；不能通过允许私网抓取或修改系统 DNS 来跳过检查。此前真实页面解析与适配测试通过，不代表当前网络下所有海外源均可实时采集。
+本机 `.env` 已按授权打开 `COLLECT_ENABLED` 和 `MODEL_CALLS_ENABLED`，使用 DeepSeek 默认模型；数据库中的 `llm` 请求预算为 20/分钟、60/小时、120/滚动24小时。17 个信源间隔为 480 分钟。停止付费处理时可将该服务预算设为 0，或关闭模型开关后正常重启服务。
 
-正式启用模型前，配置服务商和预算，完成人工标注与评测。然后自行启动 worker 并显式打开对应安全阀；本地启动器始终保持它们关闭。不要把 API key 或 `.data/` 提交到 Git。公开上线前还需确定运营主体、联系方式，并由使用者确认条款和隐私说明。
+本机配置 `EGRESS_PROXY_URL=http://127.0.0.1:55435`，由启动器启动仅监听回环地址的项目代理，继续使用既有 DNS 与 SSRF 检查。此地址仅适用于本机；新服务器需要验证自己的出口条件，不应照抄回环代理地址。不得通过允许私网抓取或关闭 TLS 检查绕过失败。
+
+费用、队列与空页面排查见[运行维护](../operations/README.md)。人工标注尚未完成，模型试运行不等于质量评测通过；公开上线前需完成质量校准、运营资料及使用规则和隐私说明确认。

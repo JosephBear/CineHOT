@@ -52,7 +52,7 @@ export const SITE = {
   /** 默认域名，只在没设置 SITE_URL 时使用。 */
   defaultUrl: "http://localhost:3000",
   /** 标准图标（favicon.ico、icon.png、icon-192.png、apple-icon.png、logo.svg）以外也放在网站根目录的图标，site/brand/ 里的文件名（选填）；manifest.webmanifest 或外站引用了它们时用。 */
-  rootIcons: [] as string[],
+  rootIcons: ["doc-logo-1d9e4beb.jpg"] as string[],
   /**
    * MCP 工具名的前缀（小写字母、数字、下划线），工具会叫 cinemahot_get_latest、cinemahot_search……
    * 已经有人接入后就不要再改。
@@ -223,6 +223,8 @@ export const ALERTS = {
 export const SOURCE_DEFAULTS = {
   /** 站内展示全文；false 时只显示摘要和原文链接。 */
   siteFulltext: false,
+  /** 固定采集间隔；null 使用按产量自适应的间隔。 */
+  fixedIntervalMinutes: 480 as number | null,
 };
 
 /**

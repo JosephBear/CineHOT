@@ -1,8 +1,9 @@
 # CinemaHOT 本地品牌资源
 
-导航与加载标记使用胶片卷图形；静态站点图标与导航使用同一图形语言，并沿用现有青色主题。
+导航完整显示摄影系提供的原始 JPG，并保留 CinemaHOT 站名；电脑端和手机端均上下排列。静态站点图标及加载动画继续使用胶片卷图形。
 
-- `site/brand/Logo.tsx`：字标显示 CinemaHOT，胶片卷可作为加载动画。
+- `site/brand/Logo.tsx`：显示原图与 CinemaHOT 站名；胶片卷仅作为加载动画。
+- `site/brand/doc-logo-1d9e4beb.jpg`：未经裁切或改色的 433 × 433 原始图片，通过站点根路径提供。
 - `site/brand/logo.svg`：512 × 512 矢量图标。
 - `icon.png`、`icon-192.png`、`apple-icon.png`：512、192、180 像素图标。
 - `favicon.ico`：32 像素 PNG 编码图标。

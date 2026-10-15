@@ -5,7 +5,7 @@ import type { SourceRow } from "./types.ts";
 
 // Rules applied in collect.ts to every kind read through collectSource.
 const PUBLISHER = ["publisherRole", "publisherUrlPrefixes", "publisherRequiresDiscovery"];
-const COLLECTED = [...PUBLISHER, "_aihot", "allowUrlPrefixes", "denyUrlPrefixes", "ingestNoiseFilter", "itemUrlPrefixRewrite", "sortByPublishedAt", "detail", "fetchPublicContent", "publishedAfter"];
+const COLLECTED = [...PUBLISHER, "_aihot", "allowUrlPrefixes", "denyUrlPrefixes", "ingestNoiseFilter", "itemUrlPrefixRewrite", "sortByPublishedAt", "detail", "fetchPublicContent", "publishedAfter", "bodyUrlPrefixRewrite"];
 
 const KEYS: Record<SourceRow["kind"], string[]> = {
   rss: [...COLLECTED, "feedUrl", "summaryIsBody", "preserveUrlFragment", "allowCategories", "denyCategories"],
@@ -29,6 +29,7 @@ const NESTED: Record<string, string[]> = {
   _aihot: ["initialBackfillLimit", "initialBackfillMonths"],
   ingestNoiseFilter: ["dropMarkers", "dropMarkersTitleOnly", "keepIfMatches"],
   itemUrlPrefixRewrite: ["from", "to"],
+  bodyUrlPrefixRewrite: ["from", "to"],
   requireBoolean: ["path", "equals"],
   minNumeric: ["path", "min"],
   detail: [
@@ -57,6 +58,15 @@ export function unsupportedConfig(kind: SourceRow["kind"], config: Record<string
     if (!allowed.has(key)) out.push(key);
     else if (key === "publisherRequiresDiscovery" && (typeof value !== "boolean"
       || value && (!Array.isArray(config.publisherUrlPrefixes) || config.publisherUrlPrefixes.length === 0))) out.push(key);
+    else if (key === "bodyUrlPrefixRewrite" && (() => {
+      if (!value || typeof value !== "object") return true;
+      const { from, to } = value as Record<string, unknown>;
+      if (typeof from !== "string" || typeof to !== "string" || !from.endsWith("/") || !to.endsWith("/")) return true;
+      try {
+        const a = new URL(from), b = new URL(to);
+        return !/^https?:$/.test(a.protocol) || a.origin !== b.origin || !!(a.username || a.password || b.username || b.password || a.search || a.hash || b.search || b.hash);
+      } catch { return true; }
+    })()) out.push(key);
     else if (key === "publishedAfter" && !utcInstant(value)) out.push(key);
     else if (key === "multipleLinks" && typeof value !== "boolean") out.push(key);
     else if (key === "publisherUrlPrefixes" && (!Array.isArray(value) || !value.every((v) => {
