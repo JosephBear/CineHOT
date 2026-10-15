@@ -15,16 +15,16 @@ test("topic lists and pool counts share the exact membership predicate", async (
   const at = new Date("2026-01-01T00:00:00Z");
   const now = new Date(+at + 1000);
   const cases = [
-    { title: "", original: null, tags: ["Agent"], topics: ["agent"] },
-    { title: "Anthropic Agent", original: null, tags: [], topics: [] },
-    { title: "", original: null, tags: ["entity:anthropic"], topics: ["anthropic"] },
-    { title: "Unrelated", original: null, tags: ["entity:anthropic", "entity:openai"], topics: [] },
-    { title: "Unrelated", original: "ANTHROPIC launches a model", tags: ["entity:anthropic", "entity:openai"], topics: ["anthropic"] },
-    { title: "Metadata", original: null, tags: ["entity:meta", "entity:openai"], topics: [] },
-    { title: "发布Meta的新模型", original: null, tags: ["entity:meta", "entity:openai"], topics: ["meta"] },
-    { title: "Unselected", original: null, tags: ["Agent", "entity:anthropic"], topics: ["agent", "anthropic"], selected: false },
-    { title: "Withdrawn", original: null, tags: ["Agent", "entity:anthropic"], topics: ["agent", "anthropic"], visibility: "withdrawn" },
-    { title: "Future", original: null, tags: ["Agent", "entity:anthropic"], topics: ["agent", "anthropic"], future: true },
+    { title: "", original: null, tags: ["虚拟制作"], topics: ["virtual-production"] },
+    { title: "ARRI 发布新机身", original: null, tags: [], topics: [] },
+    { title: "", original: null, tags: ["entity:arri"], topics: ["arri"] },
+    { title: "Unrelated", original: null, tags: ["entity:arri", "entity:sony"], topics: [] },
+    { title: "Unrelated", original: "ARRI launches a lens", tags: ["entity:arri", "entity:sony"], topics: ["arri"] },
+    { title: "Redshift", original: null, tags: ["entity:red", "entity:sony"], topics: [] },
+    { title: "发布RED的新镜头", original: null, tags: ["entity:red", "entity:sony"], topics: ["red"] },
+    { title: "Unselected", original: null, tags: ["虚拟制作", "entity:arri"], topics: ["virtual-production", "arri"], selected: false },
+    { title: "Withdrawn", original: null, tags: ["虚拟制作", "entity:arri"], topics: ["virtual-production", "arri"], visibility: "withdrawn" },
+    { title: "Future", original: null, tags: ["虚拟制作", "entity:arri"], topics: ["virtual-production", "arri"], future: true },
   ];
   await sql`INSERT INTO sources (id, name, kind, tier) VALUES (${prefix}, ${prefix}, 'rss', 'T1')`;
   for (const [i, row] of cases.entries()) {
@@ -36,7 +36,7 @@ test("topic lists and pool counts share the exact membership predicate", async (
       VALUES (${id}, ${prefix}, ${row.title}, ${row.original}, ${`https://example.org/${id}`}, ${at}, ${at},
         ${at}, ${row.future ? new Date(+now + 1) : at}, ${row.selected ?? true}, true, ${row.visibility ?? "public"}, 'news', ${row.tags})`;
   }
-  const topics = ["anthropic", "meta", "agent"].map(slug => findTopic(slug)!);
+  const topics = ["arri", "red", "virtual-production"].map(slug => findTopic(slug)!);
   const membership = new Map((await sql<{ id: string; topics: string[] }[]>`
     SELECT p.article_id AS id, ${topicMembership(topics)} AS topics FROM publications p WHERE p.source_id = ${prefix}`)
     .map(row => [row.id, row.topics]));

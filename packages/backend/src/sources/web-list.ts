@@ -162,24 +162,28 @@ export function fromHtml(html: string, base: string, source: SourceRow): Candida
   const nodes = itemSel ? $(itemSel).toArray() : $("a[href]").toArray();
   for (const node of nodes) {
     const el = $(node);
-    const linkEl = c.linkSelector ? (el.is(c.linkSelector) ? el : el.find(c.linkSelector).first()) : el.is("a") ? el : el.find("a[href]").first();
-    const url = absolute(linkEl.attr("href"), base);
-    if (!url || seen.has(url) || !allowed(url, source)) continue;
-    if (!sectionsArePosts && listingItself(url, listing)) continue;
-    const titleEl = c.titleSelector ? (el.is(c.titleSelector) ? el : el.find(c.titleSelector).first()) : linkEl;
-    const title = collapseWhitespace(titleEl.text() || linkEl.attr("title") || "");
-    if (!title) continue;
-    let publishedAt: Date | null = null;
-    if (c.publishedAtSelector) {
-      const dateEl = el.find(c.publishedAtSelector).first();
-      publishedAt = elementDate(dateEl, c.publishedAtUtcOffset);
+    const links = c.linkSelector ? (el.is(c.linkSelector) ? el : el.find(c.linkSelector)) : el.is("a") ? el : el.find("a[href]");
+    for (const link of (c.multipleLinks === true ? links : links.first()).toArray()) {
+      const linkEl = $(link);
+      const url = absolute(linkEl.attr("href"), base);
+      if (!url || seen.has(url) || !allowed(url, source)) continue;
+      if (!sectionsArePosts && listingItself(url, listing)) continue;
+      const titleRoot = c.multipleLinks === true ? linkEl : el;
+      const titleEl = c.titleSelector ? (titleRoot.is(c.titleSelector) ? titleRoot : titleRoot.find(c.titleSelector).first()) : linkEl;
+      const title = collapseWhitespace(titleEl.text() || linkEl.attr("title") || "");
+      if (!title) continue;
+      let publishedAt: Date | null = null;
+      if (c.publishedAtSelector) {
+        const dateEl = el.find(c.publishedAtSelector).first();
+        publishedAt = elementDate(dateEl, c.publishedAtUtcOffset);
+      }
+      if (!publishedAt && c.publishedAtRegex) {
+        const m = new RegExp(c.publishedAtRegex).exec($.html(el));
+        publishedAt = parseLooseDate(m?.[1], c.publishedAtUtcOffset);
+      }
+      seen.add(url);
+      out.push({ url, title, publishedAt });
     }
-    if (!publishedAt && c.publishedAtRegex) {
-      const m = new RegExp(c.publishedAtRegex).exec($.html(el));
-      publishedAt = parseLooseDate(m?.[1], c.publishedAtUtcOffset);
-    }
-    seen.add(url);
-    out.push({ url, title, publishedAt });
   }
   return out;
 }
@@ -336,11 +340,56 @@ async function fromMimoHome(html: string, base: string, source: SourceRow): Prom
   throw new FetchError("mimo_home: no Blog list in the homepage's chunks");
 }
 
+/**
+ * CineHello's homepage links two public article renderings. /stream/ has a readable article but
+ * only a month/day label; its stream_id names the same post's /morning/articles/ metadata, encoded
+ * as base64url JSON in window._data. Read the published timestamp there, never infer its year.
+ * No page scripts or embedded credentials are executed or used.
+ */
+async function fromCineHelloHome(html: string, base: string, source: SourceRow): Promise<Candidate[]> {
+  const $ = cheerio.load(html);
+  const urls = new Set<string>();
+  for (const el of $(".news-list a.title[href]").toArray()) {
+    const href = absolute($(el).attr("href"), base);
+    if (!href) continue;
+    const url = new URL(href);
+    if (url.origin !== new URL(base).origin || !/^\/(?:stream|morning\/articles)\/\d+$/.test(url.pathname) || !allowed(href, source)) continue;
+    url.search = "";
+    url.hash = "";
+    urls.add(url.toString());
+  }
+  const out: Candidate[] = [];
+  for (const url of urls) {
+    let page = await fetchScript(url);
+    let id = /\/morning\/articles\/(\d+)$/.exec(url)?.[1];
+    if (!id) {
+      id = /\bvar\s+stream_id\s*=\s*(\d+)\s*;/.exec(page)?.[1];
+      if (!id) throw new FetchError("cinehello_home: no public article id");
+      page = await fetchScript(new URL(`/morning/articles/${id}`, base).toString());
+    }
+    const encoded = /window\._data\s*=\s*['"]([A-Za-z0-9+/_=-]+)['"]\s*;/.exec(page)?.[1];
+    if (!encoded) throw new FetchError("cinehello_home: no public article metadata");
+    let post: Record<string, unknown>;
+    try { post = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")).post; }
+    catch { throw new FetchError("cinehello_home: invalid public article metadata"); }
+    if (!post || String(post.id) !== id) throw new FetchError("cinehello_home: article id mismatch");
+    if (post.status !== "final" || post.access_modifier !== "all_public") continue;
+    const title = typeof post.title === "string" ? collapseWhitespace(post.title) : "";
+    // Require an exact timestamp with a zone, rather than parse a partial date in this rendering.
+    const stamp = typeof post.created_at === "string" ? post.created_at : "";
+    const publishedAt = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(stamp) && Number.isFinite(Date.parse(stamp)) ? parseLooseDate(stamp) : null;
+    if (!title || !publishedAt) throw new FetchError("cinehello_home: missing title or publication date");
+    out.push({ url, title, publishedAt });
+  }
+  return out;
+}
+
 export async function fetchWebList(source: SourceRow): Promise<Candidate[]> {
   const { text, viaJina, base } = await fetchListingText(source);
-  const mode = source.config.adapter === "mimo_home" ? "mimo_home" : source.config.parseMode ?? (viaJina ? "markdown" : "html");
+  const mode = source.config.adapter ?? source.config.parseMode ?? (viaJina ? "markdown" : "html");
   let out: Candidate[];
-  if (mode === "mimo_home") out = await fromMimoHome(text, base, source);
+  if (mode === "cinehello_home") out = await fromCineHelloHome(text, base, source);
+  else if (mode === "mimo_home") out = await fromMimoHome(text, base, source);
   else if (mode === "markdown") out = fromMarkdown(text, base, source);
   else if (mode === "docusaurus_changelog") out = fromDocusaurusChangelog(text, base, source);
   else if (mode === "intercom_changelog") out = fromIntercomChangelog(text, base, source);

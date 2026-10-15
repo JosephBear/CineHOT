@@ -10,17 +10,17 @@
 
 `itemType` 必须七选一：
 
-- `model_release`：新模型或大版本更新
-- `product_launch`：新产品、工具或重大功能更新
-- `tool_or_prompt`：可直接复用的方法、Prompt、Skill 或技巧
-- `research_paper`：论文、研究或技术报告
-- `industry_event`：融资、收购、监管、诉讼、商业动作或人事
+- `gear_release`：新器材或器材的重大规格变化（机身、镜头、灯光、稳定、录音、监看、存储）
+- `software_release`：后期、调色、DIT、虚拟制作等软件或服务的版本发布与功能更新
+- `workflow_or_tool`：可直接复用的流程、预设、LUT、模板或工作方法
+- `tech_paper`：技术白皮书、标准文档、色彩科学研究或系统性的技术分析
+- `industry_event`：厂商经营、融资并购、人事、合作、诉讼、政策、影展奖项或项目开机
 - `opinion_analysis`：观点、行业判断、复盘或长访谈
-- `tutorial_explainer`：教程、科普、解读或评测
+- `tutorial_explainer`：教程、科普、解读或器材评测
 
-优先级：发了模型选 model_release；发了工具选 product_launch；发了 Prompt 或方法选 tool_or_prompt；论文优先 research_paper；评测选 tutorial_explainer。
+优先级：发了器材选 gear_release；发了软件或插件选 software_release；发了流程、预设或 LUT 选 workflow_or_tool；白皮书和标准文档优先 tech_paper；评测选 tutorial_explainer。
 
-输出前检查 `itemType` 与第一个分类标签是否自洽：`model_release` 对应“模型发布”，`product_launch` 对应“产品更新”，`research_paper` 对应“论文/研究”，`industry_event` 对应“行业动态”或“政策/监管”，`opinion_analysis` 对应“大佬观点”或“现象/趋势”，`tutorial_explainer` 对应“教程/实践”或“评测/基准”。如果二者冲突，按当前材料的核心事件修正后再输出。
+输出前检查 `itemType` 与第一个分类标签是否自洽：`gear_release` 对应“器材发布”，`software_release` 对应“软件/流程”，`workflow_or_tool` 对应“软件/流程”或“教程/实践”，`tech_paper` 对应“技术/标准”，`industry_event` 对应“行业动态”、“政策/监管”或“影展/奖项”，`opinion_analysis` 对应“观点/趋势”或“人物/访谈”，`tutorial_explainer` 对应“教程/实践”或“评测/实测”。如果二者冲突，按当前材料的核心事件修正后再输出。
 
 ## 作者角色
 
@@ -32,14 +32,14 @@
 
 ## 标签
 
-`tags` 输出 1–6 个字符串。第一个必须从以下分类标签中选一个：模型发布、产品更新、开源/仓库、论文/研究、教程/实践、大佬观点、评测/基准、安全/对齐、现象/趋势、行业动态、政策/监管、非AI/通用工具、其他。
+`tags` 输出 1–6 个字符串。第一个必须从以下分类标签中选一个：器材发布、技术/标准、软件/流程、作品/幕后、教程/实践、评测/实测、影展/奖项、政策/监管、人物/访谈、行业动态、观点/趋势、其他。
 
 其后可选 0–5 个适用标签，并且只能来自以下两个白名单：
 
-- 主题：Agent、编码、推理、多模态、语音、视频、图像生成、RAG、端侧、数据/训练、搜索、部署/工程、开源生态、具身智能、MCP/工具调用
-- 实体：OpenAI、Anthropic、DeepSeek、DeepMind、Google、Meta、Microsoft、xAI、Hugging Face、GitHub、arXiv
+- 主题：镜头、灯光、稳定/运镜、色彩/调色、格式/编码、虚拟制作、后期/流程、同期录音、航拍、特殊拍摄、胶片、特效/合成、现场监看、存储/备份
+- 实体：ARRI、RED、Sony、Blackmagic、Panavision、ZEISS、Cooke、Canon、DJI、Aputure、Kodak、ASC
 
-正文中即使明确出现了 NVIDIA、Apple、阿里等其他实体，也不要把它们放进 `tags`。不要创造白名单之外的标签。没有适用的主题或实体时，只返回第一个分类标签；例如学校限制 AI 使用的监管新闻，不需要强行归到“编码”或“推理”。
+正文中即使明确出现了 Nikon、Fujifilm、Atomos 等其他实体，也不要把它们放进 `tags`。不要创造白名单之外的标签。没有适用的主题或实体时，只返回第一个分类标签；例如一条只讲拍摄许可政策的新闻，不需要强行归到“镜头”或“灯光”。
 
 ## 候选阅读价值
 
@@ -51,12 +51,12 @@
 
 ## 中文标题和摘要
 
-`titleZh` 必须是自洽的中文标题，包含事件主体以及动作或结果。保留必要的模型名、产品名、版本号、机构名和关键数字，不写“最新动态”“引发关注”等空话。原标题已经是中文时也要保证脱离来源名后仍能独立理解。
+`titleZh` 必须是自洽的中文标题，包含事件主体以及动作或结果。保留必要的器材名、型号、版本号、机构名和关键数字，不写“最新动态”“引发关注”等空话。原标题已经是中文时也要保证脱离来源名后仍能独立理解。
 
-`summaryZh` 必须忠实使用当前材料。短 X 推文完整翻译作者自己的主推文；长推文或文章先写核心事实，再写一层关键细节或影响。保留关键数字、版本、机构、模型和 URL；引用内容只作上下文，不冒充主推作者自己的话。
+`summaryZh` 必须忠实使用当前材料。短 X 推文完整翻译作者自己的主推文；长推文或文章先写核心事实，再写一层关键细节或影响。保留关键数字、型号、机构、器材和 URL；引用内容只作上下文，不冒充主推作者自己的话。
 
 图片只能补充清晰可见、与正文直接相关的事实。忽略头像、品牌图、装饰图、模糊内容和与正文重复的信息。不得仅凭图片猜测人物身份、地点、时间、因果、性能或产品能力；图文冲突时不得擅自裁决。
 
 只返回合法 JSON，不要 Markdown，不要解释。顶层必须且只能包含以下六个字段：
 
-{"itemType":"product_launch","authorRole":"principal","tags":["产品更新","Agent"],"editorialJudgment":"原文给出了能力变化和开放入口，读者可以据此判断它会怎样改变现有工作流。","titleZh":"某产品发布智能体功能","summaryZh":"某产品发布新的智能体功能，给出了开放入口和主要能力变化。"}
+{"itemType":"gear_release","authorRole":"principal","tags":["器材发布","镜头"],"editorialJudgment":"原文给出了卡口、重量和最近对焦距离，读者可以据此判断它能不能上现有的稳定器和跟焦系统。","titleZh":"某厂商发布新款定焦镜头系列","summaryZh":"某厂商发布新款定焦镜头系列，公布了焦段、卡口与重量，并说明供货时间。"}

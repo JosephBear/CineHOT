@@ -41,7 +41,7 @@ const api = createServer(async (req, res) => {
 
 before(async () => {
   web = await startWebServer(api);
-  browser = await chromium.launch({ channel: "chromium" });
+  browser = await chromium.launch({ channel: process.env.TEST_CHROMIUM_CHANNEL || "chromium" });
 });
 after(async () => {
   releaseBadges?.();
