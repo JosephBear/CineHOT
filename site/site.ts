@@ -21,16 +21,18 @@ export const EDITION_WHEN = {
 
 export const SITE = {
   /** 站名：导航、页面标题、分享图、RSS、MCP、后台都用它。 */
-  name: "CinemaHOT",
+  name: "电影动态",
   /**
-   * 行业词：拼进默认说法里，比如“电影摄影周报”“全部电影摄影动态”。
+   * 行业词：拼进默认说法里，比如“电影周报”“电影行业动态”。
    * 改成“影视”“摄影”之类，页面上就会跟着变。
    */
-  subject: "电影摄影",
+  subject: "电影",
+  /** 全部资讯页及导航的名称。 */
+  allTitle: "电影行业动态",
   /** 首页的完整标题（浏览器标签、搜索结果）。 */
-  homeTitle: "CinemaHOT — 电影摄影动态 · 每周精选与周报",
+  homeTitle: "电影动态 — 电影行业资讯 · 每周精选与周报",
   /** 主题目录页（/topics）的标题。 */
-  topicsTitle: "电影摄影主题：厂商与机构、技术方向、内容形态的最新动态",
+  topicsTitle: "电影行业主题：厂商与机构、影像技术、AI影视创作的最新动态",
   /** 反馈表单输入框里的示例。 */
   feedbackExample: "例如：我在搜索某款镜头时遇到……我原本想……",
   /** 反馈页标题下面的一句话。 */
@@ -38,13 +40,13 @@ export const SITE = {
   /** 反馈表单邮箱框里的提示。 */
   feedbackEmailHint: "留下邮箱，我们可以回信联系你",
   /** 一句话介绍：搜索引擎、分享卡片、RSS、llms.txt 会用。 */
-  description: `从一批电影摄影信源里挑出值得看的动态，把同一件事的多篇报道归到一起，${EDITION_WHEN.weekly} 出一份周报。`,
+  description: `从电影行业官方、专业媒体和创作者的信源里挑出值得看的动态，把同一件事的多篇报道归到一起，${EDITION_WHEN.weekly} 出一份周报。`,
   /** llms.txt 里一句话介绍下面的一段详细介绍（选填）。 */
   llmsIntro: null as string | null,
   /** 一行小字：分享图、海报下方。 */
-  tagline: "值得关注的电影摄影动态",
+  tagline: "值得关注的电影行业动态",
   /** 搜索引擎读到的关键词（首页结构化数据）。 */
-  keywords: ["电影摄影", "摄影器材", "影视技术", "电影摄影周报", "影视行业动态", "镜头", "灯光"] as string[],
+  keywords: ["电影摄影", "摄影器材", "影视技术", "电影行业周报", "影视行业动态", "AI影视创作", "镜头", "灯光"] as string[],
   /** 网站开始收录的年份（结构化数据的时间范围，选填）。 */
   since: null as string | null,
   /** 界面语言（HTML lang、og:locale）。 */
@@ -73,7 +75,7 @@ export const SITE = {
   github: null as string | null,
   /** 结构化数据里的网站运营者（搜索引擎用）。 */
   organization: {
-    name: "CinemaHOT",
+    name: "电影动态",
     /** 创始人（选填）。 */
     founder: null as null | { name: string; alternateName?: string; jobTitle?: string; description?: string; url?: string },
   },
@@ -139,13 +141,13 @@ export const ABOUT = {
   /** 大标题：第一行正常颜色，第二行强调色。 */
   headline: ["器材、技术、影展、剧组，", "值得跟的，只有几条。"] as [string, string],
   /** 标题下面的一段话。{sources} 会换成实时的信源数（两边自动加空格，所以 {sources} 两边不写空格）；统计没取到时换成 sourcesFallback。 */
-  lead: `${SITE.name} 替你盯着{sources}个信源：抓取、归并、打分、精选，${EDITION_WHEN.weekly} 出一份周报。当前仅本地试运行，采集和模型调用关闭，精选门槛尚未校准。`,
+  lead: `${SITE.name} 替你盯着{sources}个信源：抓取、归并、打分、精选，${EDITION_WHEN.weekly} 出一份周报。当前仅本地试运行，精选门槛尚未人工标注校准。`,
   sourcesFallback: "十几",
   /** 信源河动画下面的四个环节。 */
   steps: {
-    collect: "器材厂商官网、影视技术媒体和影展的更新都在看；更新越勤的源看得越勤，最快 15 分钟看一次。",
+    collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；本机试运行每6小时检查一次信源更新，每天4次。",
     store: "抓到的都存下来，同一件事的报道归到一起，热点榜就是从这里算出来的。",
-    select: `模型先看是不是电影摄影的事、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；以压制器材商软文和重复转发为目标；实际效果仍需人工标注校准。`,
+    select: `模型先看是否与电影行业或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；以压制器材商软文和重复转发为目标；实际效果仍需人工标注校准。`,
     publish: `${EDITION_WHEN.weekly} 出周报；${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.monthly} 出月报，用来回看。`,
   },
   /**
@@ -200,7 +202,7 @@ export const REPORTS = {
    */
   entry: { measure: "件", noun: "大事" },
   /** 报头上其余几个数字后面的说法；精选数和日报期数在关于页、主题页也这样写。 */
-  metricUnits: { sourcesCount: "个来源", firstPartyEvents: "件一手发布", selectedCount: "条精选", reportsCovered: "期日报" },
+  metricUnits: { sourcesCount: "个来源", firstPartyEvents: "件首发", selectedCount: "条精选", reportsCovered: "期日报" },
   /** 报告分享图上“共几条”的说法。 */
   shareUnit: "件大事",
   /** 日报时段内有资料经过评判、但没有新大事时的标题与导语。 */
@@ -224,7 +226,7 @@ export const SOURCE_DEFAULTS = {
   /** 站内展示全文；false 时只显示摘要和原文链接。 */
   siteFulltext: false,
   /** 固定采集间隔；null 使用按产量自适应的间隔。 */
-  fixedIntervalMinutes: 480 as number | null,
+  fixedIntervalMinutes: 360 as number | null,
 };
 
 /**
@@ -239,7 +241,7 @@ export const COMMUNITY_FEEDS: { dev: string[]; hn: string[] } = {
 /** 各页分享图（/og/pages/*.png）上的文字。主题目录页的那张按主题数自动生成。 */
 export const CARDS: Record<string, { kicker: string; title: string; subtitle: string; accent?: "hot" | "amber" }> = {
   site: { kicker: subjectAfter("每日", "精选"), title: SITE.tagline, subtitle: SITE.description },
-  all: { kicker: subjectAfter("全部", "动态"), title: "所有信源的最新动态，一站看完", subtitle: "按时间汇总各信源的最新动态，可按类别与标签筛选。" },
+  all: { kicker: SITE.allTitle, title: "所有信源的最新动态，一站看完", subtitle: "按时间汇总各信源的最新动态，可按类别与标签筛选。" },
   hot: { kicker: "热点榜", title: "过去 48 小时，大家在讨论什么", subtitle: "热度指数、趋势与组成热度的公开来源。", accent: "hot" },
   daily: { kicker: withSubject("日报"), title: subjectAfter(`每天 ${spokenTime(EDITION_TIMES.daily)}，一份读得完的`, "日报"), subtitle: `${subjectAfter("前一天值得关注的", "动态")}。` },
   weekly: { kicker: withSubject("周报"), title: `一周${REPORTS.entry.noun}，一次看清`, subtitle: "本周的主线、重要发布与值得回看的讨论。" },

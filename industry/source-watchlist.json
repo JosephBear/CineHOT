@@ -1,0 +1,77 @@
+{
+  "purpose": "用户指定的待接入账号。此文件是接入清单，不由seed导入，也不表示已启用自动采集。",
+  "updatedAt": "2026-10-15",
+  "accounts": [
+    {
+      "id": "bilibili-946974",
+      "platform": "bilibili",
+      "name": "影视飓风",
+      "uid": "946974",
+      "url": "https://space.bilibili.com/946974/dynamic",
+      "status": "pending_access",
+      "include": {
+        "matchFields": [
+          "title",
+          "description",
+          "available_transcript"
+        ],
+        "anyOf": [
+          "设备测试",
+          "器材测试",
+          "影像",
+          "电影",
+          "AI"
+        ],
+        "aiRequiresAudiovisualContext": true
+      },
+      "exclude": [
+        "无关生活动态",
+        "无影像信息的商业推广",
+        "仅作者名或主页简介命中关键词"
+      ],
+      "lastCheck": {
+        "date": "2026-10-15",
+        "result": "公开动态页面及动态列表接口返回HTTP412；未接入自动采集"
+      }
+    },
+    {
+      "id": "bilibili-14118553",
+      "platform": "bilibili",
+      "name": "调色师手册",
+      "uid": "14118553",
+      "url": "https://space.bilibili.com/14118553/dynamic",
+      "status": "pending_access",
+      "include": {
+        "topics": [
+          "调色教程",
+          "色彩管理",
+          "影视后期工作流",
+          "相关软件与工具讲解"
+        ]
+      },
+      "lastCheck": {
+        "date": "2026-10-15",
+        "result": "公开动态列表接口返回HTTP412；未接入自动采集"
+      }
+    },
+    {
+      "id": "wechat-kazike",
+      "platform": "wechat",
+      "name": "数字生命卡兹克",
+      "sampleArticleUrl": "https://mp.weixin.qq.com/s/VuJsVTvyNIK8GRTL95n-Qw",
+      "status": "pending_access",
+      "include": {
+        "topics": [
+          "AI影视创作",
+          "视频生成",
+          "影像工具",
+          "创作教程和案例"
+        ]
+      },
+      "lastCheck": {
+        "date": "2026-10-15",
+        "result": "样例文章HTTP200但返回环境异常验证页，未读到正文，尚未核实公众号原始ID；现有自动采集需要额外第三方服务，未开通"
+      }
+    }
+  ]
+}

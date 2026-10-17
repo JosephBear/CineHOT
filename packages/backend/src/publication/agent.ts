@@ -133,7 +133,7 @@ export function storyAnswer(s: Story, limit: number, via: Via): string {
     "",
     ...(s.digest ? [`事件综述：${s.digest}`, ""] : []),
     "报道时间线（从新到旧）：",
-    ...reports.map((r, i) => `${i + 1}. ${stamp(r.publishedAt)} · ${publicSourceName(r.source.name)}${r.source.firstParty ? "（一手）" : ""} · [${linkText(r.title)}](${r.links.aihot})`),
+    ...reports.map((r, i) => `${i + 1}. ${stamp(r.publishedAt)} · ${publicSourceName(r.source.name)}${r.source.firstParty ? "（首发）" : ""} · [${linkText(r.title)}](${r.links.aihot})`),
     ...(neighbours.length ? ["", "相关事件：", ...neighbours.map((n) => `- ${n.title}：${via === "http" ? agentUrl(`/stories/${n.publicId}`) : `public_id=${n.publicId}`}`)] : []),
   ];
   return answer([
@@ -143,7 +143,7 @@ export function storyAnswer(s: Story, limit: number, via: Via): string {
     `事件页：${s.links.aihot}`,
   ], data, [
     "先讲最新进展，再按时间讲清来龙去脉；综述里点明的矛盾或未证实之处要照实说。",
-    "标「一手」的是当事公司或本人的发布，引用时优先用它们。",
+    "标「首发」的是当事公司或本人的直接发布，不代表全网最早报道；引用时优先用它们。",
     ...(s.reportCount > reports.length ? [`时间线只列了最新 ${reports.length} 篇，共 ${s.reportCount} 篇；${via === "http" ? "要看更多加 limit（最多 50）" : "要看更多调大 report_limit（最多 50）"}。`] : []),
     NO_INTERNALS,
   ]);

@@ -95,15 +95,16 @@ interface ReceiptRow {
 }
 
 async function checkBudget(tx: Db, service: string): Promise<void> {
-  const [budget] = await tx<{ per_minute: number; per_hour: number; per_day: number }[]>`
-    SELECT per_minute, per_hour, per_day FROM budgets WHERE service = ${service}`;
+  const [budget] = await tx<{ per_minute: number; per_hour: number; per_day: number; daily_reset_at: Date | null }[]>`
+    SELECT per_minute, per_hour, per_day, daily_reset_at FROM budgets WHERE service = ${service}`;
   if (!budget) return; // default rows come with the migrations; a service an operator removed is unlimited
-  // Every request sent counts, retries of the same logical request included.
+  // Every request sent counts, including retries. A manual daily reset preserves the ledger
+  // and the short-window throttles; only the daily allowance starts at the recorded boundary.
   const [counts] = await tx<{ minute: number; hour: number; day: number }[]>`
     SELECT
       count(*) FILTER (WHERE started_at > now() - interval '1 minute') AS minute,
       count(*) FILTER (WHERE started_at > now() - interval '1 hour') AS hour,
-      count(*) AS day
+      count(*) FILTER (WHERE started_at > coalesce(${budget.daily_reset_at}::timestamptz, '-infinity'::timestamptz)) AS day
     FROM receipt_attempts
     WHERE service = ${service} AND origin = 'live' AND started_at > now() - interval '1 day'`;
   const c = counts!;
@@ -203,8 +204,10 @@ export async function paidRequest(req: ReceiptRequest, call: () => Promise<CallO
 }
 
 async function startAttempt(tx: Db, receiptId: number, attempt: number, req: ReceiptRequest): Promise<number> {
+  // now() predates a wait on the budget lock; reserve at wall time so a concurrent reset counts us.
   const [row] = await tx<{ id: number }[]>`
-    INSERT INTO receipt_attempts (receipt_id, attempt, service, model, status) VALUES (${receiptId}, ${attempt}, ${req.service}, ${req.model ?? null}, 'pending')
+    INSERT INTO receipt_attempts (receipt_id, attempt, service, model, status, started_at)
+    VALUES (${receiptId}, ${attempt}, ${req.service}, ${req.model ?? null}, 'pending', clock_timestamp())
     RETURNING id`;
   return row!.id;
 }

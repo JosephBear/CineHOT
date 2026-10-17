@@ -1,257 +1,269 @@
 {
-  "$comment": "CinemaHOT 信源配置。首次启动通过 scripts/seed.ts 导入；已有信源不覆盖，从文件删除也不会删除数据库记录。2026-10-14 保留原有 12 个 RSS，并补齐 ARRI、Blackmagic Design、Wandering DP、Team Deakins 与影视工业网。首轮最多回灌 8 条；站内与订阅均只展示摘要及原文链接。网页适配依据与验证方法见 docs/sources/catalog.md。",
+  "$comment": "CinemaHOT 2026-10-16 信源配置快照：原19个来源加用户选定35个，共54个登记来源；RSS和网页列表按360分钟（每天4次）采集，external仅接受本轮导入，仍需长期采集适配。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
   "sources": [
     {
       "id": "rss-asc",
       "name": "The ASC（美国电影摄影师协会）",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://theasc.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://theasc.com/feed/"
       },
       "tier": "T1",
       "owner_entity_id": "asc",
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "官方",
         "协会"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-cooke",
       "name": "Cooke Optics（库克镜头）",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://cookeoptics.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://cookeoptics.com/feed/"
       },
       "tier": "T1",
       "owner_entity_id": "cooke",
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "官方",
         "器材"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-newsshooter",
       "name": "Newsshooter",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.newsshooter.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.newsshooter.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "器材"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-cined",
       "name": "CineD",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.cined.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.cined.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "器材"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-provideocoalition",
       "name": "ProVideo Coalition",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.provideocoalition.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.provideocoalition.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "技术"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-nofilmschool",
       "name": "No Film School",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://nofilmschool.com/rss.xml",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://nofilmschool.com/rss.xml"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "教程"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-fdtimes",
       "name": "Film and Digital Times",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.fdtimes.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.fdtimes.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "技术"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-ymcinema",
       "name": "Y.M.Cinema Magazine",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://ymcinema.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://ymcinema.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "器材"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-studiodaily",
       "name": "StudioDaily",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.studiodaily.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.studiodaily.com/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "后期"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-indiewire-craft",
       "name": "IndieWire（幕后工艺）",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.indiewire.com/c/film/craft/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.indiewire.com/c/film/craft/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "作品"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-variety-film",
       "name": "Variety（电影）",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://variety.com/v/film/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://variety.com/v/film/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "行业"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-thr-tech",
       "name": "The Hollywood Reporter（技术）",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://www.hollywoodreporter.com/c/tech/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://www.hollywoodreporter.com/c/tech/feed/"
       },
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "媒体",
         "行业"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "web-arri-news",
@@ -259,28 +271,29 @@
       "kind": "web_list",
       "config": {
         "url": "https://www.arri.com/en/company/arri-news",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
         "itemSelector": ".ci-tile-teaser",
         "linkSelector": "a",
         "titleSelector": ".ci-tile-teaser-title",
-        "publishedAtSelector": ".ci-tile-teaser-date",
-        "publishedAtUtcOffset": "+00:00",
         "allowUrlPrefixes": [
           "https://www.arri.com/news-en/",
           "https://www.arri.com/en/company/press/press-releases-"
         ],
-        "_aihot": {
-          "initialBackfillLimit": 8
-        }
+        "publishedAtSelector": ".ci-tile-teaser-date",
+        "publishedAtUtcOffset": "+00:00"
       },
       "tier": "T1",
+      "owner_entity_id": "arri",
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "官方"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
-      "owner_entity_id": "arri"
+      "enabled": true
     },
     {
       "id": "web-blackmagic-news",
@@ -288,72 +301,77 @@
       "kind": "web_list",
       "config": {
         "url": "https://www.blackmagicdesign.com/media/partial/archive",
-        "itemSelector": ".article-container",
-        "linkSelector": ".article-links a",
-        "multipleLinks": true,
-        "publishedAtSelector": ".date",
-        "publishedAtUtcOffset": "+00:00",
-        "allowUrlPrefixes": [
-          "https://www.blackmagicdesign.com/media/release/"
-        ],
         "_aihot": {
           "initialBackfillLimit": 8
         },
+        "itemSelector": ".article-container",
+        "linkSelector": ".article-links a",
+        "multipleLinks": true,
+        "allowUrlPrefixes": [
+          "https://www.blackmagicdesign.com/media/release/"
+        ],
+        "publishedAtSelector": ".date",
         "bodyUrlPrefixRewrite": {
-          "from": "https://www.blackmagicdesign.com/media/release/",
-          "to": "https://www.blackmagicdesign.com/media/partial/release/"
-        }
+          "to": "https://www.blackmagicdesign.com/media/partial/release/",
+          "from": "https://www.blackmagicdesign.com/media/release/"
+        },
+        "publishedAtUtcOffset": "+00:00"
       },
       "tier": "T1",
+      "owner_entity_id": "blackmagic",
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "官方"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
-      "owner_entity_id": "blackmagic"
+      "enabled": true
     },
     {
       "id": "rss-wandering-dp",
       "name": "Wandering DP",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://wanderingdp.com/feed/",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://wanderingdp.com/feed/"
       },
       "tier": "T2",
+      "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "摄影师",
         "布光"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "rss-team-deakins",
       "name": "Team Deakins",
       "kind": "rss",
       "config": {
-        "feedUrl": "https://rss.libsyn.com/shows/265448/destinations/2018942.xml",
         "_aihot": {
           "initialBackfillLimit": 8
-        }
+        },
+        "feedUrl": "https://rss.libsyn.com/shows/265448/destinations/2018942.xml"
       },
       "tier": "T2",
+      "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "摄影师",
         "访谈",
         "播客"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
     },
     {
       "id": "web-cinehello",
@@ -361,6 +379,9 @@
       "kind": "web_list",
       "config": {
         "url": "https://cinehello.com/",
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
         "adapter": "cinehello_home",
         "allowUrlPrefixes": [
           "https://cinehello.com/stream/",
@@ -375,19 +396,942 @@
             "优惠券",
             "课程报名"
           ]
-        },
-        "_aihot": {
-          "initialBackfillLimit": 8
         }
       },
       "tier": "T2",
+      "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 480,
+      "interval_minutes": 360,
       "tags": [
         "影视媒体"
       ],
       "site_fulltext": false,
-      "syndicate_fulltext": false
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-google-ai-film",
+      "name": "Google 官方 AI 动态（影视创作筛选）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 6
+        },
+        "feedUrl": "https://blog.google/technology/ai/rss/",
+        "publishedAfter": "2026-04-15T00:00:00.000Z"
+      },
+      "tier": "T1",
+      "owner_entity_id": "google",
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-comfyui-releases",
+      "name": "ComfyUI 官方版本更新",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "initialBackfillMonths": 6
+        },
+        "feedUrl": "https://github.com/Comfy-Org/ComfyUI/releases.atom",
+        "summaryIsBody": true,
+        "publishedAfter": "2026-04-15T00:00:00.000Z"
+      },
+      "tier": "T1",
+      "owner_entity_id": "comfy",
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "开源",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-cinematography-world",
+      "name": "Cinematography World",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.cinematography.world/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.cinematography.world/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-british-cinematographer",
+      "name": "British Cinematographer",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://britishcinematographer.co.uk/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://britishcinematographer.co.uk/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-panavision",
+      "name": "Panavision Highlights",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.panavision.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-redshark",
+      "name": "RedShark News",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.redsharknews.com/rss.xml",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.redsharknews.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-lensrentals",
+      "name": "Lensrentals Blog",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.lensrentals.com/blog/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.lensrentals.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-fxguide",
+      "name": "fxguide",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.fxguide.com/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.fxguide.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-befores-and-afters",
+      "name": "befores & afters",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://beforesandafters.com/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://beforesandafters.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-mixing-light",
+      "name": "Mixing Light",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://mixinglight.com/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://mixinglight.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-filmlight",
+      "name": "FilmLight",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.filmlight.ltd.uk/store/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.filmlight.ltd.uk/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-unreal-film",
+      "name": "Unreal Engine Film & Television",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.unrealengine.com/rss?lang=en-US",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://www.unrealengine.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-smpte",
+      "name": "SMPTE Motion Imaging Journal",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.smpte.org/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-aces",
+      "name": "ACESCentral",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://acescentral.com/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://acescentral.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-runway",
+      "name": "Runway",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://runway.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-bytedance-seed",
+      "name": "字节跳动 Seed",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://seed.bytedance.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-kling",
+      "name": "可灵／快手官方公告",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://ir.kuaishou.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-openai",
+      "name": "OpenAI",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://openai.com/news/rss.xml",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://openai.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-anthropic",
+      "name": "Anthropic",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.anthropic.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-xai",
+      "name": "xAI／Grok",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://x.ai/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-curious-refuge",
+      "name": "Curious Refuge",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://curiousrefuge.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-cullen-kelly",
+      "name": "Cullen Kelly",
+      "kind": "external",
+      "config": {
+        "publisherRole": "person",
+        "publisherUrlPrefixes": [
+          "https://cullenkellycolor.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-theoretically-media",
+      "name": "Theoretically Media",
+      "kind": "external",
+      "config": {
+        "publisherRole": "person",
+        "publisherUrlPrefixes": [
+          "https://theoreticallymedia.beehiiv.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-paul-trillo",
+      "name": "Paul Trillo",
+      "kind": "external",
+      "config": {
+        "publisherRole": "person",
+        "publisherUrlPrefixes": [
+          "https://paultrillo.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-studiobinder",
+      "name": "StudioBinder",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://www.studiobinder.com/feed/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "best movies",
+            "best films",
+            "worst movies",
+            "movies ranked",
+            "films ranked",
+            "movie directors of all time",
+            "best horror",
+            "best western",
+            "best crime",
+            "best werewolf",
+            "best musical"
+          ]
+        },
+        "publisherUrlPrefixes": [
+          "https://www.studiobinder.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-chinafilm-gov",
+      "name": "国家电影局",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.chinafilm.gov.cn/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-chinafilm-news",
+      "name": "中国电影报",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://chinafilmnews.cn/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "专业媒体／创作者"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-higgsfield",
+      "name": "Higgsfield",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://higgsfield.ai/blog/rss.xml",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "best ai ",
+            "cheapest ai ",
+            "best unlimited ai ",
+            "best creatify alternatives",
+            "plans and pricing compared",
+            "ai video generators in 2026: plans"
+          ]
+        },
+        "publisherUrlPrefixes": [
+          "https://higgsfield.ai/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-luma",
+      "name": "Luma",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://lumalabs.ai/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-minimax-hailuo",
+      "name": "MiniMax／海螺",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.minimax.io/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-vidu",
+      "name": "Vidu／生数科技",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://platform.vidu.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-pixverse",
+      "name": "PixVerse",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://pixverse.ai/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-autodesk-flow",
+      "name": "Autodesk Flow Studio",
+      "kind": "web_list",
+      "config": {
+        "url": "https://blogs.autodesk.com/media-and-entertainment/",
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "itemSelector": "a[href]",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "allowUrlPrefixes": [
+          "https://blogs.autodesk.com/media-and-entertainment/"
+        ],
+        "publishedAtRegex": "/(20\\d{2}/\\d{2}/\\d{2})/",
+        "publishedAtUtcOffset": "+00:00"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-black-forest-labs",
+      "name": "Black Forest Labs／FLUX",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://bfl.ai/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-topaz",
+      "name": "Topaz Labs",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.topazlabs.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-elevenlabs",
+      "name": "ElevenLabs",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://elevenlabs.io/blog/rss.xml",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://elevenlabs.io/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-midjourney",
+      "name": "Midjourney",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 1
+        },
+        "feedUrl": "https://updates.midjourney.com/rss/",
+        "publisherRole": "organization",
+        "publishedAfter": "2026-09-14T16:00:00.000Z",
+        "publisherUrlPrefixes": [
+          "https://updates.midjourney.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 360,
+      "tags": [
+        "官方",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
     }
   ]
 }

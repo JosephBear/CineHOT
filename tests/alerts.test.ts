@@ -7,6 +7,7 @@ import { closeDb, sql } from "@aihot/backend/db";
 import { upsertMaterial } from "@aihot/backend/content/materials";
 import { getBoss, stopBoss } from "@aihot/backend/jobs/queue";
 import { checkAlerts, collectFindings, sendDigest } from "@aihot/backend/operations/alerts";
+import { paidRequest } from "@aihot/backend/providers/receipts";
 import { runsOverview } from "@aihot/backend/admin/runs";
 
 process.env.COLLECT_ENABLED = "false";
@@ -166,4 +167,18 @@ test("the ops digest does not describe unknown paid work as harmless or already 
     if (enabled === undefined) delete process.env.FEISHU_INTERNAL_ENABLED;
     else process.env.FEISHU_INTERNAL_ENABLED = enabled;
   }
+});
+
+
+test("a daily budget reset closes its old cap alert and new calls can exhaust it again", async () => {
+  const service = `alert-reset-${tag()}`;
+  await sql`INSERT INTO budgets (service, per_minute, per_hour, per_day) VALUES (${service}, 100, 100, 1)`;
+  const finding = async () => (await collectFindings()).find((f) => f.key === `budget.day.${service}`);
+  const send = async () => ({ response: {} });
+  await paidRequest({ service, purpose: "test", identity: "historical" }, send);
+  assert.ok(await finding());
+  await sql`UPDATE budgets SET daily_reset_at = clock_timestamp() WHERE service = ${service}`;
+  assert.equal(await finding(), undefined);
+  await paidRequest({ service, purpose: "test", identity: "normal" }, send);
+  assert.ok(await finding());
 });

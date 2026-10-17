@@ -4,7 +4,7 @@
 
 | 文件夹 | 内容 |
 |---|---|
-| [deployment/](deployment/README.md) | 首次部署、本机启动、校园访问 |
+| [deployment/](deployment/README.md) | 逐步服务器部署手册、首次部署、本机启动、校园访问 |
 | [sources/](sources/README.md) | 后台信源管理、当前名单与适配依据 |
 | [operations/](operations/README.md) | 模型配置、请求预算、费用观察、常见问题 |
 | [quality/](quality/calibration.md) | 101 条真实文章待标注清单及精选校准 |

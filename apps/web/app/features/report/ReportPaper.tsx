@@ -82,13 +82,13 @@ function Masthead({ report, index, quiet }: { report: ReportDetail; index: Repor
   );
 }
 
-/** Source face and name, and the site's 一手 mark when first-hand. */
+/** Source face and name, and the site's 首发 mark when first-hand. */
 function Source({ c, size = 16 }: { c: ReportCitation; size?: number }) {
   return (
     <span className="inline-flex min-w-0 items-center gap-1.5">
       <SourceAvatar name={c.sourceName} iconUrl={c.sourceIconUrl} iconSrcSet={c.sourceIconSrcSet} size={size} />
       <span className="truncate">{c.sourceName}</span>
-      {c.firstParty && <Badge tone="accent">一手</Badge>}
+      {c.firstParty && <Badge tone="accent" title="官方或当事人直接发布，不代表全网最早报道">首发</Badge>}
     </span>
   );
 }

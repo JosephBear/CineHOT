@@ -1,9 +1,10 @@
 # CinemaHOT 部署
 
-当前版本 v0.1.0 已在本机试运行。部署到另一台机器需要独立准备密钥、数据库和模型预算；复制代码不会迁移新闻数据，也不会自动打开付费调用。
+当前版本 v0.2.0 已在本机试运行。部署到另一台机器需要独立准备密钥、数据库和模型预算；复制代码不会迁移新闻数据，也不会自动打开付费调用。
 
 ## 选择部署方式
 
+- 交给服务器负责人逐步执行：[服务器部署手册（含每步目的与检查）](server-runbook.md)。
 - 当前电脑启动：[本地试运行](local-trial.md)。
 - 让校园内的同学访问：[校园部署](campus.md)。
 - Docker、HTTPS、非 Docker、更新和备份细节：[完整部署参考](../deploy.md)。
@@ -15,7 +16,7 @@
 ```sh
 git clone https://github.com/JosephBear/cinemahot.git
 cd cinemahot
-git checkout v0.1.0
+git checkout v0.2.0
 node scripts/init-env.ts
 ```
 
@@ -52,8 +53,8 @@ docker compose logs --tail=100 api worker web
 docker compose up -d --force-recreate api worker
 ```
 
-新信源首轮最多导入 8 条，已有素材随后进入处理队列；达到预算会等待，不保证固定几分钟后出现内容。站点固定采集间隔为 480 分钟。推送开关保持关闭，直到明确配置并授权推送。
+新信源首轮最多导入 8 条，已有素材随后进入处理队列；达到预算会等待，不保证固定几分钟后出现内容。站点固定采集间隔为 360 分钟。推送开关保持关闭，直到明确配置并授权推送。
 
 ## 更新已有部署
 
-按[完整部署参考中的更新和备份](../deploy.md#更新)执行。v0.1.0 无新增数据库迁移，但已有 Blackmagic 信源需在后台补正文规则，旧间隔需改为 480，见[本版升级说明](../releases/v0.1.0.md)。`scripts/seed.ts` 只添加新 ID，不会覆盖现有信源。
+按[完整部署参考中的更新和备份](../deploy.md#更新)执行。v0.2.0 新增预算起算点迁移 0084；已有 Blackmagic 信源仍需保留正文规则，旧间隔需改为 360，见[本版升级说明](../releases/v0.2.0.md)。`scripts/seed.ts` 只添加新 ID，不会覆盖现有信源。

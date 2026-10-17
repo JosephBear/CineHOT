@@ -246,6 +246,7 @@ async function providerFindings(): Promise<Finding[]> {
   const capped = await sql<{ service: string; per_day: number; used: number }[]>`
     SELECT b.service, b.per_day, count(a.id)::int AS used FROM budgets b
     JOIN receipt_attempts a ON a.service = b.service AND a.origin = 'live' AND a.started_at > now() - interval '1 day'
+      AND a.started_at > coalesce(b.daily_reset_at, '-infinity'::timestamptz)
     WHERE b.per_day > 0 GROUP BY 1, 2 HAVING count(a.id) >= b.per_day`;
   for (const c of capped) {
     out.push({

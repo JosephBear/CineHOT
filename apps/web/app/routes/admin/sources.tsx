@@ -85,7 +85,7 @@ export default function Sources({ loaderData }: Route.ComponentProps) {
                 <div className="flex gap-1">
                   <Badge tone={r.participation_mode === "editorial" ? "accent" : "muted"}>{MODE_LABEL[r.participation_mode] ?? r.participation_mode}</Badge>
                   <Badge tone="info">{r.tier.replace("_", ".")}</Badge>
-                  {r.first_party && <Badge tone="ok">一手</Badge>}
+                  {r.first_party && <Badge tone="ok">首发</Badge>}
                 </div>
               ),
             },

@@ -179,7 +179,7 @@ export default function SourceDetail({ loaderData }: Route.ComponentProps) {
                   {Object.entries(MODE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </Select>
               </Field>
-              <Field label="等级" hint="仅 T1 为一手信源">
+              <Field label="等级" hint="仅 T1 为首发信源">
                 <Select value={draft.tier} onChange={(e) => setDraft({ ...draft, tier: e.target.value })}>
                   {Object.entries(TIER_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </Select>

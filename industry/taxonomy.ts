@@ -13,6 +13,7 @@
 export const CATEGORIES = [
   { key: "gear", label: "器材", feedLabel: "电影摄影器材", section: "器材发布", guide: "机身、镜头、灯光、稳定、录音、监看与存储设备的发布、规格与价格变化，以及有实测依据的器材结论。厂商的营销稿、经销商促销和没有实测的“上手体验”不算。" },
   { key: "tech", label: "技术", feedLabel: "影视技术", section: "技术与流程", guide: "拍摄工艺、布光方法、色彩与格式标准（Log、HDR、色彩空间）、虚拟制作、后期与调色流程。重点是能迁移到实际拍摄的做法或标准变化；单纯发布软件或插件归器材。" },
+  { key: "ai", label: "AI", feedLabel: "AI影视创作", section: "AI影视创作", guide: "与影视创作直接相关的生成式AI产品和模型更新、视频生成、分镜预演、角色与镜头一致性、AI剪辑/调色/配音/视效、开源影像工具及可复用的创作教程。AI创作为主要信息时优先归本类；教程同时标教程/实践。仅在作者名或无关背景出现AI、普通聊天助手、编程工具、融资和泛科技消息不算。" },
   { key: "industry", label: "行业", feedLabel: "行业动态", section: "行业动态", guide: "影展与奖项的评选结果、影响拍摄实务的政策与补贴、厂商经营与人事、影片项目开机与制片动态、劳资与工会事件。单纯的片场八卦和绯闻不归这一类。" },
   { key: "works", label: "作品", feedLabel: "作品与幕后", section: "作品与幕后", guide: "已上映或已公布影片的摄影解析、摄影师访谈、幕后技术拆解。重点是“这部片子是怎么拍出来的”；没有摄影技术信息的纯影评和剧情讨论不算。" },
   { key: "tip", label: "教程", section: "技巧与观点", guide: "读者可以照着做的拍摄、布光、运镜、调色方法与经验复盘。重点是可复用的做法；单纯介绍器材归器材，只有态度和预测而无做法归观点。", commentary: true },
@@ -48,11 +49,11 @@ export const CATEGORY_TAGS = [
 
 /** 可选的主题标签。 */
 export const TOPIC_TAGS = [
-  "镜头", "灯光", "稳定/运镜", "色彩/调色", "格式/编码", "虚拟制作", "后期/流程", "同期录音", "航拍", "特殊拍摄", "胶片", "特效/合成", "现场监看", "存储/备份",
+  "镜头", "灯光", "稳定/运镜", "色彩/调色", "格式/编码", "虚拟制作", "后期/流程", "同期录音", "航拍", "特殊拍摄", "胶片", "特效/合成", "现场监看", "存储/备份", "AI影视创作", "视频生成", "AI配音",
 ] as const;
 
 /** 可选的实体标签（公司、机构、平台）。 */
-export const ENTITY_TAGS = ["ARRI", "RED", "Sony", "Blackmagic", "Panavision", "ZEISS", "Cooke", "Canon", "DJI", "Aputure", "Kodak", "ASC"] as const;
+export const ENTITY_TAGS = ["ARRI", "RED", "Sony", "Blackmagic", "Panavision", "ZEISS", "Cooke", "Canon", "DJI", "Aputure", "Kodak", "ASC", "可灵", "即梦", "Runway", "Google", "ComfyUI", "LTX", "Wan"] as const;
 
 /** 模型常写的近义词，统一成词表里的写法。 */
 export const TAG_SYNONYMS: Readonly<Record<string, string>> = {
@@ -77,6 +78,13 @@ export const TAG_SYNONYMS: Readonly<Record<string, string>> = {
  * 把事实的主体对到发布方时也认它们。
  */
 export const ENTITIES: Record<string, { name: string; displayTag: string | null; aliases: string[]; otherNames?: string[] }> = {
+  kling: { name: "可灵", displayTag: "可灵", aliases: ["可灵", "可灵AI", "Kling", "Kling AI"], otherNames: ["快手可灵"] },
+  jimeng: { name: "即梦", displayTag: "即梦", aliases: ["即梦", "即梦AI", "Jimeng"] },
+  runway: { name: "Runway", displayTag: "Runway", aliases: ["Runway", "Runway AI", "RunwayML"] },
+  google: { name: "Google", displayTag: "Google", aliases: ["Google", "谷歌", "Google DeepMind"], otherNames: ["Veo", "Google Flow"] },
+  comfy: { name: "ComfyUI", displayTag: "ComfyUI", aliases: ["ComfyUI", "Comfy-Org", "Comfy Org"] },
+  ltx: { name: "LTX", displayTag: "LTX", aliases: ["LTX", "LTX-Video", "LTX Video"], otherNames: ["Lightricks"] },
+  wan: { name: "Wan", displayTag: "Wan", aliases: ["Wan", "Wan2.2", "通义万相"] },
   arri: { name: "ARRI", displayTag: "ARRI", aliases: ["ARRI", "阿莱"], otherNames: ["ARRI Camera Systems", "ARRI Rental"] },
   red: { name: "RED Digital Cinema", displayTag: "RED", aliases: ["RED", "RED Digital Cinema"], otherNames: ["RED.com"] },
   sony: { name: "Sony", displayTag: "Sony", aliases: ["Sony", "索尼", "Sony Cine"], otherNames: ["Sony Cinema", "Sony Professional", "索尼中国"] },
@@ -104,6 +112,13 @@ export const ENTITIES: Record<string, { name: string; displayTag: string | null;
  * 行业没有这个问题时可以留空数组。
  */
 export const IDENTITY_LEXICON: ReadonlyArray<{ id: string; name: string; patterns: RegExp[] }> = [
+  { id: "kling", name: "可灵", patterns: [/可灵|\bKling(?: AI)?\b/i] },
+  { id: "jimeng", name: "即梦", patterns: [/即梦|\bJimeng\b/i] },
+  { id: "runway", name: "Runway", patterns: [/\bRunway(?:ML|\s+AI)\b/i, /\bRunway\s+(?:Gen-\d|Aleph|Act-(?:One|Two))\b/i, /\bRunway\s*(?:公司|团队)?(?:发布|推出|更新|开放|生成式|模型)/, /\bRunway\s+(?:launch\w*|introduc\w*|announc\w*|releas\w*|unveil\w*|updat\w*)\b[^.!?\n]{0,100}\b(?:AI|video|generative|Gen-\d|Aleph)\b/i] },
+  { id: "google", name: "Google", patterns: [/\bGoogle\b|谷歌|\bDeepMind\b|\bVeo\b/i] },
+  { id: "comfy", name: "ComfyUI", patterns: [/\bComfyUI\b|\bComfy[- ]Org\b/i] },
+  { id: "ltx", name: "LTX", patterns: [/\bLTX(?:[- ]Video)?\b|\bLightricks\b/i] },
+  { id: "wan", name: "Wan", patterns: [/通义万相|\bWan[- ]?\d+(?:\.\d+)*\b/i] },
   { id: "arri", name: "ARRI", patterns: [/\bARRI\b|阿莱/i] },
   // The bare acronym is case-sensitive: ordinary “red light” is not a camera maker.
   { id: "red", name: "RED Digital Cinema", patterns: [/\bRED\b/, /RED Digital Cinema|\bKOMODO\b|\bV-RAPTOR\b|\bMONSTRO\b|\bHELIUM\b/i] },

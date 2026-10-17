@@ -25,14 +25,14 @@ function hrefWith(base: string, params: URLSearchParams, patch: Record<string, s
 }
 
 /**
- * The feed's one filter (精选 and 全部动态 alike): none, 一手, or a category. One choice at a time: picking
- * 一手 clears the category and picking a category clears 一手. Older 资讯 / X links still filter; the
+ * The feed's one filter (精选 and 全部动态 alike): none, 首发, or a category. One choice at a time: picking
+ * 首发 clears the category and picking a category clears 首发. Older 资讯 / X links still filter; the
  * choice then shows as none.
  */
 function filterOptions(base: string, params: URLSearchParams, noneLabel: string) {
   return [
     { key: "all", label: noneLabel, to: hrefWith(base, params, { category: null, channel: null }) },
-    { key: "firstParty", label: CHANNEL_LABELS.firstParty, to: hrefWith(base, params, { category: null, channel: "firstParty" }) },
+    { key: "firstParty", label: <span title="官方或当事人直接发布，不代表全网最早报道">{CHANNEL_LABELS.firstParty}</span>, to: hrefWith(base, params, { category: null, channel: "firstParty" }) },
     ...CATEGORY_KEYS.map((k) => ({ key: k, label: CATEGORY_LABELS[k], to: hrefWith(base, params, { category: k, channel: null }) })),
   ];
 }
@@ -96,6 +96,7 @@ function FilterSheet({ open, onClose, base, active }: { open: boolean; onClose: 
   const [params] = useSearchParams();
   return (
     <Sheet open={open} onClose={onClose} title="筛选">
+      <p className="mx-4 mb-2 text-[13px] text-ink-3">首发指官方或当事人直接发布，不代表全网最早报道。</p>
       <ul className="mx-4 divide-y divide-line-soft">
         {filterOptions(base, params, "不限").map((o) => {
           const on = o.key === active;
