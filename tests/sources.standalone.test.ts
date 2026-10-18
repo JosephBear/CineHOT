@@ -36,6 +36,13 @@ const pages: Record<string, () => string> = {
   "/zoneless-post": () => `<html><head><meta property="article:published_time" content="2026-09-30 17:43:58"></head><body><p>Post</p></body></html>`,
   // A list API that gives calendar days as yyyymmdd.
   "/days.json": () => JSON.stringify({ data: { list: [{ seq: 695, ttl: "MCFlow", day: "20260922" }, { seq: 1, ttl: "Bad day", day: "20260230" }] } }),
+  // A list API that moved from ISO strings to millisecond timestamps: old entries keep the strings.
+  "/mixed-epoch.json": () => JSON.stringify({ data: [{ slug: "new", title: "New", publishDate: 1791820800000 }, { slug: "old", title: "Old", publishDate: "2026-05-22T05:57:29.600Z" }, { slug: "bad", title: "Bad", publishDate: "unknown" }] }),
+  // A Next.js page whose posts arrive in a flight payload, each post with arrays of its own.
+  "/flight": () => {
+    const posts = [{ _id: "a", title: "First", date: "2026-10-08T20:37:00.000Z", href: "/news/first", tags: ["x", "y"] }, { _id: "b", title: "Second", date: "2026-09-30T18:32:00.000Z", href: "/news/second", tags: [] }];
+    return `<html><body><script>self.__next_f.push([1,${JSON.stringify(`5:["$","div",null,{"posts":${JSON.stringify(posts)},"more":[1]}]`)}])</script></body></html>`;
+  },
   // Google Developers Blog: no date in the feed or in meta tags, only in JSON-LD.
   "/ld-post": () =>
     `<html><head><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Blog"},` +
@@ -193,6 +200,19 @@ test("a time without a zone is read in the source's offset, in JSON lists and in
   assert.deepEqual(await list({ publishedAtUtcOffset: "+00:00" }), ["2026-09-30T17:43:58.000Z", "2026-09-30T17:43:58.000Z", "2026-09-30T22:43:58.000Z"]);
   const detail = async (offset?: string) => (await fetchDetail(`${site}/zoneless-post`, { id: "test-feed", config: { detail: { maxFetches: 20, publishedAtUtcOffset: offset } } } as never, { date: true, title: false, summary: false, body: false })).publishedAt?.toISOString();
   assert.deepEqual([await detail(), await detail("+00:00")], ["2026-09-30T09:43:58.000Z", "2026-09-30T17:43:58.000Z"]);
+});
+
+test("a millisecond-timestamp list keeps the ISO dates of its older entries", async () => {
+  const items = await fetchJsonList({ id: "test-json", config: { url: `${site}/mixed-epoch.json`, itemsPath: "data", titlePaths: ["title"], urlTemplate: "https://example.org/news/{slug}", publishedAtPath: "publishDate", publishedAtUnit: "epoch_ms" } } as never);
+  assert.deepEqual(items.map((c) => c.publishedAt?.toISOString() ?? null), ["2026-10-12T16:00:00.000Z", "2026-05-22T05:57:29.600Z", null]);
+});
+
+test("an embedded flight array is read whole, past the arrays inside its items", async () => {
+  const items = await fetchJsonList({ id: "test-json", config: { url: `${site}/flight`, mode: "html_json_key", jsonKey: "posts", titlePaths: ["title"], urlTemplate: "https://example.org{raw:href}", publishedAtPath: "date" } } as never);
+  assert.deepEqual(items.map((c) => [c.title, c.url, c.publishedAt?.toISOString()]), [
+    ["First", "https://example.org/news/first", "2026-10-08T20:37:00.000Z"],
+    ["Second", "https://example.org/news/second", "2026-09-30T18:32:00.000Z"],
+  ]);
 });
 
 test("dates in yyyymmdd and in JSON-LD are read", async () => {

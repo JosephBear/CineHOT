@@ -101,3 +101,38 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 ## v0.2.0 当前周期
 
 2026-10-17起默认周期为360分钟。上文480分钟描述为历史运行记录；当前54个登记信源中35个支持自动采集，19个external仍待接入。
+
+## 2026-10-18 外部来源转为自动采集
+
+原19个`external`来源中，11个找到了可长期读取的公开订阅、网页列表或页面内嵌数据，改用新ID自动采集；旧ID仍是外部导入，新部署不再登记。当前54个登记信源：33个RSS、10个网页列表、3个JSON列表自动采集，8个`external`待接入。
+
+管理后台只允许在RSS、网页列表和JSON列表之间调整采集方式，不能把`external`改为自动采集，所以使用新ID。已有部署运行 `node --env-file=.env scripts/seed.ts` 添加新ID，再在 `/admin/sources` 暂停对应的旧external来源。文章按原文网址去重，新来源读到已导入的文章时并入原记录，不会重复出现。
+
+| 来源 | 旧ID | 新ID | 读取方式 | 入口 |
+|---|---|---|---|---|
+| Curious Refuge | `web-curious-refuge` | `rss-curious-refuge` | Squarespace RSS | https://curiousrefuge.com/blog?format=rss |
+| SMPTE（官方新闻） | `web-smpte` | `rss-smpte` | 官方博客RSS；期刊目录无可读日期，改收SMPTE官方新闻 | https://www.smpte.org/blog/rss.xml |
+| Anthropic | `web-anthropic` | `web-anthropic-news` | 网页列表，列表日期 | https://www.anthropic.com/news |
+| Black Forest Labs／FLUX | `web-black-forest-labs` | `web-bfl-blog` | 网页列表，`time[datetime]` | https://bfl.ai/blog |
+| Topaz Labs | `web-topaz` | `web-topaz-news` | 网页列表；列表无日期，详情页JSON-LD补日期 | https://www.topazlabs.com/news |
+| Theoretically Media | `web-theoretically-media` | `web-theoretically-media-archive` | beehiiv归档页网页列表 | https://theoreticallymedia.beehiiv.com/archive |
+| 国家电影局 | `web-chinafilm-gov` | `web-chinafilm-hyzx` | “行业资讯”栏目网页列表；标题由页面脚本写出，从详情页脚本读取标题 | https://www.chinafilm.gov.cn/xwzx/hyzx/ |
+| Vidu／生数科技 | `web-vidu` | `web-shengshu-news` | 生数科技英文新闻页网页列表；原平台新闻页停在2025-12，中文页更新较慢 | https://www.shengshu.com/en/news/ |
+| Runway | `web-runway` | `json-runway-news` | JSON列表，Next.js页面内嵌 `posts` | https://runway.com/news |
+| MiniMax／海螺 | `web-minimax-hailuo` | `json-minimax-news` | JSON列表，官方新闻接口 | https://www.minimax.io/api/news?page=1&locale=en |
+| 字节跳动 Seed | `web-bytedance-seed` | `json-seed-updates` | JSON列表，首页 `window._ROUTER_DATA` 的最新动态；过滤招聘 | https://seed.bytedance.com/zh/ |
+
+验证：MiniMax、Seed、国家电影局在本机直接联网通过 `scripts/check-cinemahot-sources.ts`；其余8个在本机解析到私网地址（代理的fake-IP），被SSRF检查拦下，改为用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。正式运行需要可用的出网条件（见[部署](../deploy.md)中的 `EGRESS_PROXY_URL`），以后台运行记录为准。
+
+仍为`external`的8个：
+
+| 来源 | ID | 原因 |
+|---|---|---|
+| Panavision Highlights | `web-panavision` | 列表与文章页都没有发布日期 |
+| 可灵／快手官方公告 | `web-kling` | 返回HTTP 403 |
+| xAI／Grok | `web-xai` | 新闻页与变更记录返回HTTP 403 |
+| Cullen Kelly | `web-cullen-kelly` | Newsletter只有订阅表单，没有公开归档 |
+| Paul Trillo | `web-paul-trillo` | 作品集网站，没有文章列表 |
+| 中国电影报 | `web-chinafilm-news` | 电子报按期分版，需要先找最新一期再读版面，现有读取方式不支持两级列表 |
+| Luma | `web-luma` | 新闻页以泛工具排行榜为主 |
+| PixVerse | `web-pixverse` | 博客以泛工具排行榜为主，条目在Astro序列化数据中，现有读取方式不支持 |

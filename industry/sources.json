@@ -1,5 +1,5 @@
 {
-  "$comment": "CinemaHOT 2026-10-16 信源配置快照：原19个来源加用户选定35个，共54个登记来源；RSS和网页列表按360分钟（每天4次）采集，external仅接受本轮导入，仍需长期采集适配。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
+  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共54个登记来源，其中33个RSS、10个网页列表、3个JSON列表按360分钟（每天4次）自动采集，8个external仅接受导入。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
   "sources": [
     {
       "id": "rss-asc",
@@ -724,10 +724,14 @@
       "enabled": true
     },
     {
-      "id": "web-smpte",
-      "name": "SMPTE Motion Imaging Journal",
-      "kind": "external",
+      "id": "rss-smpte",
+      "name": "SMPTE（官方新闻）",
+      "kind": "rss",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.smpte.org/blog/rss.xml",
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.smpte.org/"
@@ -772,10 +776,22 @@
       "enabled": true
     },
     {
-      "id": "web-runway",
+      "id": "json-runway-news",
       "name": "Runway",
-      "kind": "external",
+      "kind": "json_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://runway.com/news",
+        "mode": "html_json_key",
+        "jsonKey": "posts",
+        "titlePaths": [
+          "title"
+        ],
+        "urlTemplate": "https://runway.com{raw:href}",
+        "publishedAtPath": "date",
+        "externalIdPath": "_id",
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://runway.com/"
@@ -794,10 +810,29 @@
       "enabled": true
     },
     {
-      "id": "web-bytedance-seed",
+      "id": "json-seed-updates",
       "name": "字节跳动 Seed",
-      "kind": "external",
+      "kind": "json_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://seed.bytedance.com/zh/",
+        "mode": "html_window_var",
+        "windowVar": "_ROUTER_DATA",
+        "itemsPath": "loaderData.(locale$)/page.homeDesign.latestUpdates.items",
+        "titlePaths": [
+          "title.zh"
+        ],
+        "urlTemplate": "https://seed.bytedance.com{raw:href.zh}",
+        "publishedAtPath": "date.zh",
+        "externalIdPath": "id",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "招聘",
+            "招募"
+          ]
+        },
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://seed.bytedance.com/"
@@ -866,10 +901,21 @@
       "enabled": true
     },
     {
-      "id": "web-anthropic",
+      "id": "web-anthropic-news",
       "name": "Anthropic",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.anthropic.com/news",
+        "itemSelector": "a[class*=\"PublicationList\"][href^=\"/news/\"]",
+        "titleSelector": "[class*=\"__title\"]",
+        "publishedAtSelector": "time",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://www.anthropic.com/news/"
+        ],
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.anthropic.com/"
@@ -910,10 +956,14 @@
       "enabled": true
     },
     {
-      "id": "web-curious-refuge",
+      "id": "rss-curious-refuge",
       "name": "Curious Refuge",
-      "kind": "external",
+      "kind": "rss",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://curiousrefuge.com/blog?format=rss",
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://curiousrefuge.com/"
@@ -952,10 +1002,21 @@
       "enabled": true
     },
     {
-      "id": "web-theoretically-media",
+      "id": "web-theoretically-media-archive",
       "name": "Theoretically Media",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://theoreticallymedia.beehiiv.com/archive",
+        "itemSelector": "a[href^=\"/p/\"]",
+        "titleSelector": "h3",
+        "publishedAtSelector": "p",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://theoreticallymedia.beehiiv.com/p/"
+        ],
         "publisherRole": "person",
         "publisherUrlPrefixes": [
           "https://theoreticallymedia.beehiiv.com/"
@@ -1036,10 +1097,25 @@
       "enabled": true
     },
     {
-      "id": "web-chinafilm-gov",
+      "id": "web-chinafilm-hyzx",
       "name": "国家电影局",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.chinafilm.gov.cn/xwzx/hyzx/",
+        "itemSelector": ".m2ru1 > li",
+        "linkSelector": "a",
+        "publishedAtRegex": "<span>(\\d{4}-\\d{2}-\\d{2})</span>",
+        "allowUrlPrefixes": [
+          "https://www.chinafilm.gov.cn/xwzx/hyzx/"
+        ],
+        "detail": {
+          "maxFetches": 15,
+          "titleRegex": "var _doctitle = '([^']+)'",
+          "titleAuthoritative": true
+        },
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.chinafilm.gov.cn/"
@@ -1138,10 +1214,26 @@
       "enabled": true
     },
     {
-      "id": "web-minimax-hailuo",
+      "id": "json-minimax-news",
       "name": "MiniMax／海螺",
-      "kind": "external",
+      "kind": "json_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.minimax.io/api/news?page=1&locale=en",
+        "mode": "json_api",
+        "itemsPath": "data",
+        "titlePaths": [
+          "title"
+        ],
+        "summaryPaths": [
+          "summary"
+        ],
+        "urlTemplate": "https://www.minimax.io/news/{slug}",
+        "publishedAtPath": "publishDate",
+        "publishedAtUnit": "epoch_ms",
+        "externalIdPath": "newsId",
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.minimax.io/"
@@ -1160,13 +1252,25 @@
       "enabled": true
     },
     {
-      "id": "web-vidu",
+      "id": "web-shengshu-news",
       "name": "Vidu／生数科技",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.shengshu.com/en/news/",
+        "itemSelector": "a.news-featured, article.news-card",
+        "linkSelector": "a",
+        "titleSelector": "h2, h3",
+        "publishedAtSelector": ".news-featured__meta span, .news-card__date",
+        "allowUrlPrefixes": [
+          "https://www.shengshu.com/en/news/"
+        ],
+        "sortByPublishedAt": true,
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
-          "https://platform.vidu.com/"
+          "https://www.shengshu.com/"
         ]
       },
       "tier": "T1",
@@ -1234,10 +1338,20 @@
       "enabled": true
     },
     {
-      "id": "web-black-forest-labs",
+      "id": "web-bfl-blog",
       "name": "Black Forest Labs／FLUX",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://bfl.ai/blog",
+        "itemSelector": "a[href^=\"/blog/\"]:has(article)",
+        "titleSelector": "h2",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://bfl.ai/blog/"
+        ],
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://bfl.ai/"
@@ -1256,10 +1370,24 @@
       "enabled": true
     },
     {
-      "id": "web-topaz",
+      "id": "web-topaz-news",
       "name": "Topaz Labs",
-      "kind": "external",
+      "kind": "web_list",
       "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.topazlabs.com/news",
+        "itemSelector": ".v26-news-link",
+        "linkSelector": "a.v26-news-link-float",
+        "titleSelector": "h2",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://www.topazlabs.com/news/"
+        ],
+        "detail": {
+          "maxFetches": 8
+        },
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.topazlabs.com/"

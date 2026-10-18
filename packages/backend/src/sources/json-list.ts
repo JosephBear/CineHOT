@@ -53,7 +53,8 @@ function toDate(v: unknown, unit: string | undefined, utcOffset: string | undefi
   } catch {
     return null;
   }
-  if (unit === "epoch_ms" || unit === "epoch_s") {
+  // Some APIs switch formats between old and new entries: a non-numeric value is read as a date string.
+  if ((unit === "epoch_ms" || unit === "epoch_s") && /^-?\d+(?:\.\d+)?$/.test(text)) {
     const date = new Date(Number(text) * (unit === "epoch_s" ? 1000 : 1));
     return Number.isFinite(date.getTime()) ? date : null;
   }
@@ -82,6 +83,27 @@ function findKey(obj: unknown, key: string, depth = 0): unknown {
   return undefined;
 }
 
+/** Balanced-brace scan: the index of the bracket closing the object or array literal at start, or -1. */
+function literalEnd(text: string, start: number): number {
+  let depth = 0, inStr: string | null = null, esc = false;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i]!;
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === inStr) inStr = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'") inStr = ch;
+    else if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
 function embeddedJson(html: string, source: SourceRow): unknown {
   const mode = source.config.mode;
   if (mode === "html_window_var") {
@@ -90,24 +112,9 @@ function embeddedJson(html: string, source: SourceRow): unknown {
     const m = re.exec(html);
     if (!m) throw new FetchError(`window.${name} not found`);
     const start = m.index + m[0].length;
-    // Balanced-brace scan to find the object literal's end.
-    let depth = 0, inStr: string | null = null, esc = false;
-    for (let i = start; i < html.length; i++) {
-      const ch = html[i]!;
-      if (inStr) {
-        if (esc) esc = false;
-        else if (ch === "\\") esc = true;
-        else if (ch === inStr) inStr = null;
-        continue;
-      }
-      if (ch === '"' || ch === "'") inStr = ch;
-      else if (ch === "{" || ch === "[") depth++;
-      else if (ch === "}" || ch === "]") {
-        depth--;
-        if (depth === 0) return JSON.parse(html.slice(start, i + 1));
-      }
-    }
-    throw new FetchError(`window.${name} not terminated`);
+    const end = literalEnd(html, start);
+    if (end < 0) throw new FetchError(`window.${name} not terminated`);
+    return JSON.parse(html.slice(start, end + 1));
   }
   // html_json_key: scan JSON script blocks (e.g. __NEXT_DATA__) for the key.
   const key = String(source.config.jsonKey);
@@ -129,12 +136,13 @@ function embeddedJson(html: string, source: SourceRow): unknown {
     if (flight) {
       try {
         const decoded = JSON.parse(`"${flight[1]}"`) as string;
-        const idx = decoded.indexOf(`"${key}"`);
-        if (idx >= 0) {
-          const objStart = decoded.lastIndexOf("{", idx);
-          const parsed = JSON.parse(decoded.slice(objStart, decoded.indexOf("]", idx) + 1) + "}");
-          const found = findKey(parsed, key);
-          if (found) return { [key]: found };
+        // The array may nest arrays of its own (tags, categories): read it to its matching bracket.
+        const at = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\s*:\\s*\\[`).exec(decoded);
+        if (at) {
+          const start = at.index + at[0].length - 1;
+          const end = literalEnd(decoded, start);
+          const found = end < 0 ? null : JSON.parse(decoded.slice(start, end + 1));
+          if (Array.isArray(found)) return { [key]: found };
         }
       } catch {
         // keep scanning
