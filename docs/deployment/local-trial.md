@@ -47,6 +47,6 @@ node scripts/smoke.ts --base http://localhost:3000
 
 本机 `.env` 已按授权打开 `COLLECT_ENABLED` 和 `MODEL_CALLS_ENABLED`，使用 DeepSeek 默认模型；数据库中的 `llm` 请求预算为 20/分钟、60/小时、120/滚动24小时。17 个信源间隔为 480 分钟。停止付费处理时可将该服务预算设为 0，或关闭模型开关后正常重启服务。
 
-本机配置 `EGRESS_PROXY_URL=http://127.0.0.1:55435`，由启动器启动仅监听回环地址的项目代理，继续使用既有 DNS 与 SSRF 检查。此地址仅适用于本机；新服务器需要验证自己的出口条件，不应照抄回环代理地址。不得通过允许私网抓取或关闭 TLS 检查绕过失败。
+本机配置 `EGRESS_PROXY_URL=http://127.0.0.1:55435`，由启动器启动仅监听回环地址的项目代理（仓库内版本：`node scripts/source-discovery/loopback-proxy.mjs`，见[信源侦测](../../scripts/source-discovery/README.md)），继续使用既有 DNS 与 SSRF 检查。此地址仅适用于本机；新服务器需要验证自己的出口条件，不应照抄回环代理地址。不得通过允许私网抓取或关闭 TLS 检查绕过失败。
 
 费用、队列与空页面排查见[运行维护](../operations/README.md)。人工标注尚未完成，模型试运行不等于质量评测通过；公开上线前需完成质量校准、运营资料及使用规则和隐私说明确认。

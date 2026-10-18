@@ -190,3 +190,33 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | 《电影艺术》 | `web-dyys` | 期刊按期出版，网站没有带日期的文章列表 |
 
 《当代电影》《北京电影学院学报》没有找到可公开访问的官方网站入口，未登记；可考虑通过知网等数据库人工导入。
+
+### 2026-10-18 移出无法采集的来源
+
+上文两张“仍为`external`”“暂登记为`external`”表中的16个来源找不到可长期采集的入口，已从 `industry/sources.json` 移出，当前共74个，全部自动采集。移出原因保留在上表，以后找到入口可按新ID重新登记。已有部署的数据库记录不会因种子文件变化而删除，需在后台暂停这些来源。
+
+### 2026-10-18 品牌官方来源补充
+
+| 来源 | ID | 读取方式 | 入口 |
+|---|---|---|---|
+| Panavision | `rss-yt-panavision` | 官方YouTube频道RSS（官网列表无日期） | channel_id=UCjjsTTWiWbeZGbbxqI0ExVw |
+| 可灵 Kling AI | `rss-yt-kling` | 官方YouTube频道RSS（快手投资者页面返回403） | channel_id=UC1i21joJVJVVRUGUOGFEdVQ |
+| 爱图仕 Aputure | `rss-yt-aputure` | 官方YouTube频道RSS（官网新闻页404） | channel_id=UCc0D1yh3TGE8dJSLm9VmEdg |
+| DJI 大疆 | `web-dji-news` | 官方中文新闻网页列表 | https://www.dji.com/cn/media-center/announcements |
+
+PixVerse仍未接入：官方YouTube频道订阅为空，博客以泛工具排行榜为主且在Astro序列化数据中，接口文档更新日志是一张同一网址下的表格，每行没有独立链接。其官方X账号可用`x_search`接入，但需要SocialData按请求付费。当前共78个信源。
+
+### 2026-10-18 联网实测与补充频道
+
+经本机转发代理联网实测，下列6个来源当前读不到可用条目，因内容有价值仍保留，按后台运行记录观察：
+
+| 来源 | ID | 当前情况 | 补充入口 |
+|---|---|---|---|
+| The ASC | `rss-asc` | 采集程序被网站防护拦截（HTTP 403） | 已有官方频道 `rss-yt-asc` |
+| AFI | `rss-afi-news` | 网站拒绝采集程序的User-Agent（HTTP 403） | 新增官方频道 `rss-yt-afi`（channel_id=UCmO_WjaWDwimv8Kl7GHFxAA） |
+| CineMontage | `rss-cinemontage` | 采集程序被网站防护拦截（HTTP 403） | 没有官方YouTube频道 |
+| Cooke Optics | `rss-cooke` | 订阅当前为空 | 新增官方频道 `rss-yt-cooke`（channel_id=UC-Ya9gBlwOhRwtloTn1hvbA，更新较少） |
+| The Hollywood Reporter（技术） | `rss-thr-tech` | 订阅当前为空 | 官方YouTube以娱乐资讯为主，未接入 |
+| StudioBinder | `rss-studiobinder` | 最新条目都被其排行榜过滤规则排除 | 已有官方频道 `rss-yt-studiobinder` |
+
+X（推特）账号可通过 `x_search` 接入，但需SocialData按请求付费，暂未开通。当前共80个信源。

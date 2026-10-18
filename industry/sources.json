@@ -1,5 +1,5 @@
 {
-  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共90个登记来源，其中50个RSS、20个网页列表、4个JSON列表按60分钟自动采集，16个external仅接受导入。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停；同日新增院校、影展、泛影像媒体与视频频道。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
+  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共80个登记来源，其中55个RSS、21个网页列表、4个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
   "sources": [
     {
       "id": "rss-asc",
@@ -514,27 +514,6 @@
       "enabled": true
     },
     {
-      "id": "web-panavision",
-      "name": "Panavision Highlights",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.panavision.com/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "rss-redshark",
       "name": "RedShark News",
       "kind": "rss",
@@ -851,28 +830,6 @@
       "enabled": true
     },
     {
-      "id": "web-kling",
-      "name": "可灵／快手官方公告",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://ir.kuaishou.com/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "AI影视创作"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "rss-openai",
       "name": "OpenAI",
       "kind": "rss",
@@ -934,28 +891,6 @@
       "enabled": true
     },
     {
-      "id": "web-xai",
-      "name": "xAI／Grok",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://x.ai/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "AI影视创作"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "rss-curious-refuge",
       "name": "Curious Refuge",
       "kind": "rss",
@@ -967,27 +902,6 @@
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://curiousrefuge.com/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "专业媒体／创作者"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-cullen-kelly",
-      "name": "Cullen Kelly",
-      "kind": "external",
-      "config": {
-        "publisherRole": "person",
-        "publisherUrlPrefixes": [
-          "https://cullenkellycolor.com/"
         ]
       },
       "tier": "T2",
@@ -1020,27 +934,6 @@
         "publisherRole": "person",
         "publisherUrlPrefixes": [
           "https://theoreticallymedia.beehiiv.com/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "专业媒体／创作者"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-paul-trillo",
-      "name": "Paul Trillo",
-      "kind": "external",
-      "config": {
-        "publisherRole": "person",
-        "publisherUrlPrefixes": [
-          "https://paultrillo.com/"
         ]
       },
       "tier": "T2",
@@ -1133,27 +1026,6 @@
       "enabled": true
     },
     {
-      "id": "web-chinafilm-news",
-      "name": "中国电影报",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://chinafilmnews.cn/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "专业媒体／创作者"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "rss-higgsfield",
       "name": "Higgsfield",
       "kind": "rss",
@@ -1177,28 +1049,6 @@
         },
         "publisherUrlPrefixes": [
           "https://higgsfield.ai/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "AI影视创作"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-luma",
-      "name": "Luma",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://lumalabs.ai/"
         ]
       },
       "tier": "T1",
@@ -1271,28 +1121,6 @@
         "publisherRole": "organization",
         "publisherUrlPrefixes": [
           "https://www.shengshu.com/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "AI影视创作"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-pixverse",
-      "name": "PixVerse",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://pixverse.ai/"
         ]
       },
       "tier": "T1",
@@ -1714,28 +1542,6 @@
       "interval_minutes": 60,
       "tags": [
         "剪辑"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-first-festival",
-      "name": "FIRST 青年电影展",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.firstfilm.org.cn/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "影展"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
@@ -2183,14 +1989,108 @@
       "enabled": true
     },
     {
-      "id": "web-cilect",
-      "name": "CILECT 国际电影电视学校联合会",
-      "kind": "external",
+      "id": "rss-yt-panavision",
+      "name": "YouTube：Panavision",
+      "kind": "rss",
       "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.cilect.org/"
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCjjsTTWiWbeZGbbxqI0ExVw"
+      },
+      "tier": "T1",
+      "owner_entity_id": "panavision",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-kling",
+      "name": "YouTube：Kling AI（可灵）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC1i21joJVJVVRUGUOGFEdVQ"
+      },
+      "tier": "T1",
+      "owner_entity_id": "kling",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-aputure",
+      "name": "YouTube：Aputure（爱图仕）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCc0D1yh3TGE8dJSLm9VmEdg"
+      },
+      "tier": "T1",
+      "owner_entity_id": "aputure",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-dji-news",
+      "name": "DJI 大疆官方新闻",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.dji.com/cn/media-center/announcements",
+        "itemSelector": "a[class*=\"listItem___\"][href^=\"/cn/media-center/announcements/\"]",
+        "titleSelector": "h3",
+        "publishedAtSelector": "[class*=\"listItemTime\"]",
+        "allowUrlPrefixes": [
+          "https://www.dji.com/cn/media-center/announcements/"
         ]
+      },
+      "tier": "T1",
+      "owner_entity_id": "dji",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-afi",
+      "name": "YouTube：American Film Institute（AFI）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmO_WjaWDwimv8Kl7GHFxAA"
       },
       "tier": "T1",
       "owner_entity_id": null,
@@ -2198,136 +2098,30 @@
       "interval_minutes": 60,
       "tags": [
         "官方",
-        "院校"
+        "院校",
+        "视频频道"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "enabled": true
     },
     {
-      "id": "web-bfa",
-      "name": "北京电影学院",
-      "kind": "external",
+      "id": "rss-yt-cooke",
+      "name": "YouTube：Cooke Optics（库克镜头）",
+      "kind": "rss",
       "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.bfa.edu.cn/"
-        ]
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-Ya9gBlwOhRwtloTn1hvbA"
       },
       "tier": "T1",
-      "owner_entity_id": null,
+      "owner_entity_id": "cooke",
       "participation_mode": "editorial",
       "interval_minutes": 60,
       "tags": [
         "官方",
-        "院校"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-criterion-current",
-      "name": "Criterion「The Current」",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.criterion.com/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "评论"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-bjp",
-      "name": "British Journal of Photography",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.1854.photography/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "摄影"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-cfa",
-      "name": "中国电影资料馆",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "https://www.cfa.org.cn/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "机构"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-bcsff",
-      "name": "北京大学生电影节",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "http://www.bcsff.com/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "影展"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-dyys",
-      "name": "《电影艺术》",
-      "kind": "external",
-      "config": {
-        "publisherRole": "organization",
-        "publisherUrlPrefixes": [
-          "http://www.dyys.com.cn/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "期刊"
+        "视频频道"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
