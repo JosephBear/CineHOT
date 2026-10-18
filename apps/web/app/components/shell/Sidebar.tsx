@@ -75,6 +75,9 @@ export function Sidebar({ changelogVersion }: { changelogVersion: string | null 
             {SITE.icp}
           </a>
         )}
+        <a href={SITE.credit.url} target="_blank" rel="noopener noreferrer" className="block px-2 text-[10px] leading-[1.5] text-ink-4 hover:text-ink-3">
+          {SITE.credit.label}
+        </a>
       </div>
     </aside>
   );

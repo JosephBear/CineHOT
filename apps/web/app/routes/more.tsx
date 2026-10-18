@@ -112,6 +112,7 @@ export default function MorePage() {
         <a href="/feed.xml" className="hover:text-ink-2">RSS</a>
         {SITE.github && <a href={SITE.github} target="_blank" rel="noopener noreferrer" className="hover:text-ink-2">GitHub 开源</a>}
         {SITE.icp && <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-ink-2">{SITE.icp}</a>}
+        <a href={SITE.credit.url} target="_blank" rel="noopener noreferrer" className="hover:text-ink-2">{SITE.credit.label}</a>
       </div>
     </div>
   );

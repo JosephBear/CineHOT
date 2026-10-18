@@ -1,5 +1,5 @@
 {
-  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共54个登记来源，其中33个RSS、10个网页列表、3个JSON列表按360分钟（每天4次）自动采集，8个external仅接受导入。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
+  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共90个登记来源，其中50个RSS、20个网页列表、4个JSON列表按60分钟自动采集，16个external仅接受导入。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停；同日新增院校、影展、泛影像媒体与视频频道。首次初始化只添加不存在的ID；已有部署的修改由后台分别维护。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
   "sources": [
     {
       "id": "rss-asc",
@@ -14,7 +14,7 @@
       "tier": "T1",
       "owner_entity_id": "asc",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "协会"
@@ -36,7 +36,7 @@
       "tier": "T1",
       "owner_entity_id": "cooke",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "器材"
@@ -58,7 +58,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "器材"
@@ -80,7 +80,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "器材"
@@ -102,7 +102,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "技术"
@@ -124,7 +124,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "教程"
@@ -146,7 +146,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "技术"
@@ -168,7 +168,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "器材"
@@ -190,7 +190,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "后期"
@@ -212,7 +212,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "作品"
@@ -234,7 +234,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "行业"
@@ -256,7 +256,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "媒体",
         "行业"
@@ -287,7 +287,7 @@
       "tier": "T1",
       "owner_entity_id": "arri",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -320,7 +320,7 @@
       "tier": "T1",
       "owner_entity_id": "blackmagic",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -341,7 +341,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "摄影师",
         "布光"
@@ -363,7 +363,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "摄影师",
         "访谈",
@@ -401,7 +401,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "影视媒体"
       ],
@@ -424,7 +424,7 @@
       "tier": "T1",
       "owner_entity_id": "google",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -449,7 +449,7 @@
       "tier": "T1",
       "owner_entity_id": "comfy",
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "开源",
@@ -478,7 +478,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -505,7 +505,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -526,7 +526,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -553,7 +553,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -580,7 +580,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -607,7 +607,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -634,7 +634,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -661,7 +661,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -688,7 +688,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -715,7 +715,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -740,7 +740,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -767,7 +767,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -800,7 +800,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -841,7 +841,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -863,7 +863,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -891,7 +891,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -924,7 +924,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -946,7 +946,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -972,7 +972,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -993,7 +993,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -1025,7 +1025,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -1046,7 +1046,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -1088,7 +1088,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -1124,7 +1124,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方"
       ],
@@ -1145,7 +1145,7 @@
       "tier": "T2",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "专业媒体／创作者"
       ],
@@ -1182,7 +1182,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1204,7 +1204,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1242,7 +1242,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1276,7 +1276,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1298,7 +1298,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1328,7 +1328,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1360,7 +1360,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1396,7 +1396,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1424,7 +1424,7 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
@@ -1452,10 +1452,882 @@
       "tier": "T1",
       "owner_entity_id": null,
       "participation_mode": "editorial",
-      "interval_minutes": 360,
+      "interval_minutes": 60,
       "tags": [
         "官方",
         "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-afi-news",
+      "name": "AFI 美国电影学院",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.afi.com/news/feed/"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-bfi",
+      "name": "BFI 英国电影协会（含 Sight and Sound）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.bfi.org.uk/rss-feed"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "机构",
+        "评论"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-mubi-notebook",
+      "name": "MUBI Notebook",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://mubi.com/notebook/posts.rss"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "评论"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-frameio-insider",
+      "name": "Frame.io Insider",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://blog.frame.io/feed/"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "后期"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-petapixel",
+      "name": "PetaPixel",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://petapixel.com/feed/"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-fstoppers",
+      "name": "Fstoppers",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://fstoppers.com/feed"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-cartoonbrew",
+      "name": "Cartoon Brew",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.cartoonbrew.com/feed/"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "动画"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-awn",
+      "name": "Animation World Network",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.awn.com/news/rss.xml"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "动画",
+        "视效"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-vfxvoice",
+      "name": "VFX Voice（视效协会杂志）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://vfxvoice.com/feed/"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视效"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-80lv",
+      "name": "80.lv",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://80.lv/feed"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "实时渲染",
+        "虚拟制作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-ida-documentary",
+      "name": "IDA《Documentary》杂志",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.documentary.org/rss.xml"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "纪录片"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-cinemontage",
+      "name": "CineMontage（剪辑师协会）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://cinemontage.org/feed/"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "剪辑"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-first-festival",
+      "name": "FIRST 青年电影展",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.firstfilm.org.cn/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-asc",
+      "name": "YouTube：American Cinematographer（ASC）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCFjhAJXEcQBAcQIRhGUyCAA"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-indepthcine",
+      "name": "YouTube：In Depth Cine",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUodELQsFwF8dq0X-bK9FQQ"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "教程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-wolfcrow",
+      "name": "YouTube：wolfcrow",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC7gBcKzHKc0oOR5-XiWdlFQ"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "教程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-studiobinder",
+      "name": "YouTube：StudioBinder",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCUFoQUaVRt3MVFxqwPUMLCQ"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "教程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-higgsfield",
+      "name": "YouTube：Higgsfield AI",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCh13OyDSm-Kb8ij3yZArtFg"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-camerimage-news",
+      "name": "EnergaCAMERIMAGE 国际电影摄影艺术节",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://camerimage.pl/en/news",
+        "itemSelector": ".smallNewsThumb",
+        "linkSelector": "a[href^=\"/en/news/\"]",
+        "titleSelector": "p.font-bold",
+        "publishedAtSelector": "p.text-xs",
+        "publishedAtUtcOffset": "+01:00",
+        "allowUrlPrefixes": [
+          "https://camerimage.pl/en/news/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-usc-sca-news",
+      "name": "USC 南加州大学电影艺术学院",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://cinema.usc.edu/news/index.cfm",
+        "itemSelector": "article.event-list__item",
+        "linkSelector": ".event-list__title a",
+        "titleSelector": ".event-list__title a",
+        "publishedAtSelector": ".event-list__meta span",
+        "publishedAtUtcOffset": "-07:00",
+        "allowUrlPrefixes": [
+          "https://cinema.usc.edu/news/article.cfm"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-nyu-tisch-news",
+      "name": "NYU Tisch 纽约大学帝势艺术学院",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://tisch.nyu.edu/tisch-research-news-events/news/_jcr_content/search.results",
+        "baseUrl": "https://tisch.nyu.edu/tisch-research-news-events/news",
+        "itemSelector": "li.media-item--maj",
+        "linkSelector": "h2 a",
+        "titleSelector": "h2 a",
+        "publishedAtSelector": ".media-title--minor",
+        "publishedAtUtcOffset": "-04:00",
+        "allowUrlPrefixes": [
+          "https://tisch.nyu.edu/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-nfts-news",
+      "name": "NFTS 英国国家电影电视学院",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://nfts.co.uk/news",
+        "itemSelector": "article.node--teaser",
+        "linkSelector": ".teaser--meta__content a",
+        "titleSelector": ".teaser--meta__content h2",
+        "publishedAtUtcOffset": "+01:00",
+        "allowUrlPrefixes": [
+          "https://nfts.co.uk/article/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "publishedAtSelector": "time"
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-wpp-news",
+      "name": "World Press Photo 荷赛",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.worldpressphoto.org/news",
+        "itemSelector": "a.article-list-widget__item",
+        "titleSelector": "h4",
+        "publishedAtSelector": ".article-list-widget__item-posted",
+        "publishedAtUtcOffset": "+01:00",
+        "allowUrlPrefixes": [
+          "https://www.worldpressphoto.org/news/"
+        ],
+        "sortByPublishedAt": true
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-siff-news",
+      "name": "上海国际电影节",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.siff.com/",
+        "itemSelector": ".swiper-slide",
+        "linkSelector": "a",
+        "titleSelector": ".overlay-title",
+        "allowUrlPrefixes": [
+          "https://www.siff.com/content?aid="
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "publishedAtSelector": "span.time"
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-bjiff-news",
+      "name": "北京国际电影节",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.bjiff.com/ywzx/",
+        "itemSelector": ".detail_item",
+        "linkSelector": "a",
+        "titleSelector": "h3",
+        "publishedAtSelector": ".detail_item_date",
+        "allowUrlPrefixes": [
+          "https://www.bjiff.com/ywzx/2"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-nrta-news",
+      "name": "国家广播电视总局",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.nrta.gov.cn/",
+        "itemSelector": "li.zjywlist",
+        "linkSelector": "a",
+        "titleSelector": "a",
+        "publishedAtRegex": "/art/(\\d{4}/\\d{1,2}/\\d{1,2})/",
+        "allowUrlPrefixes": [
+          "https://www.nrta.gov.cn/art/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "政策"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-fengniao-news",
+      "name": "蜂鸟网",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://news.fengniao.com/",
+        "itemSelector": ".listBox .txtBox",
+        "linkSelector": "a.title",
+        "titleSelector": "a.title",
+        "publishedAtSelector": "span.time",
+        "allowUrlPrefixes": [
+          "https://qicai.fengniao.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-xitek-news",
+      "name": "色影无忌",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://info.xitek.com/news/",
+        "itemSelector": ".list.l_dt li",
+        "linkSelector": "a",
+        "titleSelector": "h3",
+        "publishedAtSelector": ".dd_time",
+        "allowUrlPrefixes": [
+          "https://info.xitek.com/news/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-pyiff-news",
+      "name": "平遥国际电影展",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.pyiffestival.com/app/api/v1/TenantWebSite/3aee7dc2-91cf-4d51-8927-d300541cc8dc/TenantWebSiteInfoContents?pageIndex=1&pageSize=20",
+        "mode": "json_api",
+        "itemsPath": "items",
+        "titlePaths": [
+          "title"
+        ],
+        "urlTemplate": "https://www.pyiffestival.com/NewsDetail/{id}",
+        "publishedAtPath": "publishedTime",
+        "externalIdPath": "id"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-cilect",
+      "name": "CILECT 国际电影电视学校联合会",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.cilect.org/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-bfa",
+      "name": "北京电影学院",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.bfa.edu.cn/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-criterion-current",
+      "name": "Criterion「The Current」",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.criterion.com/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "评论"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-bjp",
+      "name": "British Journal of Photography",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.1854.photography/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "摄影"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-cfa",
+      "name": "中国电影资料馆",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "https://www.cfa.org.cn/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "机构"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-bcsff",
+      "name": "北京大学生电影节",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "http://www.bcsff.com/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "影展"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-dyys",
+      "name": "《电影艺术》",
+      "kind": "external",
+      "config": {
+        "publisherRole": "organization",
+        "publisherUrlPrefixes": [
+          "http://www.dyys.com.cn/"
+        ]
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "期刊"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,

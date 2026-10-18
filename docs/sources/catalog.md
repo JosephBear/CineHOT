@@ -136,3 +136,57 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | 中国电影报 | `web-chinafilm-news` | 电子报按期分版，需要先找最新一期再读版面，现有读取方式不支持两级列表 |
 | Luma | `web-luma` | 新闻页以泛工具排行榜为主 |
 | PixVerse | `web-pixverse` | 博客以泛工具排行榜为主，条目在Astro序列化数据中，现有读取方式不支持 |
+
+2026-10-18起默认采集周期改为60分钟（`site/site.ts` 的 `SOURCE_DEFAULTS.fixedIntervalMinutes` 与种子配置）。已有部署的信源间隔需在后台调整。
+
+## 2026-10-18 院校、影展与泛影像信源
+
+站点面向学习电影与泛影像的师生，新增院校、影展、评论、摄影、动画、视效、纪录片、剪辑和视频频道来源，共36个：28个自动采集，8个暂登记为`external`。预筛提示词同步把泛影像与电影教育列为相关内容；评分标准与精选门槛未改，仍待人工样本校准。当前共90个：50个RSS、20个网页列表、4个JSON列表、16个`external`。
+
+| 来源 | ID | 读取方式 | 入口 |
+|---|---|---|---|
+| AFI 美国电影学院 | `rss-afi-news` | RSS | https://www.afi.com/news/feed/ |
+| BFI 英国电影协会（含 Sight and Sound） | `rss-bfi` | RSS | https://www.bfi.org.uk/rss-feed |
+| MUBI Notebook | `rss-mubi-notebook` | RSS | https://mubi.com/notebook/posts.rss |
+| Frame.io Insider | `rss-frameio-insider` | RSS | https://blog.frame.io/feed/ |
+| PetaPixel | `rss-petapixel` | RSS | https://petapixel.com/feed/ |
+| Fstoppers | `rss-fstoppers` | RSS | https://fstoppers.com/feed |
+| Cartoon Brew | `rss-cartoonbrew` | RSS | https://www.cartoonbrew.com/feed/ |
+| Animation World Network | `rss-awn` | RSS | https://www.awn.com/news/rss.xml |
+| VFX Voice | `rss-vfxvoice` | RSS | https://vfxvoice.com/feed/ |
+| 80.lv | `rss-80lv` | RSS | https://80.lv/feed |
+| IDA《Documentary》 | `rss-ida-documentary` | RSS | https://www.documentary.org/rss.xml |
+| CineMontage | `rss-cinemontage` | RSS | https://cinemontage.org/feed/ |
+| YouTube：American Cinematographer（ASC） | `rss-yt-asc` | YouTube频道RSS | channel_id=UCFjhAJXEcQBAcQIRhGUyCAA |
+| YouTube：In Depth Cine | `rss-yt-indepthcine` | YouTube频道RSS | channel_id=UCUodELQsFwF8dq0X-bK9FQQ |
+| YouTube：wolfcrow | `rss-yt-wolfcrow` | YouTube频道RSS | channel_id=UC7gBcKzHKc0oOR5-XiWdlFQ |
+| YouTube：StudioBinder | `rss-yt-studiobinder` | YouTube频道RSS | channel_id=UCUFoQUaVRt3MVFxqwPUMLCQ |
+| YouTube：Higgsfield AI | `rss-yt-higgsfield` | YouTube频道RSS | channel_id=UCh13OyDSm-Kb8ij3yZArtFg |
+| EnergaCAMERIMAGE | `web-camerimage-news` | 网页列表 | https://camerimage.pl/en/news |
+| USC 电影艺术学院 | `web-usc-sca-news` | 网页列表 | https://cinema.usc.edu/news/index.cfm |
+| NYU Tisch | `web-nyu-tisch-news` | 网页列表；新闻页加载列表所用的HTML片段 | https://tisch.nyu.edu/tisch-research-news-events/news |
+| NFTS | `web-nfts-news` | 网页列表；列表无日期，详情页 `time` 补日期（精确到天） | https://nfts.co.uk/news |
+| World Press Photo | `web-wpp-news` | 网页列表，按日期排序 | https://www.worldpressphoto.org/news |
+| 上海国际电影节 | `web-siff-news` | 首页轮播网页列表；详情页 `.time` 补日期 | https://www.siff.com/ |
+| 北京国际电影节 | `web-bjiff-news` | “要闻资讯”网页列表 | https://www.bjiff.com/ywzx/ |
+| 国家广播电视总局 | `web-nrta-news` | 首页“总局要闻”网页列表；日期取自文章网址 | https://www.nrta.gov.cn/ |
+| 蜂鸟网 | `web-fengniao-news` | 资讯网页列表（GBK编码） | https://news.fengniao.com/ |
+| 色影无忌 | `web-xitek-news` | 新闻网页列表 | https://info.xitek.com/news/ |
+| 平遥国际电影展 | `json-pyiff-news` | 官方公开新闻接口 | https://www.pyiffestival.com/News |
+
+验证：广电总局、上海国际电影节、蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinemahot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
+
+暂登记为`external`的8个：
+
+| 来源 | ID | 原因 |
+|---|---|---|
+| CILECT 国际电影电视学校联合会 | `web-cilect` | 网站拒绝脚本访问（HTTP 403） |
+| 北京电影学院 | `web-bfa` | 网站有访问验证（HTTP 412） |
+| Criterion「The Current」 | `web-criterion-current` | 网站拒绝脚本访问（HTTP 403） |
+| British Journal of Photography | `web-bjp` | 网站拒绝脚本访问（HTTP 403） |
+| 中国电影资料馆 | `web-cfa` | 动态列表由“加载更多”脚本请求，页面本身没有条目 |
+| 北京大学生电影节 | `web-bcsff` | 页面未找到带日期的新闻列表 |
+| FIRST 青年电影展 | `web-first-festival` | 网站订阅只含影片库与人物条目，新闻列表由脚本加载 |
+| 《电影艺术》 | `web-dyys` | 期刊按期出版，网站没有带日期的文章列表 |
+
+《当代电影》《北京电影学院学报》没有找到可公开访问的官方网站入口，未登记；可考虑通过知网等数据库人工导入。

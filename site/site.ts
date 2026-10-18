@@ -21,18 +21,20 @@ export const EDITION_WHEN = {
 
 export const SITE = {
   /** 站名：导航、页面标题、分享图、RSS、MCP、后台都用它。 */
-  name: "电影动态",
+  name: "全球影像动态",
+  /** 英文站名：显示在导航站名下方，也写进首页标题。 */
+  nameEn: "Global Image",
   /**
    * 行业词：拼进默认说法里，比如“电影周报”“电影行业动态”。
    * 改成“影视”“摄影”之类，页面上就会跟着变。
    */
-  subject: "电影",
+  subject: "影像",
   /** 全部资讯页及导航的名称。 */
-  allTitle: "电影行业动态",
+  allTitle: "影像行业动态",
   /** 首页的完整标题（浏览器标签、搜索结果）。 */
-  homeTitle: "电影动态 — 电影行业资讯 · 每周精选与周报",
+  homeTitle: "全球影像动态 Global Image — 电影与影像资讯 · 每周精选与周报",
   /** 主题目录页（/topics）的标题。 */
-  topicsTitle: "电影行业主题：厂商与机构、影像技术、AI影视创作的最新动态",
+  topicsTitle: "影像行业主题：厂商与机构、院校与影展、影像技术、AI影视创作的最新动态",
   /** 反馈表单输入框里的示例。 */
   feedbackExample: "例如：我在搜索某款镜头时遇到……我原本想……",
   /** 反馈页标题下面的一句话。 */
@@ -40,13 +42,13 @@ export const SITE = {
   /** 反馈表单邮箱框里的提示。 */
   feedbackEmailHint: "留下邮箱，我们可以回信联系你",
   /** 一句话介绍：搜索引擎、分享卡片、RSS、llms.txt 会用。 */
-  description: `从电影行业官方、专业媒体和创作者的信源里挑出值得看的动态，把同一件事的多篇报道归到一起，${EDITION_WHEN.weekly} 出一份周报。`,
+  description: `从电影与影像领域的官方机构、院校、影展、专业媒体和创作者的信源里挑出值得看的动态，把同一件事的多篇报道归到一起，${EDITION_WHEN.weekly} 出一份周报。`,
   /** llms.txt 里一句话介绍下面的一段详细介绍（选填）。 */
   llmsIntro: null as string | null,
   /** 一行小字：分享图、海报下方。 */
-  tagline: "值得关注的电影行业动态",
+  tagline: "值得关注的影像行业动态",
   /** 搜索引擎读到的关键词（首页结构化数据）。 */
-  keywords: ["电影摄影", "摄影器材", "影视技术", "电影行业周报", "影视行业动态", "AI影视创作", "镜头", "灯光"] as string[],
+  keywords: ["电影摄影", "影像", "摄影器材", "影视技术", "影像行业周报", "电影教育", "影展", "动画", "视效", "AI影视创作"] as string[],
   /** 网站开始收录的年份（结构化数据的时间范围，选填）。 */
   since: null as string | null,
   /** 界面语言（HTML lang、og:locale）。 */
@@ -73,9 +75,11 @@ export const SITE = {
   icp: null as string | null,
   /** 源码的 GitHub 仓库地址（选填），填了就在侧栏底部和“我的”页底部显示“GitHub 开源”。 */
   github: null as string | null,
+  /** 上游开源项目的署名（必填）：一直显示在侧栏最底部和“我的”页底部，链接到上游仓库。版权方与许可以 NOTICE 为准。 */
+  credit: { label: "基于数字生命卡兹克开源的 AIHOT · MIT", url: "https://github.com/KKKKhazix/AIHOT" },
   /** 结构化数据里的网站运营者（搜索引擎用）。 */
   organization: {
-    name: "电影动态",
+    name: "全球影像动态",
     /** 创始人（选填）。 */
     founder: null as null | { name: string; alternateName?: string; jobTitle?: string; description?: string; url?: string },
   },
@@ -145,9 +149,9 @@ export const ABOUT = {
   sourcesFallback: "十几",
   /** 信源河动画下面的四个环节。 */
   steps: {
-    collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；本机试运行每6小时检查一次信源更新，每天4次。",
+    collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；每小时检查一次信源更新。",
     store: "抓到的都存下来，同一件事的报道归到一起，热点榜就是从这里算出来的。",
-    select: `模型先看是否与电影行业或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；以压制器材商软文和重复转发为目标；实际效果仍需人工标注校准。`,
+    select: `模型先看是否与电影、泛影像或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；以压制器材商软文和重复转发为目标；实际效果仍需人工标注校准。`,
     publish: `${EDITION_WHEN.weekly} 出周报；${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.monthly} 出月报，用来回看。`,
   },
   /**
@@ -226,7 +230,7 @@ export const SOURCE_DEFAULTS = {
   /** 站内展示全文；false 时只显示摘要和原文链接。 */
   siteFulltext: false,
   /** 固定采集间隔；null 使用按产量自适应的间隔。 */
-  fixedIntervalMinutes: 360 as number | null,
+  fixedIntervalMinutes: 60 as number | null,
 };
 
 /**
