@@ -1,5 +1,5 @@
 {
-  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共80个登记来源，其中55个RSS、21个网页列表、4个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
+  "$comment": "CinemaHOT 2026-10-18 信源配置快照：共94个登记来源，其中62个RSS、23个网页列表、9个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
   "sources": [
     {
       "id": "rss-asc",
@@ -1290,28 +1290,6 @@
       "enabled": true
     },
     {
-      "id": "rss-afi-news",
-      "name": "AFI 美国电影学院",
-      "kind": "rss",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "feedUrl": "https://www.afi.com/news/feed/"
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "院校"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "rss-bfi",
       "name": "BFI 英国电影协会（含 Sight and Sound）",
       "kind": "rss",
@@ -2122,6 +2100,492 @@
       "tags": [
         "官方",
         "视频频道"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-asc-gnews",
+      "name": "ASC 官方动态（经 Google News）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://news.google.com/rss/search?q=site:theasc.com+when:30d&hl=en-US&gl=US&ceid=US:en",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Master Class",
+            "Welcomes New Member",
+            "Webinar",
+            "Screening"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": "asc",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "协会"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-crossref-film-quarterly",
+      "name": "Film Quarterly（学术期刊）",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.crossref.org/journals/0015-1386/works?sort=created&order=desc&rows=20&select=DOI,title,created,abstract,type",
+        "mode": "json_api",
+        "itemsPath": "message.items",
+        "titlePaths": [
+          "title.0"
+        ],
+        "summaryPaths": [
+          "abstract"
+        ],
+        "urlTemplate": "https://doi.org/{raw:DOI}",
+        "publishedAtPath": "created.date-time",
+        "externalIdPath": "DOI",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Review:",
+            "Book review",
+            "Books Received",
+            "Erratum",
+            "Correction",
+            "Front Matter",
+            "Back Matter",
+            "Issue Information",
+            "Editorial Board",
+            "Table of Contents",
+            "Contributors",
+            "SMPTE Spotlight"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "学术期刊"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-crossref-screen",
+      "name": "Screen（学术期刊）",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.crossref.org/journals/0036-9543/works?sort=created&order=desc&rows=20&select=DOI,title,created,abstract,type",
+        "mode": "json_api",
+        "itemsPath": "message.items",
+        "titlePaths": [
+          "title.0"
+        ],
+        "summaryPaths": [
+          "abstract"
+        ],
+        "urlTemplate": "https://doi.org/{raw:DOI}",
+        "publishedAtPath": "created.date-time",
+        "externalIdPath": "DOI",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Review:",
+            "Book review",
+            "Books Received",
+            "Erratum",
+            "Correction",
+            "Front Matter",
+            "Back Matter",
+            "Issue Information",
+            "Editorial Board",
+            "Table of Contents",
+            "Contributors",
+            "SMPTE Spotlight"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "学术期刊"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-crossref-animation",
+      "name": "Animation: An Interdisciplinary Journal（学术期刊）",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.crossref.org/journals/1746-8477/works?sort=created&order=desc&rows=20&select=DOI,title,created,abstract,type",
+        "mode": "json_api",
+        "itemsPath": "message.items",
+        "titlePaths": [
+          "title.0"
+        ],
+        "summaryPaths": [
+          "abstract"
+        ],
+        "urlTemplate": "https://doi.org/{raw:DOI}",
+        "publishedAtPath": "created.date-time",
+        "externalIdPath": "DOI",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Review:",
+            "Book review",
+            "Books Received",
+            "Erratum",
+            "Correction",
+            "Front Matter",
+            "Back Matter",
+            "Issue Information",
+            "Editorial Board",
+            "Table of Contents",
+            "Contributors",
+            "SMPTE Spotlight"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "学术期刊"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-crossref-smpte-mij",
+      "name": "SMPTE Motion Imaging Journal（学术期刊）",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.crossref.org/journals/1545-0279/works?sort=created&order=desc&rows=20&select=DOI,title,created,abstract,type",
+        "mode": "json_api",
+        "itemsPath": "message.items",
+        "titlePaths": [
+          "title.0"
+        ],
+        "summaryPaths": [
+          "abstract"
+        ],
+        "urlTemplate": "https://doi.org/{raw:DOI}",
+        "publishedAtPath": "created.date-time",
+        "externalIdPath": "DOI",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Review:",
+            "Book review",
+            "Books Received",
+            "Erratum",
+            "Correction",
+            "Front Matter",
+            "Back Matter",
+            "Issue Information",
+            "Editorial Board",
+            "Table of Contents",
+            "Contributors",
+            "SMPTE Spotlight"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "学术期刊"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "json-crossref-jfv",
+      "name": "Journal of Film and Video（学术期刊）",
+      "kind": "json_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://api.crossref.org/journals/0742-4671/works?sort=created&order=desc&rows=20&select=DOI,title,created,abstract,type",
+        "mode": "json_api",
+        "itemsPath": "message.items",
+        "titlePaths": [
+          "title.0"
+        ],
+        "summaryPaths": [
+          "abstract"
+        ],
+        "urlTemplate": "https://doi.org/{raw:DOI}",
+        "publishedAtPath": "created.date-time",
+        "externalIdPath": "DOI",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": [
+            "Review:",
+            "Book review",
+            "Books Received",
+            "Erratum",
+            "Correction",
+            "Front Matter",
+            "Back Matter",
+            "Issue Information",
+            "Editorial Board",
+            "Table of Contents",
+            "Contributors",
+            "SMPTE Spotlight"
+          ]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "学术期刊"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-filmcomment",
+      "name": "Film Comment",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.filmcomment.com/feed/"
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "评论"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-fujifilm-news",
+      "name": "FUJIFILM 富士官方新闻",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://www.fujifilm-x.com/global/news/",
+        "itemSelector": "article.wpgb-card",
+        "linkSelector": "a.wpgb-card-layer-link",
+        "titleSelector": ".wpgb-block-1",
+        "publishedAtSelector": "time",
+        "allowUrlPrefixes": [
+          "https://www.fujifilm-x.com/global/news/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": "fujifilm",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "web-kinefinity-news",
+      "name": "Kinefinity 卓曜官方新闻",
+      "kind": "web_list",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "url": "https://kinefinity.com/zh/news",
+        "itemSelector": "a[href^=\"/zh/news/\"]",
+        "titleSelector": "h3",
+        "publishedAtSelector": "span",
+        "allowUrlPrefixes": [
+          "https://kinefinity.com/zh/news/"
+        ]
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-zeiss",
+      "name": "YouTube：ZEISS Cinematography（蔡司）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCdApvEh_En_kEP7-tyoPYtw"
+      },
+      "tier": "T1",
+      "owner_entity_id": "zeiss",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-sigma",
+      "name": "YouTube：SIGMA（适马）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCB0JW9gFBGczQ0RmkkDVhwQ"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-leitz",
+      "name": "YouTube：Leitz Cine（徕兹）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC5MWg-CxQSo2M7-LvW9-7pQ"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-dzofilm",
+      "name": "YouTube：DZOFILM（东正）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC8Cndtgz0OGPG_A1mfNuPpA"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-atlas",
+      "name": "YouTube：Atlas Lens Co.",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC63YSBzyEXNh7TzxxRPksLA"
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-red",
+      "name": "YouTube：RED Digital Cinema",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbgqb0ODUGP0APcPGVxh-fg"
+      },
+      "tier": "T1",
+      "owner_entity_id": "red",
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "视频频道",
+        "器材"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,

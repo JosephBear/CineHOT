@@ -15,7 +15,6 @@ import { closeDb } from "@aihot/backend/db";
 import {
   SELECTION_PROMPT_VERSION,
   buildScoreInput,
-  normalizeAnalysis,
   runSelectionPrefilter,
   runSelectionScores,
   tierThreshold,
@@ -24,7 +23,7 @@ import {
 } from "@aihot/backend/editorial/analyze";
 import { importSelectBenchRun } from "@aihot/backend/admin/selectbench";
 import { evalModels, pmap, positiveInt, safeReportNamePart, usageFor } from "./eval-tools.ts";
-import { selectionMetrics, selectionThresholdMetrics } from "./eval-selection-core.ts";
+import { judgeEvalRun, selectionMetrics, selectionThresholdMetrics } from "./eval-selection-core.ts";
 
 // Without options: the site's gold set (site.ts DEPLOYMENT.selectionGold), else the whole of .data/gold.jsonl
 // (up to 200 cases), swept over a wide range of thresholds.
@@ -89,12 +88,6 @@ function toInput(r: GoldRow): AnalyzeInputArticle {
   };
 }
 
-// The eval skips the paid writing step, whose missing copy would read as "unknown" relevance: a PASS
-// stands in for the title and summary production would write, so the selection rule stays in one place.
-const judge = (run: AnalysisRun) => normalizeAnalysis(run.prefilter.label === "PASS"
-  ? { ...run, writing: { kind: "verbatim", model: null, titleZh: "eval", summaryZh: "", reasonZh: null, receiptIds: [], reused: true } }
-  : run);
-
 const models = await evalModels(values.models, "score");
 
 const report: Record<string, unknown> = {};
@@ -110,13 +103,13 @@ for (const model of models) {
       const prefilter = await runSelectionPrefilter(input, {}, (id) => receiptIds.push(id));
       if (prefilter.label === "BLOCK") {
         const run: AnalysisRun = { prefilter, scores: null, writing: null, structure: null };
-        return { r, out: judge(run), receiptIds, error: null as string | null };
+        return { r, out: judgeEvalRun(run), receiptIds, error: null as string | null };
       }
 
       const threshold = tierThreshold(input.source.tier);
       if (threshold === null) {
         const run: AnalysisRun = { prefilter, scores: null, writing: null, structure: null };
-        return { r, out: judge(run), receiptIds, error: null as string | null };
+        return { r, out: judgeEvalRun(run), receiptIds, error: null as string | null };
       }
 
       const key = buildScoreInput(input);
@@ -136,7 +129,7 @@ for (const model of models) {
       // Model output is independent of source tier; the decision threshold is not.
       const scores = shared.scores ? { ...shared.scores, threshold } : null;
       const run: AnalysisRun = { prefilter, scores, writing: null, structure: null };
-      return { r, out: judge(run), receiptIds, error: null as string | null };
+      return { r, out: judgeEvalRun(run), receiptIds, error: null as string | null };
     } catch (error) {
       return { r, out: null, receiptIds, error: String(error).slice(0, 200) };
     }

@@ -5,8 +5,9 @@ import net from "node:net";
 
 const server = http.createServer((_req, res) => { res.writeHead(405); res.end("CONNECT only\n"); });
 server.on("connect", (req, client, head) => {
-  const [host, port] = String(req.url).split(":");
-  const upstream = net.connect(Number(port) || 443, host, () => {
+  // URL parsing keeps IPv6 literals ("[2606:…]:443") whole; the brackets are not part of the address.
+  const { hostname, port } = new URL(`http://${req.url}`);
+  const upstream = net.connect(Number(port) || 80, hostname.replace(/^\[|\]$/g, ""), () => {
     client.write("HTTP/1.1 200 Connection Established\r\n\r\n");
     if (head.length) upstream.write(head);
     upstream.pipe(client);

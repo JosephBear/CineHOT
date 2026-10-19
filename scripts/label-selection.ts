@@ -130,6 +130,9 @@ function serve() {
   const port = arg("port", 4321);
   const server = http.createServer(async (req, res) => {
     const send = (status: number, body: string, type = "application/json; charset=utf-8") => { res.writeHead(status, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
+    // Any page in the browser can send simple requests to localhost: accept only this host (no DNS
+    // rebinding) and JSON posts (a cross-site JSON post needs a preflight this server never answers).
+    if (![`127.0.0.1:${port}`, `localhost:${port}`].includes(req.headers.host ?? "") || (req.method === "POST" && !/^application\/json\b/.test(req.headers["content-type"] ?? ""))) return send(403, '{"error":"forbidden"}');
     try {
       if (req.method === "GET" && req.url === "/") return send(200, PAGE, "text/html; charset=utf-8");
       if (req.method === "GET" && req.url === "/api/data") return send(200, JSON.stringify({ items: readJson<Item[]>(ITEMS, []), labels: readJson<Record<string, Label>>(LABELS, {}) }));
@@ -196,14 +199,14 @@ function render(){stats();const i=view[pos];if(!i){$("#card").innerHTML='<p>这�
  '<nav><button id="prev">← 上一条</button><button id="next">下一条 →</button></nav>';
  document.querySelectorAll(".choices button").forEach(b=>b.onclick=()=>mark(b.dataset.d));$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);
  $("#reason").onchange=()=>{if(labels[i.caseId])save(i.caseId,labels[i.caseId].decision)}}
-async function save(caseId,decision){const reason=$("#reason")?.value||"";const r=await fetch("/api/label",{method:"POST",body:JSON.stringify({caseId,decision,reason})});
+async function save(caseId,decision){const reason=$("#reason")?.value||"";const r=await fetch("/api/label",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({caseId,decision,reason})});
  if(!r.ok){alert("保存失败："+(await r.text()));return false}if(decision)labels[caseId]={decision,reason};else delete labels[caseId];return true}
 async function mark(d){const i=view[pos];if(!i||!await save(i.caseId,d))return;if($("#filter").value==="todo"){const p=pos;refresh(true);pos=Math.min(p,Math.max(0,view.length-1));render()}else{render();go(1)}}
 function go(n){pos=Math.min(Math.max(0,pos+n),Math.max(0,view.length-1));render();scrollTo(0,0)}
 document.onkeydown=e=>{if(e.target.tagName==="TEXTAREA"){if(e.key==="Escape")e.target.blur();return}if(e.target.tagName==="SELECT")return;
  if(e.key==="1")mark("select");else if(e.key==="2")mark("reject");else if(e.key==="3")mark("either");else if(e.key==="0")mark(null);else if(e.key==="ArrowRight")go(1);else if(e.key==="ArrowLeft")go(-1)};
 $("#filter").onchange=()=>refresh(true);$("#source").onchange=()=>refresh(true);
-$("#export").onclick=async()=>{const r=await (await fetch("/api/export",{method:"POST"})).json();alert(r.error?"导出失败："+r.error:"已导出 "+r.exported+" 条到 .data/gold.jsonl")};
+$("#export").onclick=async()=>{const r=await (await fetch("/api/export",{method:"POST",headers:{"content-type":"application/json"}})).json();alert(r.error?"导出失败："+r.error:"已导出 "+r.exported+" 条到 .data/gold.jsonl")};
 load();
 </script></body></html>`;
 

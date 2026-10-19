@@ -1,3 +1,5 @@
+import { normalizeAnalysis, type AnalysisRun } from "@aihot/backend/editorial/analyze";
+
 export type SelectionGoldDecision = "select" | "reject" | "either";
 export type SelectionDecision = "select" | "reject";
 
@@ -103,3 +105,11 @@ export function selectionThresholdMetrics(cases: SelectionThresholdCase[], thres
     decisiveErrors: metrics.decisiveErrors,
   };
 }
+
+/**
+ * The eval skips the paid writing step, whose missing copy would read as "unknown" relevance: a PASS
+ * stands in for the title and summary production would write, so the selection rule stays in one place.
+ */
+export const judgeEvalRun = (run: AnalysisRun) => normalizeAnalysis(run.prefilter.label === "PASS"
+  ? { ...run, writing: { kind: "verbatim", model: null, titleZh: "eval", summaryZh: "", reasonZh: null, receiptIds: [], reused: true } }
+  : run);

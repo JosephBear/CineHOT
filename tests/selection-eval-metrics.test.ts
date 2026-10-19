@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { selectionMetrics, selectionThresholdMetrics, type SelectionMetricCase } from "../scripts/eval-selection-core.ts";
+import { judgeEvalRun, selectionMetrics, selectionThresholdMetrics, type SelectionMetricCase } from "../scripts/eval-selection-core.ts";
 
 test("selection metrics keep valid-output quality separate from decisive coverage", () => {
   const cases: SelectionMetricCase[] = [
@@ -76,4 +76,16 @@ test("threshold sweep uses the same decisive failure denominator", () => {
     decisiveGold: 4,
     decisiveErrors: 1,
   });
+});
+
+// The eval never writes copy; without the stand-in every unblocked case read as "unknown" and nothing was selected.
+test("the eval selects a prefilter PASS whose scores reach the tier threshold", () => {
+  const prefilter = { label: "PASS" as const, reason: "", model: "m", receiptId: 1, reused: false };
+  const scores = { model: "m", threshold: 32, values: [40, 36], receiptIds: [2, 3], reused: false };
+  const pass = judgeEvalRun({ prefilter, scores, writing: null, structure: null });
+  assert.deepEqual([pass.relevance, pass.selected, pass.score], ["pass", true, 38]);
+  const low = judgeEvalRun({ prefilter, scores: { ...scores, values: [30, 20] }, writing: null, structure: null });
+  assert.deepEqual([low.relevance, low.selected], ["pass", false]);
+  const blocked = judgeEvalRun({ prefilter: { ...prefilter, label: "BLOCK" }, scores: null, writing: null, structure: null });
+  assert.deepEqual([blocked.relevance, blocked.selected], ["block", false]);
 });

@@ -220,3 +220,20 @@ PixVerse仍未接入：官方YouTube频道订阅为空，博客以泛工具排�
 | StudioBinder | `rss-studiobinder` | 最新条目都被其排行榜过滤规则排除 | 已有官方频道 `rss-yt-studiobinder` |
 
 X（推特）账号可通过 `x_search` 接入，但需SocialData按请求付费，暂未开通。当前共80个信源。
+
+### 2026-10-19 学术期刊、器材厂商与 ASC 补充
+
+面向“学术性”和“首次发布”的内容补充15个来源，并移出 `rss-afi-news`（网站拒绝采集程序，且约四分之三是每日“AFI Movie Club”片单；保留官方频道 `rss-yt-afi`）。当前共94个信源。
+
+| 来源 | ID | 读取方式 |
+|---|---|---|
+| ASC 官方动态 | `rss-asc-gnews` | Google News 按站点检索的公开RSS（近30天），过滤 Master Class、新会员等活动标题；只有标题与简短摘要，链接经 Google 跳转 |
+| Film Quarterly / Screen / Animation: An Interdisciplinary Journal / SMPTE Motion Imaging Journal / Journal of Film and Video | `json-crossref-*` | Crossref 公开接口按期刊 ISSN 取最新注册的论文；日期用 DOI 注册时间（部分期刊只给年份）；过滤书评、更正、目录、作者简介等 |
+| Film Comment | `rss-filmcomment` | 官方RSS |
+| FUJIFILM 富士 | `web-fujifilm-news` | 官方新闻网页列表 |
+| Kinefinity 卓曜 | `web-kinefinity-news` | 官方中文新闻网页列表 |
+| ZEISS、SIGMA、Leitz、DZOFILM、Atlas、RED | `rss-yt-zeiss` 等 | 官方YouTube频道RSS |
+
+未接入：Angénieux（官网证书链不完整，采集程序无法验证；Google News 结果混有站点被注入的赌博页面）、Vantage/Hawk（新闻无发布日期）、Sony、Canon、Atomos、Senses of Cinema、Bright Lights（拒绝采集程序；索尼佳能新品可经 ASC、CineD、Newsshooter 获得）。
+
+验证：本机当日无法连接 Cloudflare DNS（本机代理设置），未能联网实测；用当日下载的真实订阅与页面在本地回放，15个来源均经同一套采集代码解析出标题、链接和日期。
