@@ -1,0 +1,16 @@
+# Host Caddy in front of deploy/vps/compose.yml. Replace the domain and the bind address (the server's
+# private IP; it keeps UDP 443 free for other services). Admin pages stay off the public internet:
+# reach them through an SSH tunnel to 127.0.0.1:3000.
+{
+  servers {
+    protocols h1 h2
+  }
+}
+example.your-domain.com {
+  bind 10.0.0.10
+  encode zstd gzip
+  header X-Robots-Tag "noindex, nofollow"
+  @private path /admin /admin/* /api/admin /api/admin/* /api/auth /api/auth/*
+  respond @private 404
+  reverse_proxy 127.0.0.1:3000
+}

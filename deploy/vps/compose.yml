@@ -1,0 +1,91 @@
+# Production on a 2 GB VPS: db, api, web and worker with memory caps; the site port only on 127.0.0.1
+# (a host reverse proxy such as Caddy serves HTTPS). Secrets and switches come from .env next to this file.
+# Copy to /opt/cinemahot/compose.yml; CINEMAHOT_IMAGE in .env names the image built from deploy/vps/Dockerfile.
+name: cinemahot
+x-app: &app
+  image: ${CINEMAHOT_IMAGE:?set CINEMAHOT_IMAGE in .env}
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: [ALL]
+  logging:
+    driver: json-file
+    options: {max-size: "5m", max-file: "2"}
+x-backend-env: &backend-env
+  NODE_ENV: production
+  DATABASE_URL: postgres://cinemahot:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/cinemahot
+  AIHOT_DATA_DIR: /data
+  AIHOT_CREDENTIALS_DIR: ${AIHOT_CREDENTIALS_DIR:-}
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    mem_limit: 450m
+    cpus: 0.5
+    environment:
+      POSTGRES_USER: cinemahot
+      POSTGRES_DB: cinemahot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    command: ["postgres", "-c", "shared_buffers=64MB", "-c", "max_connections=40", "-c", "work_mem=4MB", "-c", "maintenance_work_mem=32MB"]
+    volumes: ["db:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinemahot -d cinemahot"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    logging:
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
+  api:
+    <<: *app
+    mem_limit: 450m
+    cpus: 0.5
+    env_file: .env
+    environment:
+      <<: *backend-env
+      NODE_OPTIONS: --max-old-space-size=256
+      API_HOST: 0.0.0.0
+      API_PORT: "3001"
+    command: ["node", "apps/api/src/main.ts"]
+    volumes: ["data:/data"]
+    depends_on:
+      db: {condition: service_healthy}
+  web:
+    <<: *app
+    mem_limit: 350m
+    cpus: 0.5
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=192
+      API_BASE_URL: http://api:3001
+      SITE_URL: ${SITE_URL:?set SITE_URL in .env}
+      WEB_HOST: 0.0.0.0
+      WEB_PORT: "3000"
+      AIHOT_RELEASE: ${CINEMAHOT_RELEASE:-}
+      TRUST_PROXY: "true"
+    command: ["node", "apps/web/server.ts"]
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [api]
+  # COLLECT_ENABLED and MODEL_CALLS_ENABLED come from .env; the model key is LLM_API_KEY there.
+  worker:
+    <<: *app
+    mem_limit: 300m
+    cpus: 0.35
+    env_file: .env
+    environment:
+      <<: *backend-env
+      NODE_OPTIONS: --max-old-space-size=192
+      WORKER_MAX_CONCURRENCY: "1"
+      LLM_BASE_URL: https://api.deepseek.com/v1
+      LLM_MODEL: deepseek-flash
+      LLM_EXTRA_JSON: '{"thinking":{"type":"disabled"}}'
+      LLM_VISION: "false"
+      FEISHU_CONTENT_PUSH_ENABLED: "false"
+      FEISHU_INTERNAL_ENABLED: "false"
+      INDEXNOW_SUBMIT_ENABLED: "false"
+    command: ["node", "apps/worker/src/main.ts"]
+    volumes: ["data:/data"]
+    depends_on:
+      db: {condition: service_healthy}
+volumes:
+  db: {}
+  data: {}

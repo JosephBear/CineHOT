@@ -161,17 +161,22 @@ export async function retryReleasedReceiptJobs(): Promise<number> {
   });
 }
 
+/** A queue's options with its local concurrency held to the deployment's cap (WORKER_MAX_CONCURRENCY). */
+export function capConcurrency<O extends WorkOptions>(options: O, cap: number | null = config.workerMaxConcurrency): O {
+  return cap && (options.localConcurrency ?? 1) > cap ? { ...options, localConcurrency: cap } : options;
+}
+
 /** The worker's handler for one queue (jobs/*.ts), called with each job's data. */
 export async function work<Q extends QueueName>(boss: PgBoss, name: Q, options: WorkOptions, handler: (data: JobData[Q]) => Promise<unknown>): Promise<void> {
   await ensureQueue(name);
-  await boss.work<JobData[Q]>(name, options, async ([job]) => (job ? handler(job.data) : undefined));
+  await boss.work<JobData[Q]>(name, capConcurrency(options), async ([job]) => (job ? handler(job.data) : undefined));
 }
 
 /** The worker's handlers for the site's modules' queues. */
 export async function workModuleQueues(boss: PgBoss): Promise<void> {
   for (const queue of serverModules().flatMap((m) => m.queues ?? [])) {
     await ensureQueue(queue.name, queue.options);
-    await boss.work(queue.name, { ...queue.worker, perJobResults: true }, async (jobs) => {
+    await boss.work(queue.name, capConcurrency({ ...queue.worker, perJobResults: true }), async (jobs) => {
       const output = await queue.run(jobs.map(job => job.data) as never[]);
       return jobs.map(job => ({ id: job.id, status: "completed" as const, output }));
     });
