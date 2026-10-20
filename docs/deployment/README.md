@@ -5,7 +5,7 @@
 ## 选择部署方式
 
 - 交给服务器负责人逐步执行：[服务器部署手册（含每步目的与检查）](server-runbook.md)。
-- 当前服务器（`/opt/cinemahot`，发布包 + Docker Compose）升级：[升级到 v0.2.2（逐步操作）](upgrade-v0.2.2.md)；服务器模板见 [`deploy/vps/`](../../deploy/vps/README.md)。
+- 当前服务器（`/opt/cinemahot`，发布包 + Docker Compose）升级：[升级到 v0.2.3（逐步操作）](upgrade-v0.2.3.md)；服务器模板见 [`deploy/vps/`](../../deploy/vps/README.md)。
 - 当前电脑启动：[本地试运行](local-trial.md)。
 - 让校园内的同学访问：[校园部署](campus.md)。
 - Docker、HTTPS、非 Docker、更新和备份细节：[完整部署参考](../deploy.md)。
@@ -46,7 +46,7 @@ docker compose logs --tail=100 api worker web
 
 ## 开启采集与模型
 
-先在后台配置并预览信源，在“设置”中确认模型服务的请求预算；当前站点使用默认模型，对应服务为 `llm`。日常采用 20 次/分钟、150 次/小时、1000 次/滚动 24 小时（2026-10-19 起：94 个信源每小时采集，每篇相关资料至少 5 次调用，200 次会持续积压）。这是次数上限，不是人民币金额上限。
+先在后台配置并预览信源，在“设置”中确认模型服务的请求预算；当前站点使用默认模型，对应服务为 `llm`。日常采用 20 次/分钟、300 次/小时、1000 次/滚动 24 小时（2026-10-19 起：94 个信源每小时采集，每篇相关资料至少 5 次调用，200 次会持续积压）。这是次数上限，不是人民币金额上限。
 
 确认后将 `.env` 中 `COLLECT_ENABLED`、`MODEL_CALLS_ENABLED` 显式设为 `true`，重建 API 和 worker 容器使环境生效：
 
@@ -58,4 +58,4 @@ docker compose up -d --force-recreate api worker
 
 ## 更新已有部署
 
-按[完整部署参考中的更新和备份](../deploy.md#更新)执行；当前服务器升级按[升级到 v0.2.2](upgrade-v0.2.2.md)。v0.2.0 新增预算起算点迁移 0084；已有 Blackmagic 信源仍需保留正文规则，旧间隔需改为 360，见[本版升级说明](../releases/v0.2.0.md)。`scripts/seed.ts` 只添加新 ID，不会覆盖现有信源。
+按[完整部署参考中的更新和备份](../deploy.md#更新)执行；当前服务器升级按[升级到 v0.2.3](upgrade-v0.2.3.md)。v0.2.0 新增预算起算点迁移 0084；已有 Blackmagic 信源仍需保留正文规则，旧间隔需改为 360，见[本版升级说明](../releases/v0.2.0.md)。`scripts/seed.ts` 只添加新 ID，不会覆盖现有信源。

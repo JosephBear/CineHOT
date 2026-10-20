@@ -1,6 +1,6 @@
 # VPS 部署模板（2 GB 内存服务器）
 
-当前服务器的实际部署方式：发布包 + Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。升级步骤见 [升级到 v0.2.2](../../docs/deployment/upgrade-v0.2.2.md)。
+当前服务器的实际部署方式：发布包 + Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。升级步骤见 [升级到 v0.2.3](../../docs/deployment/upgrade-v0.2.3.md)。
 
 | 文件 | 放到服务器的位置 | 作用 |
 |---|---|---|
