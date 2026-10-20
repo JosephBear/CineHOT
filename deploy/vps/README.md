@@ -4,7 +4,7 @@
 
 | 文件 | 放到服务器的位置 | 作用 |
 |---|---|---|
-| `Dockerfile` + `Dockerfile.dockerignore` | 随发布包，在发布目录里构建 | 网页事先在其他电脑构建好（`npm run build -w @aihot/web`），服务器只装生产依赖，减轻 2 GB 内存的压力 |
+| `Dockerfile` + `Dockerfile.dockerignore` | 随发布包，在发布目录里构建；构建前把 `Dockerfile.dockerignore` 复制成发布目录的 `.dockerignore`（服务器的旧版构建器只认这个名字） | 网页事先在其他电脑构建好（`npm run build -w @aihot/web`），服务器只装生产依赖，减轻 2 GB 内存的压力 |
 | `compose.yml` | `/opt/cinemahot/compose.yml` | db、api、web、worker 四个服务，带内存和 CPU 限额；网站只开在 `127.0.0.1:3000`；worker 每个队列最多同时处理 1 件（`WORKER_MAX_CONCURRENCY=1`），直连 DeepSeek |
 | `Caddyfile.example` | `/etc/caddy/Caddyfile`（按实际改域名和绑定地址） | HTTPS 反向代理；后台和登录路径对公网返回 404，只能经 SSH 隧道访问 |
 

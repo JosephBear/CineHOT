@@ -108,6 +108,8 @@ sudo ls -l "$backup_dir"
 release=/opt/cinemahot/releases/v0.2.3
 sudo mkdir -p "$release"
 sudo tar -xzf /tmp/cinemahot-v0.2.3.tar.gz -C "$release"
+# 服务器上的旧版 Docker 构建器只认构建目录里的 .dockerignore：换成保留预构建网页的那份
+sudo cp "$release/deploy/vps/Dockerfile.dockerignore" "$release/.dockerignore"
 cat "$release/VERSION"
 sudo systemd-run --unit=cinemahot-build-v022 --collect --wait --working-directory="$release" \
   /bin/sh -c 'docker build --memory=256m --cpu-period=100000 --cpu-quota=40000 -f deploy/vps/Dockerfile -t cinemahot-app:v0.2.3 . > build.log 2>&1'
@@ -211,6 +213,8 @@ dc logs --tail=60 worker
 ```
 
 **检查：** worker 为 running；挂载只有 `/data`（不再有 `/app/packages/...` 等源码挂载）；输出 `1` 和 `https://api.deepseek.com/v1`；日志没有反复出现的 `Error`。
+
+**例外（属预期，不要因此停止）**：采集停过的日期会出现 `report failed`，内容为 `daily <日期>: nothing judged in its window`、`weekly <周>: no daily entries in the period` 或 `monthly 2026-09: no daily entries in the period`。这是报表在补齐停采期间的缺期：积压的旧文章处理到那一天后日报和周报会自动生成，9 月月报的报错在 11 月 1 日后自动消失。把出现的这类报表名记进汇报即可。其他 `Error` 仍按检查不符合处理。
 
 ## 第 12 步：运行 30 分钟后核对
 
