@@ -17,11 +17,11 @@ const html = (text: string) => `<html><body><article><p>${text}</p><a href="../r
 mock.get("https://publisher.example").intercept({path:"/media/release/20260415-01"}).reply(200,html("Copyright and navigation. ".repeat(20)),{headers:{"content-type":"text/html"}}).persist();
 mock.get("https://publisher.example").intercept({path:"/media/partial/release/20260415-01"}).reply(200,html(body),{headers:{"content-type":"text/html"}}).persist();
 test("body extraction reads the same-origin fragment while relative links retain the canonical article base", async () => {
-  const got = await extractFromUrl(canonical,"test-rewrite",undefined,rewrite);
+  const got = await extractFromUrl(canonical,"test-rewrite",{ bodyUrlPrefixRewrite: rewrite });
   assert.ok(got);
   assert.ok(got.text.includes(body.trim()));
   assert.ok(got.html.includes('href="https://publisher.example/media/reference"'));
 });
 test("a body rewrite cannot move the request to another origin", async () => {
-  await assert.rejects(extractFromUrl(canonical,"test-rewrite",undefined,{...rewrite,to:"https://other.example/media/"}), /same origin/i);
+  await assert.rejects(extractFromUrl(canonical,"test-rewrite",{ bodyUrlPrefixRewrite: {...rewrite,to:"https://other.example/media/"} }), /same origin/i);
 });

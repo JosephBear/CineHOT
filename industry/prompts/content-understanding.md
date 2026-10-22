@@ -20,7 +20,7 @@ AI影视创作适用同样的证据要求：视频生成、分镜、角色/镜�
 - `opinion_analysis`：观点、行业判断、复盘或长访谈
 - `tutorial_explainer`：教程、科普、解读或器材评测
 
-优先级：发了器材选 gear_release；发了软件或插件选 software_release；发了流程、预设或 LUT 选 workflow_or_tool；白皮书和标准文档优先 tech_paper；评测选 tutorial_explainer。
+优先级：发了器材选 gear_release；发了软件或插件选 software_release；发了流程、预设或 LUT 选 workflow_or_tool；白皮书和标准文档优先 tech_paper；评测选 tutorial_explainer。原文把发布写成过去的事、本条在讲用法或做演示时，不算本次发布，选 tutorial_explainer。
 
 输出前检查 `itemType` 与第一个分类标签是否自洽：`gear_release` 对应“器材发布”，`software_release` 对应“软件/流程”，`workflow_or_tool` 对应“软件/流程”或“教程/实践”，`tech_paper` 对应“技术/标准”，`industry_event` 对应“行业动态”、“政策/监管”或“影展/奖项”，`opinion_analysis` 对应“观点/趋势”或“人物/访谈”，`tutorial_explainer` 对应“教程/实践”或“评测/实测”。如果二者冲突，按当前材料的核心事件修正后再输出。
 

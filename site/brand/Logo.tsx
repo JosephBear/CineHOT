@@ -6,7 +6,7 @@ export function Wordmark({ size = 24, className = "", title = SITE.name }: { siz
   const imageSize = stacked ? Math.round(size * 4.2) : 28;
   return (
     <span className={`inline-flex shrink-0 items-center flex-col font-black leading-none tracking-[-0.03em] ${stacked ? "gap-1.5" : "gap-0.5"} ${className}`} style={{ fontSize: stacked ? Math.round(size * 0.92) : 12 }} aria-label={`${title} ${SITE.nameEn} · 北京电影学院摄影系`} role="img">
-      <img src="/doc-logo-1d9e4beb.jpg" width={imageSize} height={imageSize} className="shrink-0 rounded-sm bg-white object-contain" alt="" aria-hidden="true" />
+      <img src="/doc-logo-1d9e4beb.jpg" width={imageSize} height={imageSize} className="shrink-0 rounded-mark bg-white object-contain" alt="" aria-hidden="true" />
       <span aria-hidden="true">{SITE.name}</span>
       {stacked && <span aria-hidden="true" className="font-semibold tracking-[0.08em] text-ink-3" style={{ fontSize: Math.round(size * 0.42) }}>{SITE.nameEn}</span>}
     </span>

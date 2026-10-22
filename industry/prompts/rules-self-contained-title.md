@@ -8,3 +8,5 @@
 5. 原标题表达的【文章类型和核心动作】是硬边界：How / Why / Guide / Analysis / Review / Test 这类解释、分析、教程或评测标题，中文标题必须保留这个类型；不能因为正文谈到一个已经存在的器材、影片或新数据，就改写成“发布 / 推出 / 上市 / 开售”。只有原标题明确宣布了发布、推出、上市或开售，中文标题才能使用对应动作。保留文章类型不等于删主体：仍须按第 1-4 条补全正文或来源明确给出的厂商、器材、影片或项目名。
    例：原标题 "How ARRI's new sensor changes low-light shooting" → "ARRI 新传感器如何改变低照度拍摄"，不能写成 "ARRI 发布新传感器"。
    例：原标题 "A guide to building your own LUT" + 来源和正文明确是 DaVinci Resolve → "DaVinci Resolve 里如何自建 LUT"，不能只写成缺主体的 "如何自建 LUT"。
+6. 本条的动作和背景里的旧发布要分清：原文把发布写成过去的事（“At NAB, we introduced …”“Last week we launched …”“上周我们发布了…”），本条是在讲用法、做演示或再次推广时，标题写介绍、演示或讲解，把发布交代成此前的事；不能写成“推出 / 发布 / 上线”，否则读者会当成今天的新闻。只有原文明确某项功能是现在才开放或新增，才对那一项用对应动作。
+   例：正文 "At NAB, we introduced the ALEXA 265 … See how it handles low light below" → "ARRI 演示 NAB 发布的 ALEXA 265 低照度表现"，不能写成 "ARRI 在 NAB 推出 ALEXA 265"。

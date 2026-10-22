@@ -8,17 +8,18 @@
  * 和相邻类别的边界在哪（总的归类原则写在 prompts/structure.md 里）。
  * commentary 标出评论类（教程、观点）：日报写过的事又有评论类的后续报道，只占一行快讯（报道它的信源够多时除外）。
  * 没归上类的资料在日报里放进第一个 key 为 industry 的类别所在的节（没有就放最后一节）。
+ * tagColor 是飞书推送卡片里跟在标题后面的这一类小标签的颜色（飞书 text_tag 的颜色名）。
  * feedLabel 是分类 RSS 标题里的名字（不写就用 label）。公开接口、RSS 和 MCP 里要把一类并进另一类发布，写在站点设置里（site/site.ts 的 PUBLIC_CATEGORIES）。
  */
 export const CATEGORIES = [
-  { key: "gear", label: "器材", feedLabel: "电影摄影器材", section: "器材发布", guide: "机身、镜头、灯光、稳定、录音、监看与存储设备的发布、规格与价格变化，以及有实测依据的器材结论。厂商的营销稿、经销商促销和没有实测的“上手体验”不算。" },
-  { key: "tech", label: "技术", feedLabel: "影视技术", section: "技术与流程", guide: "拍摄工艺、布光方法、色彩与格式标准（Log、HDR、色彩空间）、虚拟制作、后期与调色流程。重点是能迁移到实际拍摄的做法或标准变化；单纯发布软件或插件归器材。" },
-  { key: "ai", label: "AI", feedLabel: "AI影视创作", section: "AI影视创作", guide: "与影视创作直接相关的生成式AI产品和模型更新、视频生成、分镜预演、角色与镜头一致性、AI剪辑/调色/配音/视效、开源影像工具及可复用的创作教程。AI创作为主要信息时优先归本类；教程同时标教程/实践。仅在作者名或无关背景出现AI、普通聊天助手、编程工具、融资和泛科技消息不算。" },
-  { key: "industry", label: "行业", feedLabel: "行业动态", section: "行业动态", guide: "影展与奖项的评选结果、影响拍摄实务的政策与补贴、厂商经营与人事、影片项目开机与制片动态、劳资与工会事件。单纯的片场八卦和绯闻不归这一类。" },
-  { key: "works", label: "作品", feedLabel: "作品与幕后", section: "作品与幕后", guide: "已上映或已公布影片的摄影解析、摄影师访谈、幕后技术拆解。重点是“这部片子是怎么拍出来的”；没有摄影技术信息的纯影评和剧情讨论不算。" },
-  { key: "tip", label: "教程", section: "技巧与观点", guide: "读者可以照着做的拍摄、布光、运镜、调色方法与经验复盘。重点是可复用的做法；单纯介绍器材归器材，只有态度和预测而无做法归观点。", commentary: true },
-  { key: "opinion", label: "观点", section: "技巧与观点", guide: "重点是作者的解释、判断、主张、预测、评论或访谈观点。讨论某个厂商不自动归行业，作者是知名摄影师不自动归观点。", commentary: true },
-] as const satisfies ReadonlyArray<{ key: string; label: string; feedLabel?: string; section: string; guide: string; commentary?: true }>;
+  { key: "gear", tagColor: "indigo", label: "器材", feedLabel: "电影摄影器材", section: "器材发布", guide: "机身、镜头、灯光、稳定、录音、监看与存储设备的发布、规格与价格变化，以及有实测依据的器材结论。厂商的营销稿、经销商促销和没有实测的“上手体验”不算。" },
+  { key: "tech", tagColor: "turquoise", label: "技术", feedLabel: "影视技术", section: "技术与流程", guide: "拍摄工艺、布光方法、色彩与格式标准（Log、HDR、色彩空间）、虚拟制作、后期与调色流程。重点是能迁移到实际拍摄的做法或标准变化；单纯发布软件或插件归器材。" },
+  { key: "ai", tagColor: "violet", label: "AI", feedLabel: "AI影视创作", section: "AI影视创作", guide: "与影视创作直接相关的生成式AI产品和模型更新、视频生成、分镜预演、角色与镜头一致性、AI剪辑/调色/配音/视效、开源影像工具及可复用的创作教程。AI创作为主要信息时优先归本类；教程同时标教程/实践。仅在作者名或无关背景出现AI、普通聊天助手、编程工具、融资和泛科技消息不算。" },
+  { key: "industry", tagColor: "orange", label: "行业", feedLabel: "行业动态", section: "行业动态", guide: "影展与奖项的评选结果、影响拍摄实务的政策与补贴、厂商经营与人事、影片项目开机与制片动态、劳资与工会事件。单纯的片场八卦和绯闻不归这一类。" },
+  { key: "works", tagColor: "blue", label: "作品", feedLabel: "作品与幕后", section: "作品与幕后", guide: "已上映或已公布影片的摄影解析、摄影师访谈、幕后技术拆解。重点是“这部片子是怎么拍出来的”；没有摄影技术信息的纯影评和剧情讨论不算。" },
+  { key: "tip", tagColor: "green", label: "教程", section: "技巧与观点", guide: "读者可以照着做的拍摄、布光、运镜、调色方法与经验复盘。重点是可复用的做法；单纯介绍器材归器材，只有态度和预测而无做法归观点。", commentary: true },
+  { key: "opinion", tagColor: "purple", label: "观点", section: "技巧与观点", guide: "重点是作者的解释、判断、主张、预测、评论或访谈观点。讨论某个厂商不自动归行业，作者是知名摄影师不自动归观点。", commentary: true },
+] as const satisfies ReadonlyArray<{ key: string; tagColor: string; label: string; feedLabel?: string; section: string; guide: string; commentary?: true }>;
 
 /**
  * 这个行业最受关注的一类发布（电影摄影行业是新器材）：日报报头的“N 款新器材”、改分类后修订已出的报告都按它数。
@@ -74,10 +75,11 @@ export const TAG_SYNONYMS: Readonly<Record<string, string>> = {
 
 /**
  * 公司主题：id → 显示名、卡片上显示的标签（null 表示只用 entity:<id> 归类）、别名。
- * aliases 给结构抽取模型看；otherNames 是公司自己的其他称呼（官方账号名、子品牌），
- * 把事实的主体对到发布方时也认它们。
+ * aliases 给结构抽取模型看；orgNames 是这家公司发消息时开头用的组织名（公司、实验室、团队），
+ * 在它自己的主题页上读者知道说的是谁，可以省去；otherNames 是公司的其他称呼（官方账号名、子品牌）。
+ * 所有这些名字都用来认出说的是哪家公司，比如把事实的主体对到发布方。
  */
-export const ENTITIES: Record<string, { name: string; displayTag: string | null; aliases: string[]; otherNames?: string[] }> = {
+export const ENTITIES: Record<string, { name: string; displayTag: string | null; aliases: string[]; orgNames?: string[]; otherNames?: string[] }> = {
   kling: { name: "可灵", displayTag: "可灵", aliases: ["可灵", "可灵AI", "Kling", "Kling AI"], otherNames: ["快手可灵"] },
   jimeng: { name: "即梦", displayTag: "即梦", aliases: ["即梦", "即梦AI", "Jimeng"] },
   runway: { name: "Runway", displayTag: "Runway", aliases: ["Runway", "Runway AI", "RunwayML"] },

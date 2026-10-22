@@ -45,6 +45,8 @@ export const config = {
   /** Caps how many jobs of one queue a worker runs at once (a small server); unset keeps each queue's own number. */
   workerMaxConcurrency: Math.max(0, int("WORKER_MAX_CONCURRENCY", 0)) || null,
   allowPrivateNetworkFetch: bool("ALLOW_PRIVATE_NETWORK_FETCH", false),
+  /** Whole host names of self-hosted feed services on private addresses; only listing fetches use them. */
+  privateFeedHosts: (env.PRIVATE_FEED_HOSTS || "").split(",").map((v) => v.trim().toLowerCase()).filter(Boolean),
   feishuContentPushEnabled: bool("FEISHU_CONTENT_PUSH_ENABLED", false),
   indexNowSubmitEnabled: bool("INDEXNOW_SUBMIT_ENABLED", false),
   /** IndexNow key (32 hex characters); without one nothing is submitted and no key file is served. */
