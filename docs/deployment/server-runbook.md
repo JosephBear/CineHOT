@@ -1,8 +1,8 @@
-# CinemaHOT 服务器部署手册
+# CineHOT 服务器部署手册
 
 适用版本：**v0.2.0**。编写日期：**2026 年 10 月 17 日**。
 
-面向服务器负责人，目标是让位于学校不同网络的少量教师、学生通过浏览器访问 CinemaHOT。推荐方案为 **Linux 服务器 + Docker Compose + 宿主机 Nginx + 学校 HTTPS 证书**。本文主线以 Ubuntu 24.04 LTS 为例；其他系统应由负责人替换系统软件安装命令，应用部署步骤相同。
+面向服务器负责人，目标是让位于学校不同网络的少量教师、学生通过浏览器访问 CineHOT。推荐方案为 **Linux 服务器 + Docker Compose + 宿主机 Nginx + 学校 HTTPS 证书**。本文主线以 Ubuntu 24.04 LTS 为例；其他系统应由负责人替换系统软件安装命令，应用部署步骤相同。
 
 本文提供操作步骤，尚未在学校服务器实际执行。所有 IP、域名和证书路径示例都需要替换；`202.205.122.xx` 不是可执行地址，也不能据此推断学校的子网掩码。
 
@@ -101,7 +101,7 @@ git rev-parse HEAD
 
 **检查：** `VERSION` 为 `0.2.0`；运行 `git describe --tags --exact-match` 应返回 `v0.2.0`，并将 `git rev-parse HEAD` 与 GitHub 发布标签对应提交核对。
 
-内部包、镜像和 Compose 项目仍沿用框架的 `aihot` 名称；网站品牌是 CinemaHOT。不要临时改数据库名或卷名，以免连接到另一套空数据。
+内部包、镜像和 Compose 项目仍沿用框架的 `aihot` 名称；网站品牌是 CineHOT。不要临时改数据库名或卷名，以免连接到另一套空数据。
 
 ## 第 4 步：生成服务器专用配置
 
@@ -182,7 +182,7 @@ sudo docker compose exec -T db pg_isready -U aihot -d aihot
 
 #### A1. 旧电脑正常停止应用，等待模型收尾
 
-**执行位置：当前运行 CinemaHOT 的 Mac。** 由项目负责人在启动器所在终端按 Ctrl-C，等待出现 `worker stopped`，最长预留 210 秒。启动器会停止 API、网页和 worker，PostgreSQL 保持运行。
+**执行位置：当前运行 CineHOT 的 Mac。** 由项目负责人在启动器所在终端按 Ctrl-C，等待出现 `worker stopped`，最长预留 210 秒。启动器会停止 API、网页和 worker，PostgreSQL 保持运行。
 
 如果启动器由其他工具后台启动，由维护者确认 `work/run-local.py` 的准确进程身份后发送正常终止信号，并检查 worker 已停止；不要用模糊匹配批量结束进程，也不要强制杀掉进行中的模型请求。
 
@@ -373,11 +373,11 @@ sudo chmod 640 /etc/nginx/cinemahot.htpasswd
 
 命令交互输入密码，不把密码写在命令行参数中。`-c` 只用于首次创建；已有文件时去掉 `-c`，否则会覆盖原有用户。
 
-在 CinemaHOT 的 `server` 块中、`location` 之前加入：
+在 CineHOT 的 `server` 块中、`location` 之前加入：
 
 ```nginx
 satisfy all;
-auth_basic "CinemaHOT campus trial";
+auth_basic "CineHOT campus trial";
 auth_basic_user_file /etc/nginx/cinemahot.htpasswd;
 ```
 
@@ -554,8 +554,8 @@ sudo docker compose up -d worker
 
 ## 官方资料与项目入口
 
-- [CinemaHOT v0.2.0 发布记录](https://github.com/JosephBear/cinemahot/releases/tag/v0.2.0)
-- [CinemaHOT 文档导航](https://github.com/JosephBear/cinemahot/tree/main/docs)
+- [CineHOT v0.2.0 发布记录](https://github.com/JosephBear/cinemahot/releases/tag/v0.2.0)
+- [CineHOT 文档导航](https://github.com/JosephBear/cinemahot/tree/main/docs)
 - [Docker 在 Ubuntu 上安装](https://docs.docker.com/engine/install/ubuntu/)
 - [Docker Compose 单机生产部署](https://docs.docker.com/compose/how-tos/production/)
 - [GitHub 部署密钥](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys)

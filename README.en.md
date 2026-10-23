@@ -1,4 +1,4 @@
-# CinemaHOT v0.1.0
+# CineHOT v0.1.0
 
 A cinematography news aggregator based on the [AIHOT framework](https://github.com/KKKKhazix/AIHOT), under the retained [MIT License](LICENSE).
 

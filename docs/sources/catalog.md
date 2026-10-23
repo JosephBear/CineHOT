@@ -1,6 +1,6 @@
-# CinemaHOT 信源配置与验收
+# CineHOT 信源配置与验收
 
-CinemaHOT 第一阶段沿用电影摄影分类和文本资讯引擎。项目名称为 CinemaHOT，页面站名为“电影动态”；公开 MCP 前缀保持 `cinemahot`，抓取 User-Agent 为 `CinemaHOTBot/1.0`。
+CineHOT 第一阶段沿用电影摄影分类和文本资讯引擎。项目名称为 CineHOT，页面站名为“电影动态”；公开 MCP 前缀保持 `cinemahot`，抓取 User-Agent 为 `CineHOTBot/1.0`。
 
 2026-10-14 保留当前 12 个 RSS，新增 ARRI Newsroom、Blackmagic Design、Wandering DP、Team Deakins 和影视工业网，共 17 个配置来源。ARRI 和 Blackmagic 是 T1 官方来源；新增创作者与媒体暂按 T2 评价。首次回灌上限均为 8 条；站内与订阅全文权限均关闭。播客条目只使用公开介绍，不代表已经转写或听过音频。
 

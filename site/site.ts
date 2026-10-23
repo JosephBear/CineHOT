@@ -9,7 +9,7 @@ import type { Founder } from "@aihot/contracts/site-config";
  * 月报在每月 1 日出。排程、成刊时间窗口、缺期告警和所有提到时间的文案都读它（public/ 里的文件写占位
  * {{dailyTime}}、{{weeklyTime}}、{{monthlyTime}}）；排程每半小时检查一次，所以写整点或半点。
  *
- * CinemaHOT 以周报为主推；日报和月报照常出，用来回看。日报时段内没有新大事时用 REPORTS.quiet 的
+ * CineHOT 以周报为主推；日报和月报照常出，用来回看。日报时段内没有新大事时用 REPORTS.quiet 的
  * 标题与导语出刊，不会报错。
  */
 export const EDITION_TIMES = { daily: "08:00", weekly: "10:00", monthly: "10:30" };
@@ -25,7 +25,7 @@ export const SITE = {
   /** 站名：导航、页面标题、分享图、RSS、MCP、后台都用它。 */
   name: "全球影像动态",
   /** 英文站名：显示在导航站名下方，也写进首页标题。 */
-  nameEn: "Global Image",
+  nameEn: "Global Cine News",
   /**
    * 行业词：拼进默认说法里，比如“电影周报”“电影行业动态”。
    * 改成“影视”“摄影”之类，页面上就会跟着变。
@@ -34,7 +34,7 @@ export const SITE = {
   /** 全部资讯页及导航的名称。 */
   allTitle: "影像行业动态",
   /** 首页的完整标题（浏览器标签、搜索结果）。 */
-  homeTitle: "全球影像动态 Global Image — 电影与影像资讯 · 每周精选与周报",
+  homeTitle: "全球影像动态 Global Cine News — 电影与影像资讯 · 每周精选与周报",
   /** 主题目录页（/topics）的标题。 */
   topicsTitle: "影像行业主题：厂商与机构、院校与影展、影像技术、AI影视创作的最新动态",
   /** 反馈表单输入框里的示例。 */
@@ -58,7 +58,7 @@ export const SITE = {
   /** 默认域名，只在没设置 SITE_URL 时使用。 */
   defaultUrl: "http://localhost:3000",
   /** 标准图标（favicon.ico、icon.png、icon-192.png、apple-icon.png、logo.svg）以外也放在网站根目录的图标，site/brand/ 里的文件名（选填）；manifest.webmanifest 或外站引用了它们时用。 */
-  rootIcons: ["doc-logo-1d9e4beb.jpg"] as string[],
+  rootIcons: [] as string[],
   /**
    * MCP 工具名的前缀（小写字母、数字、下划线），工具会叫 cinemahot_get_latest、cinemahot_search……
    * 已经有人接入后就不要再改。
@@ -88,7 +88,7 @@ export const SITE = {
     founder: null as Founder | null,
   },
   /** 抓取信源时报上的名字和版本（User-Agent 里用），不要冒用别的站。 */
-  crawlerName: "CinemaHOTBot/1.0",
+  crawlerName: "CineHOTBot/1.0",
 } as const;
 
 /** 使用规则和隐私说明两页（正文在 pages/ 里）。 */

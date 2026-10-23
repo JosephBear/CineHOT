@@ -264,7 +264,7 @@ Content-Type: application/json
 - 条目的 `raw._aihot.backfill` 为 `true` 时按历史回灌处理（不进入“今天”、不推送）。
 
 
-### CinemaHOT 的固定采集间隔与正文片段
+### CineHOT 的固定采集间隔与正文片段
 
 `site/site.ts` 的 `SOURCE_DEFAULTS.fixedIntervalMinutes` 当前为 `480`。每日间隔调整会保留此值；后台新增信源默认也使用此值。设为 `null` 恢复按产量自适应。失败重试不会早于信源的配置间隔；第三方请求预算耗尽仍按原机制等待配额恢复。
 

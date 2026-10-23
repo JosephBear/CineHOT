@@ -122,6 +122,9 @@ function exportGold() {
     samplingContext: { benchmarkSplit: i.split, samplingStratum: i.tags.find((t) => t !== "官方") ?? i.tier },
     gold: { decision: labels[i.caseId]!.decision },
   }));
+  // collect replaces items.json each round: keep earlier rounds' gold cases this round no longer lists.
+  const current = new Set(items.map((i) => i.caseId));
+  if (existsSync(GOLD)) lines.unshift(...readFileSync(GOLD, "utf8").split("\n").filter((l) => l && !current.has((JSON.parse(l) as { caseId: string }).caseId)));
   writeAtomic(GOLD, lines.join("\n") + (lines.length ? "\n" : ""));
   return lines.length;
 }

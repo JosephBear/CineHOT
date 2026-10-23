@@ -1,4 +1,4 @@
-# CinemaHOT 标注与精选校准
+# CineHOT 标注与精选校准
 
 状态：**已完成首轮校准（2026-10-19）**，结论见文末“首轮校准结论”。下文“已准备的清单”是 2026-10-14 在原电脑准备、未随仓库迁移的旧清单。
 
@@ -37,8 +37,8 @@ node --env-file=.env scripts/label-selection.ts export                          
 人工标注完成且明确启用模型、配置好服务商与预算后，使用已有评测脚本：
 
 ```sh
-node --env-file=.env scripts/eval-selection.ts --gold .data/gold.jsonl --split development --label 'CinemaHOT 首轮人工标注'
-node --env-file=.env scripts/eval-selection.ts --gold .data/gold.jsonl --split holdout --label 'CinemaHOT 留出集验收'
+node --env-file=.env scripts/eval-selection.ts --gold .data/gold.jsonl --split development --label 'CineHOT 首轮人工标注'
+node --env-file=.env scripts/eval-selection.ts --gold .data/gold.jsonl --split holdout --label 'CineHOT 留出集验收'
 ```
 
 评测会调用模型并可能计费，本次没有执行。对比查准率、查全率、F1、覆盖率、完整准确率和错例；先调整标准，再决定是否调整门槛，最后用未参与调参的留出集验证。`industry/gold.example.jsonl` 仅为明确标注的虚构格式示例，不能用于证明真实质量。

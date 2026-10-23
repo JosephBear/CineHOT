@@ -1,4 +1,4 @@
-"""Local CinemaHOT supervisor; detached by start-background.py."""
+"""Local CineHOT supervisor; detached by start-background.py."""
 from pathlib import Path
 from datetime import datetime, timezone
 import fcntl, json, os, signal, subprocess, time

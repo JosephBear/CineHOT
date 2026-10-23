@@ -1,4 +1,4 @@
-// Regenerating a local CinemaHOT must work with the licensed font already in the repository.
+// Regenerating a local CineHOT must work with the licensed font already in the repository.
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
