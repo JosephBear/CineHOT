@@ -63,7 +63,6 @@ node scripts/check-cinemahot-sources.ts --ids web-arri-news,web-blackmagic-news,
 | B | befores & afters | `rss-befores-and-afters` | RSS／Atom；已读到真实条目 | https://beforesandafters.com/ |
 | B | Mixing Light | `rss-mixing-light` | RSS／Atom；已读到真实条目 | https://mixinglight.com/ |
 | B | FilmLight | `rss-filmlight` | RSS／Atom；已读到真实条目 | https://www.filmlight.ltd.uk/store/ |
-| C | Unreal Engine Film & Television | `rss-unreal-film` | RSS／Atom；已读到真实条目 | https://www.unrealengine.com/uses/film-television?lang=en-US |
 | C | SMPTE Motion Imaging Journal | `web-smpte` | 本轮外部导入／待长期采集适配 | https://www.smpte.org/motion-imaging-journal |
 | C | ACESCentral | `rss-aces` | RSS／Atom；已读到真实条目 | https://acescentral.com/ |
 | D | Runway | `web-runway` | 本轮外部导入／待长期采集适配 | https://runway.com/news |
@@ -164,17 +163,15 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | YouTube：Higgsfield AI | `rss-yt-higgsfield` | YouTube频道RSS | channel_id=UCh13OyDSm-Kb8ij3yZArtFg |
 | EnergaCAMERIMAGE | `web-camerimage-news` | 网页列表 | https://camerimage.pl/en/news |
 | USC 电影艺术学院 | `web-usc-sca-news` | 网页列表 | https://cinema.usc.edu/news/index.cfm |
-| NYU Tisch | `web-nyu-tisch-news` | 网页列表；新闻页加载列表所用的HTML片段 | https://tisch.nyu.edu/tisch-research-news-events/news |
-| NFTS | `web-nfts-news` | 网页列表；列表无日期，详情页 `time` 补日期（精确到天） | https://nfts.co.uk/news |
 | World Press Photo | `web-wpp-news` | 网页列表，按日期排序 | https://www.worldpressphoto.org/news |
 | 上海国际电影节 | `web-siff-news` | 首页轮播网页列表；详情页 `.time` 补日期 | https://www.siff.com/ |
 | 北京国际电影节 | `web-bjiff-news` | “要闻资讯”网页列表 | https://www.bjiff.com/ywzx/ |
 | 国家广播电视总局 | `web-nrta-news` | 首页“总局要闻”网页列表；日期取自文章网址 | https://www.nrta.gov.cn/ |
-| 蜂鸟网 | `web-fengniao-news` | 资讯网页列表（GBK编码） | https://news.fengniao.com/ |
-| 色影无忌 | `web-xitek-news` | 新闻网页列表 | https://info.xitek.com/news/ |
 | 平遥国际电影展 | `json-pyiff-news` | 官方公开新闻接口 | https://www.pyiffestival.com/News |
 
-验证：广电总局、上海国际电影节、蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinemahot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
+2026-10-23 按两轮人工标注移出蜂鸟网（`web-fengniao-news`）、色影无忌（`web-xitek-news`）、NYU Tisch（`web-nyu-tisch-news`）、NFTS（`web-nfts-news`）、Unreal Engine Film & Television（`rss-unreal-film`），依据见[信源评审记录](reviews.md)。已有部署的数据库不会因此自动变化，按升级说明处理。
+
+验证：广电总局、上海国际电影节，以及已移出的蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinemahot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
 
 暂登记为`external`的8个：
 

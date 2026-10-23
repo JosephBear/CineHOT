@@ -1,5 +1,5 @@
 {
-  "$comment": "CineHOT 2026-10-18 信源配置快照：共94个登记来源，其中62个RSS、23个网页列表、9个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。",
+  "$comment": "CineHOT 2026-10-18 信源配置快照：共89个登记来源，其中61个RSS、19个网页列表、9个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。 2026-10-23按两轮人工标注移出蜂鸟网、色影无忌、NYU Tisch、NFTS、Unreal Engine Film & Television（见 docs/sources/reviews.md）。",
   "sources": [
     {
       "id": "rss-asc",
@@ -662,33 +662,6 @@
         "publishedAfter": "2026-09-14T16:00:00.000Z",
         "publisherUrlPrefixes": [
           "https://www.filmlight.ltd.uk/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "rss-unreal-film",
-      "name": "Unreal Engine Film & Television",
-      "kind": "rss",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8,
-          "initialBackfillMonths": 1
-        },
-        "feedUrl": "https://www.unrealengine.com/rss?lang=en-US",
-        "publisherRole": "organization",
-        "publishedAfter": "2026-09-14T16:00:00.000Z",
-        "publisherUrlPrefixes": [
-          "https://www.unrealengine.com/"
         ]
       },
       "tier": "T1",
@@ -1697,70 +1670,6 @@
       "enabled": true
     },
     {
-      "id": "web-nyu-tisch-news",
-      "name": "NYU Tisch 纽约大学帝势艺术学院",
-      "kind": "web_list",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "url": "https://tisch.nyu.edu/tisch-research-news-events/news/_jcr_content/search.results",
-        "baseUrl": "https://tisch.nyu.edu/tisch-research-news-events/news",
-        "itemSelector": "li.media-item--maj",
-        "linkSelector": "h2 a",
-        "titleSelector": "h2 a",
-        "publishedAtSelector": ".media-title--minor",
-        "publishedAtUtcOffset": "-04:00",
-        "allowUrlPrefixes": [
-          "https://tisch.nyu.edu/"
-        ]
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "院校"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-nfts-news",
-      "name": "NFTS 英国国家电影电视学院",
-      "kind": "web_list",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "url": "https://nfts.co.uk/news",
-        "itemSelector": "article.node--teaser",
-        "linkSelector": ".teaser--meta__content a",
-        "titleSelector": ".teaser--meta__content h2",
-        "publishedAtUtcOffset": "+01:00",
-        "allowUrlPrefixes": [
-          "https://nfts.co.uk/article/"
-        ],
-        "detail": {
-          "maxFetches": 8,
-          "publishedAtSelector": "time"
-        }
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "院校"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
       "id": "web-wpp-news",
       "name": "World Press Photo 荷赛",
       "kind": "web_list",
@@ -1875,62 +1784,6 @@
       "tags": [
         "官方",
         "政策"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-fengniao-news",
-      "name": "蜂鸟网",
-      "kind": "web_list",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "url": "https://news.fengniao.com/",
-        "itemSelector": ".listBox .txtBox",
-        "linkSelector": "a.title",
-        "titleSelector": "a.title",
-        "publishedAtSelector": "span.time",
-        "allowUrlPrefixes": [
-          "https://qicai.fengniao.com/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "摄影"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-xitek-news",
-      "name": "色影无忌",
-      "kind": "web_list",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "url": "https://info.xitek.com/news/",
-        "itemSelector": ".list.l_dt li",
-        "linkSelector": "a",
-        "titleSelector": "h3",
-        "publishedAtSelector": ".dd_time",
-        "allowUrlPrefixes": [
-          "https://info.xitek.com/news/"
-        ]
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "摄影"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
