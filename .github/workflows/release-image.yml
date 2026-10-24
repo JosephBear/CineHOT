@@ -1,0 +1,39 @@
+# A version tag (v0.3.0) builds the VPS image and pushes it to GHCR, so the server only pulls it
+# (deploy/vps/upgrade.sh). The web app is built here; deploy/vps/Dockerfile.dockerignore keeps it in the image.
+# Only GitHub-owned actions, pinned to a full commit SHA.
+name: Release image
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Build web
+        run: npm run build -w @aihot/web
+      - name: Build and push
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # shortcut: amd64 only (the VPS is x86); an ARM server needs a second platform here.
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinemahot-app:${GITHUB_REF_NAME}"
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker buildx build --platform linux/amd64 -f deploy/vps/Dockerfile -t "$image" --push .
+          echo "pushed $image" >> "$GITHUB_STEP_SUMMARY"

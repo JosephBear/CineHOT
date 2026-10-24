@@ -1,8 +1,7 @@
-# Image for a small VPS (2 GB): the web app is built beforehand (npm run build -w @aihot/web) on another
-# machine and copied in, so the server only installs production dependencies. Build from the repo root:
-#   docker build -f deploy/vps/Dockerfile -t cinemahot-app:<版本> .
-# Copy deploy/vps/Dockerfile.dockerignore over the release copy's .dockerignore first: it keeps apps/web/build,
-# and Docker's legacy builder (no Buildx) only reads .dockerignore from the build context root.
+# Image for a small VPS (2 GB): the web app is built beforehand (npm run build -w @aihot/web), so the image
+# only installs production dependencies. Built by .github/workflows/release-image.yml on a version tag;
+# BuildKit reads deploy/vps/Dockerfile.dockerignore, which keeps apps/web/build. By hand, from the repo root:
+#   docker buildx build -f deploy/vps/Dockerfile -t cinemahot-app:<版本> .
 FROM node:24-trixie-slim
 WORKDIR /app
 COPY . .

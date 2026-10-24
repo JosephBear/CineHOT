@@ -1,24 +1,35 @@
-# CineHOT 校园部署模板。替换域名、证书路径、校园 CIDR 后再启用。
-# 192.0.2.0/24 是文档示例；不是学校网段。详见 docs/deployment/campus.md。
-# Docker 网页端口须设置 PORT=127.0.0.1:3000，应用设置 TRUST_PROXY=true。
-server {
-    listen 443 ssl;
-    server_name cinemahot.example.edu;
+# CineHOT 校园镜像：校园服务器不运行程序和数据库，只把校内访问转发到 VPS 主站并缓存公开页面；
+# VPS 暂时连不上时继续提供缓存的旧页面。后台和登录路径与主站一样不对外。详见 docs/deployment/campus.md。
+# 替换监听端口、访问名单（192.0.2.0/24 只是文档示例）和主站地址后放进 /etc/nginx/conf.d/。
+proxy_cache_path /var/cache/nginx/cinehot levels=1:2 keys_zone=cinehot:20m max_size=2g inactive=7d use_temp_path=off;
 
-    ssl_certificate     /etc/nginx/tls/cinemahot.crt;
-    ssl_certificate_key /etc/nginx/tls/cinemahot.key;
+server {
+    listen 8080;
 
     allow 192.0.2.0/24;
     deny all;
 
+    # 后台与登录只经 SSH 隧道在 VPS 上使用。
+    location ~ ^/(admin|api/admin|api/auth)(/|$) { return 404; }
+
     location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
+        proxy_pass https://cinemahot.35-90-86-224.sslip.io;
+        proxy_ssl_server_name on;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/pki/tls/certs/ca-bundle.crt;
+        proxy_set_header Host cinemahot.35-90-86-224.sslip.io;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
         proxy_set_header Connection "";
-        proxy_buffering off;
-        # 保留应用 Cache-Control，不额外缓存后台或延长公开内容缓存期限。
+
+        # 公开内容对所有人都一样：页面最多旧 5 分钟；主站出错或连不上时用缓存的旧页面顶上。
+        proxy_cache cinehot;
+        proxy_cache_methods GET HEAD;
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
+        proxy_cache_valid 200 301 404 5m;
+        proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+        proxy_cache_background_update on;
+        proxy_cache_lock on;
+        add_header X-Mirror-Cache $upstream_cache_status always;
     }
 }

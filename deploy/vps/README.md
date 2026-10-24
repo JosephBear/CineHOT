@@ -1,10 +1,12 @@
 # VPS 部署模板（2 GB 内存服务器）
 
-当前服务器的实际部署方式：发布包 + Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。升级步骤见 [升级到 v0.2.3](../../docs/deployment/upgrade-v0.2.3.md)。
+当前服务器的实际部署方式：Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。从 v0.3.0 起，推送版本标签后由 GitHub Actions（`.github/workflows/release-image.yml`）构建镜像 `ghcr.io/josephbear/cinemahot-app:<版本>`，服务器只拉取，不再打包和构建。升级步骤见 [升级到 v0.3.0](../../docs/deployment/upgrade-v0.3.0.md)。
 
 | 文件 | 放到服务器的位置 | 作用 |
 |---|---|---|
-| `Dockerfile` + `Dockerfile.dockerignore` | 随发布包，在发布目录里构建；构建前把 `Dockerfile.dockerignore` 复制成发布目录的 `.dockerignore`（服务器的旧版构建器只认这个名字） | 网页事先在其他电脑构建好（`npm run build -w @aihot/web`），服务器只装生产依赖，减轻 2 GB 内存的压力 |
+| `Dockerfile` + `Dockerfile.dockerignore` | 不放到服务器；GitHub Actions 用它们构建镜像 | 网页先构建好（`npm run build -w @aihot/web`），镜像里只装生产依赖 |
+| `upgrade.sh` | 从镜像里取出后运行，见升级文档 | 升级到指定版本：先拉镜像，再停写、备份、换 compose 与镜像、迁移、冒烟检查、启动 worker |
+| `check.sh` | 同上 | 只读核对：版本、容器与内存、冒烟、预算与用量、采集与积压、卡住的任务、连续失败的信源、worker 错误；输出可原样贴回 |
 | `compose.yml` | `/opt/cinemahot/compose.yml` | db、api、web、worker 四个服务，带内存和 CPU 限额；网站只开在 `127.0.0.1:3000`；worker 每个队列最多同时处理 1 件（`WORKER_MAX_CONCURRENCY=1`），直连 DeepSeek |
 | `Caddyfile.example` | `/etc/caddy/Caddyfile`（按实际改域名和绑定地址） | HTTPS 反向代理；后台和登录路径对公网返回 404，只能经 SSH 隧道访问 |
 
