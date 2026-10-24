@@ -1,28 +1,6 @@
 {
-  "$comment": "CineHOT 2026-10-18 信源配置快照：共89个登记来源，其中61个RSS、19个网页列表、9个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。 2026-10-23按两轮人工标注移出蜂鸟网、色影无忌、NYU Tisch、NFTS、Unreal Engine Film & Television（见 docs/sources/reviews.md）。",
+  "$comment": "CineHOT 2026-10-18 信源配置快照：共87个登记来源，其中59个RSS、19个网页列表、9个JSON列表，按60分钟自动采集；找不到可采集入口的external来源已于同日移出。2026-10-18起原11个external来源改用新ID自动采集，已有部署的旧external记录需在后台暂停。首次初始化只添加不存在的ID；从本文件删除的ID不会删除已有数据库记录。公开仅展示摘要与原文链接。临时放开的模型预算不随此配置导出。 2026-10-23按两轮人工标注移出蜂鸟网、色影无忌、NYU Tisch、NFTS、Unreal Engine Film & Television；同日移出一直拒绝采集程序（HTTP 403）的 ASC 订阅与 CineMontage（见 docs/sources/reviews.md）。",
   "sources": [
-    {
-      "id": "rss-asc",
-      "name": "The ASC（美国电影摄影师协会）",
-      "kind": "rss",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "feedUrl": "https://theasc.com/feed/"
-      },
-      "tier": "T1",
-      "owner_entity_id": "asc",
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "协会"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
     {
       "id": "rss-cooke",
       "name": "Cooke Optics（库克镜头）",
@@ -839,9 +817,10 @@
           "initialBackfillLimit": 8
         },
         "url": "https://www.anthropic.com/news",
-        "itemSelector": "a[class*=\"PublicationList\"][href^=\"/news/\"]",
-        "titleSelector": "[class*=\"__title\"]",
-        "publishedAtSelector": "time",
+        "itemSelector": "div[class*=\"TableView\"][class*=\"__summary\"]",
+        "linkSelector": "a[class*=\"title-link\"]",
+        "titleSelector": "h3",
+        "publishedAtSelector": "[class*=\"TableView\"][class*=\"__date\"]",
         "publishedAtUtcOffset": "+00:00",
         "allowUrlPrefixes": [
           "https://www.anthropic.com/news/"
@@ -1472,27 +1451,6 @@
       "interval_minutes": 60,
       "tags": [
         "纪录片"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "rss-cinemontage",
-      "name": "CineMontage（剪辑师协会）",
-      "kind": "rss",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "feedUrl": "https://cinemontage.org/feed/"
-      },
-      "tier": "T2",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "剪辑"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,

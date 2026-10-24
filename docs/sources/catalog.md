@@ -155,7 +155,6 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | VFX Voice | `rss-vfxvoice` | RSS | https://vfxvoice.com/feed/ |
 | 80.lv | `rss-80lv` | RSS | https://80.lv/feed |
 | IDA《Documentary》 | `rss-ida-documentary` | RSS | https://www.documentary.org/rss.xml |
-| CineMontage | `rss-cinemontage` | RSS | https://cinemontage.org/feed/ |
 | YouTube：American Cinematographer（ASC） | `rss-yt-asc` | YouTube频道RSS | channel_id=UCFjhAJXEcQBAcQIRhGUyCAA |
 | YouTube：In Depth Cine | `rss-yt-indepthcine` | YouTube频道RSS | channel_id=UCUodELQsFwF8dq0X-bK9FQQ |
 | YouTube：wolfcrow | `rss-yt-wolfcrow` | YouTube频道RSS | channel_id=UC7gBcKzHKc0oOR5-XiWdlFQ |
@@ -169,7 +168,7 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | 国家广播电视总局 | `web-nrta-news` | 首页“总局要闻”网页列表；日期取自文章网址 | https://www.nrta.gov.cn/ |
 | 平遥国际电影展 | `json-pyiff-news` | 官方公开新闻接口 | https://www.pyiffestival.com/News |
 
-2026-10-23 按两轮人工标注移出蜂鸟网（`web-fengniao-news`）、色影无忌（`web-xitek-news`）、NYU Tisch（`web-nyu-tisch-news`）、NFTS（`web-nfts-news`）、Unreal Engine Film & Television（`rss-unreal-film`），依据见[信源评审记录](reviews.md)。已有部署的数据库不会因此自动变化，按升级说明处理。
+2026-10-23 按两轮人工标注移出蜂鸟网（`web-fengniao-news`）、色影无忌（`web-xitek-news`）、NYU Tisch（`web-nyu-tisch-news`）、NFTS（`web-nfts-news`）、Unreal Engine Film & Television（`rss-unreal-film`），依据见[信源评审记录](reviews.md)；同日移出自 2026-10-18 起一直拒绝采集程序（HTTP 403）的 The ASC 订阅（`rss-asc`，ASC 内容由 `rss-asc-gnews`、`rss-yt-asc` 覆盖）和 CineMontage（`rss-cinemontage`）。已有部署的数据库不会因此自动变化，按升级说明处理。
 
 验证：广电总局、上海国际电影节，以及已移出的蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinemahot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
 

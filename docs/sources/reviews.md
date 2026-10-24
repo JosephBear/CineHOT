@@ -12,6 +12,7 @@
 ## 2026-10-23 决定
 
 - **移出（5 个）**：蜂鸟网、色影无忌（整体水平偏低）；NYU Tisch、NFTS、Unreal Engine Film & Television（两轮都有样本，一条未选，多数为“不该选”）。
+- **移出（2 个，拒绝采集）**：The ASC 订阅、CineMontage。自 2026-10-18 起网站防护一直拦截采集程序（HTTP 403），改配置无法解决；ASC 仍由 Google News 与 YouTube 两个入口覆盖。
 - **观察（4 个）**：ComfyUI 官方版本更新、Animation World Network、Film and Digital Times、DJI 大疆官方新闻。两轮一条未选，但多数是“两可”，不算明确的噪声。
 - 每轮只抽到最近 14 天内有文章的信源；没抽到的信源更新少，要结合运行中的 `scripts/source-discovery/source-quality.sql` 看实际文章量。
 
