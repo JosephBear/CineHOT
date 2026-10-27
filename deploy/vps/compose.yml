@@ -80,7 +80,8 @@ services:
       LLM_EXTRA_JSON: '{"thinking":{"type":"disabled"}}'
       LLM_VISION: "false"
       FEISHU_CONTENT_PUSH_ENABLED: "false"
-      FEISHU_INTERNAL_ENABLED: "false"
+      # Alerts and feedback to the operations Feishu group: set it and FEISHU_APP_ID/SECRET/ALERT_CHAT_ID in .env.
+      FEISHU_INTERNAL_ENABLED: ${FEISHU_INTERNAL_ENABLED:-false}
       INDEXNOW_SUBMIT_ENABLED: "false"
     command: ["node", "apps/worker/src/main.ts"]
     volumes: ["data:/data"]

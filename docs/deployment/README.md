@@ -5,7 +5,7 @@
 ## 选择部署方式
 
 - 交给服务器负责人逐步执行：[服务器部署手册（含每步目的与检查）](server-runbook.md)。
-- 当前服务器（`/opt/cinemahot`，Docker Compose，镜像来自 GHCR）升级：[升级到 v0.3.0（逐步操作）](upgrade-v0.3.0.md)；服务器模板、升级脚本与核对脚本见 [`deploy/vps/`](../../deploy/vps/README.md)。
+- 当前服务器（`/opt/cinemahot`，Docker Compose，镜像来自 GHCR）升级：[升级到 v0.3.2（逐步操作）](upgrade-v0.3.2.md)（还在 v0.2.3 的先看 [v0.3.0](upgrade-v0.3.0.md)）；服务器模板、升级脚本与核对脚本见 [`deploy/vps/`](../../deploy/vps/README.md)。
 - 当前电脑启动：[本地试运行](local-trial.md)。
 - 让校园内的同学访问：[校园镜像](campus.md)（校园服务器只转发并缓存 VPS 主站）。
 - Docker、HTTPS、非 Docker、更新和备份细节：[完整部署参考](../deploy.md)。

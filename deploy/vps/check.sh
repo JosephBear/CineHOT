@@ -22,7 +22,11 @@ echo "== 4 模型预算与用量"
 q "SELECT b.service, b.per_minute, b.per_hour, b.per_day,
           (SELECT count(*) FROM receipt_attempts a WHERE a.service = b.service AND a.origin = 'live' AND a.started_at > now() - interval '1 hour') AS 近1小时,
           (SELECT count(*) FROM receipt_attempts a WHERE a.service = b.service AND a.origin = 'live' AND a.started_at > now() - interval '24 hours') AS 近24小时,
-          (SELECT round(sum(cost), 2) FROM receipt_attempts a WHERE a.service = b.service AND a.started_at > now() - interval '24 hours') AS 近24小时费用
+          (SELECT round(sum((coalesce((a.usage->>'prompt_tokens')::numeric, 0) - coalesce((a.usage->>'prompt_cache_hit_tokens')::numeric, (a.usage->'prompt_tokens_details'->>'cached_tokens')::numeric, 0)) * p.input_per_mtok
+                             + coalesce((a.usage->>'prompt_cache_hit_tokens')::numeric, (a.usage->'prompt_tokens_details'->>'cached_tokens')::numeric, 0) * coalesce(p.cached_per_mtok, p.input_per_mtok)
+                             + coalesce((a.usage->>'completion_tokens')::numeric, 0) * p.output_per_mtok) / 1e6, 2)
+           FROM receipt_attempts a JOIN service_prices p ON p.service = a.service AND p.model = ''
+           WHERE a.service = b.service AND a.started_at > now() - interval '24 hours') AS 近24小时估算费用
    FROM budgets b WHERE b.service = 'llm'"
 echo "== 5 采集与处理"
 q "SELECT (SELECT count(*) FROM fetch_runs WHERE started_at > now() - interval '1 hour') AS 近1小时采集,
