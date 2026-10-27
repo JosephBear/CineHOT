@@ -1,12 +1,31 @@
-// 导航只显示站名与英文名，不放图片；RingMark 保留为加载动画。
+// 导航：摄影机图标 + 大字 Cinehot，下面一行中文站名；RingMark 保留为加载动画。
 import { SITE } from "../site.ts";
+
+/** A cine camera: two reels on top, the body with its recording light (the "hot"), the matte box in front. */
+function CameraMark({ size = 24, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 32 24" width={Math.round((size * 32) / 24)} height={size} className={`shrink-0 ${className}`} aria-hidden="true">
+      <circle cx="9" cy="6" r="4.6" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="19.5" cy="6.6" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+      <circle cx="9" cy="6" r="1.2" fill="currentColor" />
+      <circle cx="19.5" cy="6.6" r="1.1" fill="currentColor" />
+      <rect x="2" y="11" width="20" height="11" rx="2.2" fill="currentColor" />
+      <path d="M22.5 14.2 L30 10.8 V22.2 L22.5 18.8 Z" fill="currentColor" />
+      <circle cx="6.6" cy="14.8" r="1.7" fill="var(--color-hot)" />
+    </svg>
+  );
+}
 
 export function Wordmark({ size = 24, className = "", title = SITE.name }: { size?: number; className?: string; title?: string }) {
   const stacked = size >= 24;
   return (
-    <span className={`inline-flex shrink-0 items-center flex-col font-black leading-none tracking-[-0.03em] ${stacked ? "gap-1.5" : "gap-0.5"} ${className}`} style={{ fontSize: stacked ? Math.round(size * 0.92) : 12 }} aria-label={`${title} ${SITE.nameEn}`} role="img">
-      <span aria-hidden="true">{SITE.name}</span>
-      {stacked && <span aria-hidden="true" className="font-semibold tracking-[0.08em] text-ink-3" style={{ fontSize: Math.round(size * 0.42) }}>{SITE.nameEn}</span>}
+    <span className={`inline-flex shrink-0 items-center leading-none ${stacked ? "gap-2.5" : "gap-1.5"} ${className}`} aria-label={`${SITE.nameEn} ${title}`} role="img">
+      <CameraMark size={stacked ? Math.round(size * 1.15) : size + 2} />
+      <span aria-hidden="true" className="flex flex-col gap-1.5">
+        <span className="font-black tracking-[-0.02em]" style={{ fontSize: Math.round(size * (stacked ? 1 : 1.05)) }}>{SITE.nameEn}</span>
+        {/* The phone bar has no room beside its centre switch: there the Chinese name stays in the label only. */}
+        {stacked && <span className="font-semibold tracking-[0.06em] text-ink-3" style={{ fontSize: Math.round(size * 0.5) }}>{title}</span>}
+      </span>
     </span>
   );
 }

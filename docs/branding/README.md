@@ -1,8 +1,8 @@
 # CineHOT 本地品牌资源
 
-导航只显示站名“全球影像动态”和英文名 Global Cine News，不放图片；电脑端和手机端均上下排列。静态站点图标及加载动画继续使用胶片卷图形。
+导航左上角是摄影机图标（两个片盘、机身、遮光斗，机身上的录制灯用 `--hot` 色，对应 Cinehot 的“hot”）加大字 Cinehot；电脑侧栏在 Cinehot 下面一行显示中文站名“全球影像动态”，手机顶栏空间不够，只显示图标和 Cinehot。静态站点图标及加载动画继续使用胶片卷图形。
 
-- `site/brand/Logo.tsx`：显示站名与英文名；胶片卷仅作为加载动画。
+- `site/brand/Logo.tsx`：摄影机图标与站名（品牌名取 `SITE.nameEn`）；胶片卷仅作为加载动画。
 - `site/brand/logo.svg`：512 × 512 矢量图标。
 - `icon.png`、`icon-192.png`、`apple-icon.png`：512、192、180 像素图标。
 - `favicon.ico`：32 像素 PNG 编码图标。
