@@ -1,6 +1,6 @@
 # VPS 部署模板（2 GB 内存服务器）
 
-当前服务器的实际部署方式：Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。从 v0.3.0 起，推送版本标签后由 GitHub Actions（`.github/workflows/release-image.yml`）构建镜像 `ghcr.io/josephbear/cinemahot-app:<版本>`，服务器只拉取，不再打包和构建。升级步骤见 [升级到 v0.3.2](../../docs/deployment/upgrade-v0.3.2.md)（还在 v0.2.3 的先看 [v0.3.0](../../docs/deployment/upgrade-v0.3.0.md)）。
+当前服务器的实际部署方式：Docker Compose，目录 `/opt/cinemahot`，数据库名和用户名都是 `cinemahot`，宿主机 Caddy 提供 HTTPS。从 v0.3.0 起，推送版本标签后由 GitHub Actions（`.github/workflows/release-image.yml`）构建镜像（已发布至 v0.3.2 的版本为 `ghcr.io/josephbear/cinemahot-app:<版本>`，改名后的新构建为 `ghcr.io/josephbear/cinehot-app:<标签>`），服务器只拉取，不再打包和构建。升级步骤见 [升级到 v0.3.2](../../docs/deployment/upgrade-v0.3.2.md)（还在 v0.2.3 的先看 [v0.3.0](../../docs/deployment/upgrade-v0.3.0.md)）。
 
 | 文件 | 放到服务器的位置 | 作用 |
 |---|---|---|
@@ -26,3 +26,5 @@
 | `AIHOT_CREDENTIALS_DIR` | 可选；以前在 compose 里设置过的，沿用原值 |
 
 费用由数据库里的 `llm` 预算（每分钟、每小时、滚动24小时上限）和付费回执控制，不再使用试运行期间的守护代理。
+
+改名兼容规则见 [CineHOT 命名](../../docs/branding/naming.md)，请从目标镜像提取配套升级脚本。

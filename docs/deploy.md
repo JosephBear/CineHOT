@@ -5,8 +5,8 @@
 需要一台装了 Docker（带 Compose）的机器。云服务器建议至少 2 核、4 GB 内存，构建镜像时要用到。
 
 ```bash
-git clone https://github.com/JosephBear/cinemahot.git
-cd cinemahot
+git clone https://github.com/JosephBear/CineHOT.git
+cd CineHOT
 node scripts/init-env.ts
 ```
 

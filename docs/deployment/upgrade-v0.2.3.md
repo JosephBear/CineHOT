@@ -41,7 +41,7 @@ dc() { sudo docker compose -f /opt/cinemahot/compose.yml "$@"; }
 
 ```bash
 rm -rf /private/tmp/cinemahot-v0.2.3
-gh repo clone JosephBear/cinemahot /private/tmp/cinemahot-v0.2.3 -- --branch v0.2.3 --depth 1
+gh repo clone JosephBear/CineHOT /private/tmp/cinemahot-v0.2.3 -- --branch v0.2.3 --depth 1
 cd /private/tmp/cinemahot-v0.2.3
 cat VERSION
 git rev-parse HEAD

@@ -49,4 +49,4 @@ echo "== 8 worker 近 1 小时错误（去重）"
 dc logs --since 1h worker 2>&1 | grep -i '"level":"error"' | grep -oE '"message":"[^"]{0,140}' | sort | uniq -c | sort -rn | head -12
 echo "== 9 备份与镜像"
 ls -1d "$dir"/backups/* 2>/dev/null | tail -3
-docker image ls --format '{{.Repository}}:{{.Tag}} {{.CreatedSince}}' | grep cinemahot-app
+docker image ls --format '{{.Repository}}:{{.Tag}} {{.CreatedSince}}' | grep -E 'cine(ma)?hot-app'

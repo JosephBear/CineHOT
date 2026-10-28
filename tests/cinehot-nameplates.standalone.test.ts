@@ -9,7 +9,7 @@ import { test } from "node:test";
 import sharp from "sharp";
 
 test("the nameplate generator renders every edition without downloading a font package", async () => {
-  const dir = mkdtempSync(path.join(tmpdir(), "cinemahot-nameplates-"));
+  const dir = mkdtempSync(path.join(tmpdir(), "cinehot-nameplates-"));
   try {
     execFileSync(process.execPath, [fileURLToPath(new URL("../scripts/nameplates.ts", import.meta.url))], { cwd: dir, stdio: "pipe" });
     for (const name of ["daily", "weekly", "monthly", "archive"]) {

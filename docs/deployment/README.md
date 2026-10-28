@@ -15,8 +15,8 @@
 以下命令从私有仓库取得指定版本，需要使用有该仓库读取权限的 GitHub 账号认证：
 
 ```sh
-git clone https://github.com/JosephBear/cinemahot.git
-cd cinemahot
+git clone https://github.com/JosephBear/CineHOT.git
+cd CineHOT
 git checkout v0.2.0
 node scripts/init-env.ts
 ```

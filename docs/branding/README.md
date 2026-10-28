@@ -1,6 +1,6 @@
 # CineHOT 本地品牌资源
 
-导航左上角是摄影机图标（两个片盘、机身、遮光斗，机身上的录制灯用 `--hot` 色，对应 Cinehot 的“hot”）加大字 Cinehot；电脑侧栏在 Cinehot 下面一行显示中文站名“全球影像动态”，手机顶栏空间不够，只显示图标和 Cinehot。静态站点图标及加载动画继续使用胶片卷图形。
+导航左上角是摄影机图标（两个片盘、机身、遮光斗，机身上的录制灯用 `--hot` 色，对应 CineHOT 的“hot”）加大字 CineHOT；电脑侧栏在 CineHOT 下面一行显示中文站名“全球影像动态”，手机顶栏空间不够，只显示图标和 CineHOT。静态站点图标及加载动画继续使用胶片卷图形。
 
 - `site/brand/Logo.tsx`：摄影机图标与站名（品牌名取 `SITE.nameEn`）；胶片卷仅作为加载动画。
 - `site/brand/logo.svg`：512 × 512 矢量图标。
@@ -17,3 +17,5 @@ node scripts/nameplates.ts
 默认使用仓库已有的 Noto Sans SC Bold 字体，不需要网络下载或安装系统字体。字体仍遵循 `assets/og-fonts/LICENSE` 中的 SIL Open Font License。若传入 Fontsource Noto Sans SC 包目录，仍可按原来的方式生成 Black 字重报头。
 
 修改矢量图标后，可通过项目现有 Sharp 依赖生成对应尺寸 PNG；ICO 包含相同图形的 32 像素 PNG。修改品牌资源后重新构建前端，以更新资源文件名及缓存。
+
+命名及已有部署的兼容说明见 [CineHOT 命名](naming.md)。

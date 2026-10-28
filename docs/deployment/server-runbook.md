@@ -89,13 +89,13 @@ sudo docker compose version
 下面使用已经配置好 SSH 认证的示例：
 
 ```bash
-git clone --branch v0.2.0 --depth 1 git@github.com:JosephBear/cinemahot.git "$HOME/cinemahot"
+git clone --branch v0.2.0 --depth 1 git@github.com:JosephBear/CineHOT.git "$HOME/cinemahot"
 cd "$HOME/cinemahot"
 cat VERSION
 git rev-parse HEAD
 ```
 
-如果负责人已有安全配置的 HTTPS 认证，也可将仓库地址换为 `https://github.com/JosephBear/cinemahot.git`。
+如果负责人已有安全配置的 HTTPS 认证，也可将仓库地址换为 `https://github.com/JosephBear/CineHOT.git`。
 
 **目的：** 固定到经过验证的版本，不在部署过程中意外使用变化中的代码。
 
@@ -554,8 +554,8 @@ sudo docker compose up -d worker
 
 ## 官方资料与项目入口
 
-- [CineHOT v0.2.0 发布记录](https://github.com/JosephBear/cinemahot/releases/tag/v0.2.0)
-- [CineHOT 文档导航](https://github.com/JosephBear/cinemahot/tree/main/docs)
+- [CineHOT v0.2.0 发布记录](https://github.com/JosephBear/CineHOT/releases/tag/v0.2.0)
+- [CineHOT 文档导航](https://github.com/JosephBear/CineHOT/tree/main/docs)
 - [Docker 在 Ubuntu 上安装](https://docs.docker.com/engine/install/ubuntu/)
 - [Docker Compose 单机生产部署](https://docs.docker.com/compose/how-tos/production/)
 - [GitHub 部署密钥](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys)

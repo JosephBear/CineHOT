@@ -19,8 +19,8 @@ ARRI 与 Blackmagic 的列表只提供日期，按 UTC 日值记录，没有推�
 执行只读核验，不会导入数据库、调用模型或调用付费服务：
 
 ```sh
-node scripts/check-cinemahot-sources.ts
-node scripts/check-cinemahot-sources.ts --ids web-arri-news,web-blackmagic-news,web-cinehello,rss-wandering-dp,rss-team-deakins
+node scripts/check-cinehot-sources.ts
+node scripts/check-cinehot-sources.ts --ids web-arri-news,web-blackmagic-news,web-cinehello,rss-wandering-dp,rss-team-deakins
 ```
 
 `industry/sources.json` 仅在首次启动导入。已有部署可以运行 `node --env-file=.env scripts/seed.ts` 添加新 ID；它不会覆盖后台修改过的配置。修改网页源码后应重新构建前端。
@@ -121,7 +121,7 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 | MiniMax／海螺 | `web-minimax-hailuo` | `json-minimax-news` | JSON列表，官方新闻接口 | https://www.minimax.io/api/news?page=1&locale=en |
 | 字节跳动 Seed | `web-bytedance-seed` | `json-seed-updates` | JSON列表，首页 `window._ROUTER_DATA` 的最新动态；过滤招聘 | https://seed.bytedance.com/zh/ |
 
-验证：MiniMax、Seed、国家电影局在本机直接联网通过 `scripts/check-cinemahot-sources.ts`；其余8个在本机解析到私网地址（代理的fake-IP），被SSRF检查拦下，改为用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。正式运行需要可用的出网条件（见[部署](../deploy.md)中的 `EGRESS_PROXY_URL`），以后台运行记录为准。
+验证：MiniMax、Seed、国家电影局在本机直接联网通过 `scripts/check-cinehot-sources.ts`；其余8个在本机解析到私网地址（代理的fake-IP），被SSRF检查拦下，改为用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。正式运行需要可用的出网条件（见[部署](../deploy.md)中的 `EGRESS_PROXY_URL`），以后台运行记录为准。
 
 仍为`external`的8个：
 
@@ -170,7 +170,7 @@ xAI补充核对了官方公开控制台变更记录 `https://x.ai/api/changelog`
 
 2026-10-23 按两轮人工标注移出蜂鸟网（`web-fengniao-news`）、色影无忌（`web-xitek-news`）、NYU Tisch（`web-nyu-tisch-news`）、NFTS（`web-nfts-news`）、Unreal Engine Film & Television（`rss-unreal-film`），依据见[信源评审记录](reviews.md)；同日移出自 2026-10-18 起一直拒绝采集程序（HTTP 403）的 The ASC 订阅（`rss-asc`，ASC 内容由 `rss-asc-gnews`、`rss-yt-asc` 覆盖）和 CineMontage（`rss-cinemontage`）。已有部署的数据库不会因此自动变化，按升级说明处理。
 
-验证：广电总局、上海国际电影节，以及已移出的蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinemahot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
+验证：广电总局、上海国际电影节，以及已移出的蜂鸟网、色影无忌在本机联网通过 `scripts/check-cinehot-sources.ts`；其余在本机被fake-IP解析拦截，用当天下载的真实页面在本地回放，经同一套采集代码解析出标题、链接和日期。
 
 暂登记为`external`的8个：
 

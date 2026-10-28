@@ -1,4 +1,4 @@
-// 导航：摄影机图标 + 大字 Cinehot，下面一行中文站名；RingMark 保留为加载动画。
+// 导航：摄影机图标 + 大字 CineHOT，下面一行中文站名；RingMark 保留为加载动画。
 import { SITE } from "../site.ts";
 
 /** A cine camera: two reels on top, the body with its recording light (the "hot"), the matte box in front. */

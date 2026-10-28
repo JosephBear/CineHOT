@@ -33,7 +33,7 @@ jobs:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # shortcut: amd64 only (the VPS is x86); an ARM server needs a second platform here.
-          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinemahot-app:${GITHUB_REF_NAME}"
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinehot-app:${GITHUB_REF_NAME}"
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
           docker buildx build --platform linux/amd64 -f deploy/vps/Dockerfile -t "$image" --push .
           echo "pushed $image" >> "$GITHUB_STEP_SUMMARY"

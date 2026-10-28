@@ -1,6 +1,6 @@
 # 信源侦测
 
-为新信源找到能长期自动采集的入口，再交给 `scripts/check-cinemahot-sources.ts` 联网验证。这里的工具只读公开页面，不写数据库、不调用模型、不使用付费服务。
+为新信源找到能长期自动采集的入口，再交给 `scripts/check-cinehot-sources.ts` 联网验证。这里的工具只读公开页面，不写数据库、不调用模型、不使用付费服务。
 
 | 文件 | 作用 |
 |---|---|
@@ -29,7 +29,7 @@
 3. **联网验证**：
 
    ```sh
-   EGRESS_PROXY_URL=http://127.0.0.1:55435 node scripts/check-cinemahot-sources.ts --ids <新ID>
+   EGRESS_PROXY_URL=http://127.0.0.1:55435 node scripts/check-cinehot-sources.ts --ids <新ID>
    ```
 
    通过的标准：能读到条目，且条目有可信发布时间。列表无日期、靠详情页补日期的来源，脚本会读前两条的详情页。

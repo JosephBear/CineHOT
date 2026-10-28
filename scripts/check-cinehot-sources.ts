@@ -1,5 +1,5 @@
 // Read-only source validation: no seeding, database writes, models or paid services.
-// node scripts/check-cinemahot-sources.ts [--ids web-arri-news,web-blackmagic-news,web-cinehello]
+// node scripts/check-cinehot-sources.ts [--ids web-arri-news,web-blackmagic-news,web-cinehello]
 import { readFileSync } from "node:fs";
 import { assertSupportedConfig } from "@aihot/backend/sources/config-keys";
 import { fetchRss } from "@aihot/backend/sources/rss";

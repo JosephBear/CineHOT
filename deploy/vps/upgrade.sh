@@ -3,14 +3,14 @@
 # pull first, then stop, back up, switch .env and compose.yml to the version, migrate, start api and web,
 # smoke-check, start the worker. A version's own extra steps live in docs/deployment/upgrade-<版本>.md.
 # Fetch this script from the image itself, so it always matches the version:
-#   v=v0.3.0; img=ghcr.io/josephbear/cinemahot-app:$v
+#   v=<已在新镜像仓库发布的版本标签>; img=ghcr.io/josephbear/cinehot-app:$v
 #   sudo docker pull $img && sudo docker run --rm --entrypoint cat $img deploy/vps/upgrade.sh > upgrade.sh
 #   sudo bash upgrade.sh $v
 set -euo pipefail
 v="${1:?usage: upgrade.sh v0.3.0}"
 [[ "$v" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "版本号格式应为 v0.3.0" >&2; exit 1; }
 dir=/opt/cinemahot
-image="ghcr.io/josephbear/cinemahot-app:$v"
+image="ghcr.io/josephbear/cinehot-app:$v"
 cd "$dir"
 dc() { docker compose -f "$dir/compose.yml" "$@"; }
 set_env() { sed -i "/^$1=/d" .env && echo "$1=$2" >> .env; }
