@@ -32,6 +32,19 @@ node --env-file=.env scripts/label-selection.ts export                          
 4. 补充其他信源、中文媒体、影展/协会及难例；复核分级与日期。已有 development/holdout 划分仅便于组织，不代表样本已独立、已去重或已完成盲测。相同事件应放在同一份中。
 5. 将已完成条目整理为 `docs/selection.md` 规定的 `.data/gold.jsonl`：保留原始标题与日期，补齐实际阅读材料，写入 `gold.decision`；不要将这里的扁平待标注 JSONL 直接当作评测输入。
 
+## 用线上已打的分做离线校准（不调用模型）
+
+线上每篇资料的两次评分已经存在 `analyses` 里。直接标注这些资料，就能在任意门槛下算查准率和查全率，不用再花模型费用；只有改评分提示词时才需要重跑 `eval-selection.ts`。
+
+```sh
+# 只读。DATABASE_URL 指向线上库（例如先用 ssh -L 15432:127.0.0.1:5432 把服务器的 Postgres 转到本机）
+DATABASE_URL=postgres://…@127.0.0.1:15432/… node --env-file=.env scripts/label-selection.ts collect-db --days 60 --max 400
+node --env-file=.env scripts/label-selection.ts serve      # 标注
+node --env-file=.env scripts/label-selection.ts offline    # 各门槛的查准率、查全率、F1，以及当前门槛下按信源统计的错例
+```
+
+`collect-db` 按分数段抽样：预筛拒绝、低分、门槛附近（占两份）、高分各取一部分，同一段内轮流取各信源，所以标注能同时看到漏选和误选。已标注的条目会保留。
+
 ## 之后的评测
 
 人工标注完成且明确启用模型、配置好服务商与预算后，使用已有评测脚本：
