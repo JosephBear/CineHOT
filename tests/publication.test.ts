@@ -1,7 +1,7 @@
 // Public scope and sync through the real api routes: a licence revocation or a withdrawal reaches
 // every exit, reports stop quoting withdrawn items, the hot board drops a withdrawn item at once, item
-// pages follow one rule, a withdrawal next to an unresolved selection leaves new snapshots at once, and
-// snapshots answer conditional requests.
+// pages follow one rule, a withdrawal next to an unresolved selection leaves new snapshots at once,
+// snapshots answer conditional requests, and browsing 全部动态 leaves out low scores that a search still finds.
 import { tag } from "./setup.ts";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
@@ -17,6 +17,11 @@ import { stopBoss } from "@aihot/backend/jobs/queue";
 import { publishArticle, republishSource } from "@aihot/backend/publication/publish";
 import { computeHotRanking } from "@aihot/backend/events/hot";
 import { latestHotRanking } from "@aihot/backend/publication/hot";
+import { itemFeed } from "@aihot/backend/publication/feeds";
+import { loadPool } from "@aihot/backend/publication/pool";
+import { digestReports } from "@aihot/backend/publication/story-evidence";
+import { v1Items } from "@aihot/backend/publication/v1";
+import { SELECTION } from "@aihot/industry/selection";
 import { loadItemShare } from "@aihot/backend/publication/og";
 import { buildApp } from "../apps/api/src/app.ts";
 
@@ -101,9 +106,10 @@ test("Markdown preserves a table's headings, caption, links, alignment and multi
   await sql`UPDATE articles SET language = 'en', body_html = ${table} WHERE id = ${id}`;
   await sql`INSERT INTO translations (article_id, revision, body_html, body_text, origin) VALUES (${id}, 1, ${table.replace('Benchmark results', '基准结果').replace('Model', '模型').replace('Score', '分数')}, '基准结果', 'source')`;
   await publishArticle(id, released());
-  const response = await get(`/items/${id}/markdown`);
-  assert.equal(response.status, 200);
-  const $ = cheerio.load(marked.parse(response.body, { async: false, gfm: true }));
+  const raw = await app.inject({ method: "GET", url: `/items/${id}/markdown` });
+  assert.equal(raw.statusCode, 200);
+  assert.equal(raw.headers.link, `<${config.siteUrl}/items/${id}>; rel="canonical"`);
+  const $ = cheerio.load(marked.parse(raw.body, { async: false, gfm: true }));
   assert.equal($('table').length, 2, 'both original and translated tables survive export');
   assert.deepEqual($('table th').toArray().map((node) => $(node).text()), ['模型', '分数', 'Model', 'Score']);
   assert.equal($('table th').last().attr('align'), 'right');
@@ -227,8 +233,8 @@ test("a withdrawn item leaves every report exit", async () => {
     sections: [{ label: "模型", items: [{ itemId: id, title: `LEAD-${T}`, summary: `QUOTED-${T}`, sourceUrl: `https://example.com/original-${T}`, sourceName: "Test" }] }],
     flashes: [],
   };
-  await sql`INSERT INTO reports (kind, key, window_start, window_end, content, generated_at, origin)
-            VALUES ('daily', ${REPORT_KEY}, now() - interval '1 day', now(), ${sql.json(content as never)}, now(), 'manual')
+  await sql`INSERT INTO reports (kind, key, window_start, window_end, content, generated_at)
+            VALUES ('daily', ${REPORT_KEY}, now() - interval '1 day', now(), ${sql.json(content as never)}, now())
             ON CONFLICT (kind, key) DO UPDATE SET content = EXCLUDED.content`;
   assert.ok((await get(`/api/v1/dailies/${REPORT_KEY}`)).body.includes(`QUOTED-${T}`), "the report quotes the item before");
 
@@ -592,4 +598,285 @@ test("a correction between snapshot pages arrives through changes after the fixe
   assert.deepEqual(JSON.parse(changes.body).changes.map((change: { op: string; item: { id: string; title: string } }) =>
     ({ op: change.op, id: change.item.id, title: change.item.title })), [{ op: 'upsert', id, title }],
   'the client applies the correction once after finishing the original snapshot');
+});
+
+// Failure modes: a low-score item still shows on the web list or its page count, v1 (which MCP reads), the
+// Agent list or the all RSS; an unscored item disappears; a search no longer reaches a low-score item.
+test("browsing 全部动态 on every exit leaves out items below the floor, which a search still finds", async () => {
+  const source = `${SOURCE}-floor`;
+  const at = new Date(Date.now() - 3600_000);
+  const floor = SELECTION.browseFloor;
+  const scores: Array<[string, number | null]> = [["low", floor - 1], ["edge", floor], ["unscored", null]];
+  const id = (name: string) => `${T}-floor-${name}`;
+  await sql`INSERT INTO sources (id, name, kind, tier, participation_mode, next_fetch_at) VALUES (${source}, 'Floor fixture', 'rss', 'T2', 'editorial', '2100-01-01')`;
+  for (const [name, score] of scores) {
+    await sql`INSERT INTO articles (id, source_id, identity_key, url, title, discovered_at, timeline_at, published_at)
+      VALUES (${id(name)}, ${source}, ${id(name)}, ${`https://example.org/${id(name)}`}, ${id(name)}, ${at}, ${at}, ${at})`;
+    await sql`INSERT INTO publications (article_id, title, summary, source_id, channel, url, discovered_at, timeline_at, published_at, sort_at,
+        eligible, selected, visibility, tags, score, search_text)
+      VALUES (${id(name)}, ${id(name)}, 'fixture summary', ${source}, 'news', ${`https://example.org/${id(name)}`}, ${at}, ${at}, ${at}, ${at},
+        true, false, 'public', ${[`${T}-floor`]}, ${score}, ${id(name)})`;
+    await sql`INSERT INTO pool_search (article_id, direct, body) VALUES (${id(name)}, ${id(name)}, '')`;
+  }
+  const shown = [id("edge"), id("unscored")];
+  const ours = (ids: string[]) => ids.filter((i) => i.startsWith(`${T}-floor-`)).sort();
+  const now = new Date();
+
+  const pool = await loadPool({ channel: "all", category: null, tag: `${T}-floor`, now });
+  assert.deepEqual(ours(pool.items.map((i) => i.id)), shown, "web list");
+  assert.equal(pool.total, shown.length, "web page count");
+  const v1 = await v1Items({ mode: "all", window: "24h", by: "timeline", category: null, q: null, limit: 100, cursor: null }, now);
+  assert.deepEqual(ours(v1.items.map((i) => i.id)), shown, "v1 and MCP");
+  const agent = await get("/api/v1/agent/latest?mode=all&limit=30");
+  assert.equal(agent.status, 200);
+  assert.ok(agent.body.includes(id("edge")) && !agent.body.includes(id("low")), "Agent latest");
+  const rss = await itemFeed("all", null, { now });
+  assert.ok(rss.includes(id("edge")) && rss.includes(id("unscored")) && !rss.includes(id("low")), "all RSS");
+
+  const found = await loadPool({ channel: "all", category: null, tag: `${T}-floor`, q: id("low"), now });
+  assert.deepEqual(ours(found.items.map((i) => i.id)), [id("low")], "web search");
+  const searched = await v1Items({ mode: "all", window: "24h", by: "timeline", category: null, q: id("low"), limit: 100, cursor: null }, now);
+  assert.deepEqual(ours(searched.items.map((i) => i.id)), [id("low")], "v1 search");
+});
+
+test("suppressOriginal keeps compliant Chinese copy selected while withholding raw titles, bodies, X posts, search text, old sync ledger payloads, and raw story evidence", async () => {
+  const minuteAgo = new Date(Date.now() - 60_000);
+  const rawToken = `RAWSECRET-${T}`;
+  const rawBody = `RAWBODY-${T} `.repeat(30);
+  const cleanTitle = `合规中文标题-${T}`;
+  const cleanSummary = `合规中文摘要-${T}`;
+
+  const { articleId: webId } = await upsertMaterial({
+    sourceId: SOURCE,
+    url: `https://example.com/${T}-suppress-web`,
+    title: `Original ${rawToken}`,
+    bodyText: rawBody,
+    bodyHtml: `<p>${rawBody}</p>`,
+    bodyStatus: "ok",
+    via: "fetch",
+    publishedAt: minuteAgo,
+    discoveredAt: minuteAgo,
+  });
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
+            VALUES (${webId}, 1, 'rule', 'pass', 'ai-models', ${`初版标题-${T}`}, ${`初版摘要-${T}`}, '推荐理由', 91, true,
+                    ${sql.json({ scope: "single", fact: { subject: "Lab", action: "released", object: "Model", conditions: rawToken, occurredAt: null, title: cleanTitle, evidence: rawToken } })})`;
+  await sql`INSERT INTO translations (article_id, lang, revision, title, body_html, body_text, complete, origin)
+            VALUES (${webId}, 'zh', 1, ${cleanTitle}, ${`<p>译文 ${rawBody}</p>`}, ${`译文 ${rawBody}`}, true, 'model')`;
+  // Capture a watermark before initial publication so changes replay both the initial and suppressed ledger entries.
+  const initCursor = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1000")).body).cursor as string;
+  await sql`UPDATE articles SET grouping_status = 'complete' WHERE id = ${webId}`;
+  await publishArticle(webId, released());
+
+  // Capture a snapshot cursor before suppressing original material, plus a mid-snapshot page cursor.
+  const [ secondId ] = [await article()];
+  await publishArticle(secondId, released());
+  const beforeCursor = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1000")).body).cursor as string;
+  const pagedFirst = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1")).body);
+
+  const storyPublicId = await storyFor(webId, "report");
+  const [storyRow] = await sql<{ id: number }[]>`SELECT id FROM stories WHERE public_id = ${storyPublicId}`;
+  await sql`UPDATE facts SET conditions = ${rawToken} WHERE story_id = ${storyRow!.id}`;
+  await sql`UPDATE fact_articles SET evidence = ${rawToken} WHERE article_id = ${webId}`;
+
+  await overrideFields(webId, {
+    fields: { title: cleanTitle, summary: cleanSummary, suppressOriginal: true },
+    reason: "suppress raw material",
+    version: 0,
+  }, "test");
+
+  const detailZh = JSON.parse((await get(`/api/site/items/${webId}`)).body);
+  assert.equal(detailZh.title, cleanTitle);
+  assert.equal(detailZh.summary, cleanSummary);
+  assert.equal(detailZh.originalTitle, null, "originalTitle withheld on detail");
+  assert.equal(detailZh.body, null, "stored translation withheld when suppressOriginal is set");
+
+  const detailOrig = JSON.parse((await get(`/api/site/items/${webId}?view=original`)).body);
+  assert.equal(detailOrig.originalTitle, null);
+  assert.equal(detailOrig.body, null, "raw original body withheld on original view");
+
+  const md = await get(`/items/${webId}/markdown`);
+  assert.equal(md.status, 200);
+  assert.ok(md.body.includes(cleanTitle) && md.body.includes(cleanSummary));
+  assert.ok(!md.body.includes(rawToken) && !md.body.includes(`RAWBODY-${T}`), "markdown omits original title and body");
+
+  assert.ok((await get("/feed.xml")).body.includes(cleanTitle), "remains in summary RSS");
+  const fullRss = (await get("/feed/full.xml")).body;
+  assert.ok(fullRss.includes(cleanTitle), "remains in full RSS item list with compliant summary");
+  assert.ok(!fullRss.includes(`RAWBODY-${T}`), "withholds body content:encoded from full RSS");
+
+  const v1 = JSON.parse((await get(`/api/v1/items?mode=selected&q=${encodeURIComponent(cleanTitle)}&limit=10`)).body);
+  const v1Item = v1.items.find((i: { id: string }) => i.id === webId);
+  assert.ok(v1Item, "searchable by compliant Chinese title");
+  assert.equal(v1Item.originalTitle, null);
+  assert.equal((await loadPool({ channel: "all", category: null, tag: null, q: rawToken })).items.length, 0, "raw original title is removed from search");
+  assert.equal((await loadPool({ channel: "all", category: null, tag: null, q: `RAWBODY-${T}` })).items.length, 0, "raw body is removed from search");
+
+  // Old cursors and mid-snapshot pages must never replay the pre-suppression raw originalTitle.
+  const changesFromInit = JSON.parse((await get(`/api/v1/selected/changes?cursor=${encodeURIComponent(initCursor)}&limit=100`)).body);
+  const webChanges = changesFromInit.changes.filter((c: { item?: { id: string }; id?: string }) => (c.item?.id ?? c.id) === webId);
+  assert.ok(webChanges.length >= 2, "both ledger entries are walked");
+  for (const c of webChanges) {
+    assert.equal(c.item?.originalTitle ?? null, null, "historical ledger replay never exposes pre-suppression originalTitle");
+    assert.equal(c.item?.title, cleanTitle);
+  }
+  const changesAfterBefore = JSON.parse((await get(`/api/v1/selected/changes?cursor=${encodeURIComponent(beforeCursor)}`)).body);
+  const latestChange = changesAfterBefore.changes.find((c: { item?: { id: string } }) => c.item?.id === webId);
+  assert.equal(latestChange?.item?.originalTitle, null);
+  assert.equal(latestChange?.item?.title, cleanTitle);
+
+  if (pagedFirst.nextPage) {
+    const pagedRest = JSON.parse((await get(`/api/v1/selected/snapshot?fields=default&limit=1000&page=${encodeURIComponent(pagedFirst.nextPage)}`)).body);
+    const inRest = pagedRest.items.find((i: { id: string }) => i.id === webId);
+    if (inRest) assert.equal(inRest.originalTitle, null, "mid-snapshot continuation redacts suppressed items at once");
+  }
+
+  const evidence = await digestReports(sql, [storyRow!.id]);
+  const ev = evidence.find((r) => r.title === cleanTitle);
+  assert.ok(ev, "story evidence still includes compliant Chinese report");
+  assert.equal(ev.evidence, null);
+  assert.equal(ev.fact_conditions, null);
+  assert.equal(ev.structured_fact, null);
+
+  // X post with raw text, media, and quoted post also withholds its post payload when analysis sets suppressOriginal.
+  const xSource = `${SOURCE}-x`;
+  await sql`INSERT INTO sources (id, name, kind, tier, participation_mode, next_fetch_at)
+            VALUES (${xSource}, 'Test X', 'x_search', 'T1', 'editorial', '2100-01-01')
+            ON CONFLICT (id) DO NOTHING`;
+  const { articleId: xId } = await upsertMaterial({
+    sourceId: xSource,
+    url: `https://x.com/example/status/999001`,
+    title: `@example: ${rawToken}`,
+    bodyText: `Post ${rawToken}`,
+    bodyStatus: "pending",
+    via: "fetch",
+    publishedAt: minuteAgo,
+    discoveredAt: minuteAgo,
+    xPost: {
+      id: "999001",
+      text: `Post ${rawToken}`,
+      authorHandle: "example",
+      authorName: "Example",
+      media: [{ kind: "image", url: "https://pbs.twimg.com/media/raw.jpg", width: 800, height: 600 }],
+      quoted: { url: "https://x.com/other/status/888001", authorHandle: "other", authorName: "Other", text: `Quoted ${rawToken}` },
+    } as never,
+  });
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
+            VALUES (${xId}, 1, 'model', 'pass', 'ai-products', ${`X合规标题-${T}`}, ${`X合规摘要-${T}`}, '理由', 88, true,
+                    ${sql.json({ suppressOriginal: true })})`;
+  await sql`UPDATE articles SET grouping_status = 'complete' WHERE id = ${xId}`;
+  await publishArticle(xId, released());
+
+  const xDetail = JSON.parse((await get(`/api/site/items/${xId}`)).body);
+  assert.equal(xDetail.title, `X合规标题-${T}`);
+  assert.equal(xDetail.x, null, "X post text, media, and quoted post withheld");
+  assert.equal(xDetail.body, null, "X post body withheld");
+  assert.equal(xDetail.originalTitle, null);
+  const xList = await loadPool({ channel: "x", category: null, tag: null, q: `X合规标题-${T}` });
+  assert.equal(xList.items.find((i) => i.id === xId)?.x ?? null, null, "X card in pool also withholds post");
+});
+
+test("an analysis marked withdrawn publishes directly as withdrawn unless an admin overrides visibility", async () => {
+  const minuteAgo = new Date(Date.now() - 60_000);
+  const { articleId } = await upsertMaterial({
+    sourceId: SOURCE,
+    url: `https://example.com/${T}-auto-withdrawn`,
+    title: `Blocked ${T}`,
+    bodyText: "blocked body",
+    bodyHtml: "<p>blocked body</p>",
+    bodyStatus: "ok",
+    via: "fetch",
+    publishedAt: minuteAgo,
+    discoveredAt: minuteAgo,
+  });
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, title_zh, summary_zh, score, selected, output)
+            VALUES (${articleId}, 1, 'model', 'block', '', '', null, false, ${sql.json({ withdrawn: true })})`;
+  await publishArticle(articleId, released());
+
+  assert.equal((await get(`/api/site/items/${articleId}`)).status, 404, "detail returns 404 when analysis sets withdrawn");
+  const [pub] = await sql<{ visibility: string }[]>`SELECT visibility FROM publications WHERE article_id = ${articleId}`;
+  assert.equal(pub!.visibility, "withdrawn");
+});
+
+test("restoring normal display after a clean update never re-exposes pre-suppression ledger payloads", async () => {
+  const minuteAgo = new Date(Date.now() - 60_000);
+  const leakedRawTitle = `LEAKED-V1-RAW-${T}`;
+  const cleanRawTitle = `Clean Updated Raw Title ${T}`;
+  const cleanZhV2 = `压制期合规中文标题-${T}`;
+  const cleanZhV3 = `更新后合规中文标题-${T}`;
+
+  const anchorId = await article();
+  await publishArticle(anchorId, released());
+  const cursorBeforeV1 = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1000")).body).cursor as string;
+
+  // v1: initially published with an offending raw originalTitle before suppression.
+  const { articleId } = await upsertMaterial({
+    sourceId: SOURCE,
+    url: `https://example.com/${T}-restore-after-suppress`,
+    title: leakedRawTitle,
+    bodyText: "initial raw body",
+    bodyHtml: "<p>initial raw body</p>",
+    bodyStatus: "ok",
+    via: "fetch",
+    publishedAt: minuteAgo,
+    discoveredAt: minuteAgo,
+  });
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
+            VALUES (${articleId}, 1, 'model', 'pass', 'ai-models', ${`初版未压制标题-${T}`}, ${`初版摘要-${T}`}, '理由', 92, true)`;
+  await sql`UPDATE articles SET grouping_status = 'complete' WHERE id = ${articleId}`;
+  await publishArticle(articleId, released());
+
+  // Ensure another item sorts before articleId if needed, and capture a snapshot page token at the v1 watermark.
+  const lowId = `0000-${T}-first`;
+  await sql`INSERT INTO articles (id, source_id, identity_key, url, title, grouping_status, discovered_at, timeline_at, published_at)
+            VALUES (${lowId}, ${SOURCE}, ${lowId}, ${`https://example.com/${lowId}`}, 'Anchor first', 'complete', ${minuteAgo}, ${minuteAgo}, ${minuteAgo})`;
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected)
+            VALUES (${lowId}, 1, 'model', 'pass', 'ai-models', 'Anchor first zh', '摘要', '理由', 90, true)`;
+  await publishArticle(lowId, released());
+  const v1Page1 = JSON.parse((await get("/api/v1/selected/snapshot?fields=default&limit=1")).body);
+  assert.ok(v1Page1.nextPage);
+
+  // v2: downgraded to suppressOriginal = true.
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
+            VALUES (${articleId}, 1, 'model', 'pass', 'ai-models', ${cleanZhV2}, ${`压制期摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: true })})`;
+  await publishArticle(articleId, released());
+
+  // v3: source updates its raw title/body to clean text, passes review, and restores suppressOriginal = false.
+  await sql`UPDATE articles SET revision = 2, title = ${cleanRawTitle}, body_text = 'clean updated body', body_html = '<p>clean updated body</p>' WHERE id = ${articleId}`;
+  await sql`INSERT INTO analyses (article_id, input_revision, origin, relevance, category, title_zh, summary_zh, reason_zh, score, selected, output)
+            VALUES (${articleId}, 2, 'model', 'pass', 'ai-models', ${cleanZhV3}, ${`更新后摘要-${T}`}, '理由', 92, true, ${sql.json({ suppressOriginal: false })})`;
+  await publishArticle(articleId, released());
+
+  const [pubAfter] = await sql<{ suppress_original: boolean; original_title: string | null }[]>`
+    SELECT suppress_original, original_title FROM publications WHERE article_id = ${articleId}`;
+  assert.equal(pubAfter!.suppress_original, false);
+  assert.equal(pubAfter!.original_title, cleanRawTitle);
+
+  // Walking selected/changes one sequence at a time from before v1 must NEVER replay leakedRawTitle or v1 copy.
+  let cur = cursorBeforeV1;
+  const seenForArticle: Array<{ title: string; originalTitle: string | null }> = [];
+  for (let step = 0; step < 20; step++) {
+    const page = JSON.parse((await get(`/api/v1/selected/changes?cursor=${encodeURIComponent(cur)}&limit=1`)).body);
+    assert.ok(!JSON.stringify(page).includes(leakedRawTitle), "changes page must never leak pre-suppression raw title");
+    assert.ok(!JSON.stringify(page).includes(`初版未压制标题-${T}`), "changes page must never leak pre-suppression Chinese title");
+    for (const ch of page.changes) {
+      if (ch.op === "upsert" && ch.item.id === articleId) {
+        seenForArticle.push({ title: ch.item.title, originalTitle: ch.item.originalTitle });
+      }
+    }
+    cur = page.cursor;
+    if (!page.hasMore) break;
+  }
+  assert.ok(seenForArticle.length >= 3, "all three historical upsert sequences are walked");
+  for (const item of seenForArticle) {
+    assert.equal(item.title, cleanZhV3);
+    assert.equal(item.originalTitle, cleanRawTitle);
+  }
+
+  // Continuing the snapshot page token captured back at v1 watermark must also never leak leakedRawTitle.
+  const v1Rest = JSON.parse((await get(`/api/v1/selected/snapshot?fields=default&limit=1000&page=${encodeURIComponent(v1Page1.nextPage)}`)).body);
+  assert.ok(!JSON.stringify(v1Rest).includes(leakedRawTitle), "snapshot continuation must never leak pre-suppression raw title");
+  const snapItem = v1Rest.items.find((i: { id: string }) => i.id === articleId);
+  assert.ok(snapItem);
+  assert.equal(snapItem.title, cleanZhV3);
+  assert.equal(snapItem.originalTitle, cleanRawTitle);
 });

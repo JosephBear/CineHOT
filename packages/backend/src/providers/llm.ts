@@ -117,6 +117,7 @@ function isConnectFailure(error: unknown): boolean {
 
 function requestFor<S extends z.ZodType>(opts: ChatJsonOptions<S>, spec: ModelSpec) {
   const temperature = opts.temperature ?? 0.2;
+  // Never below 512: a smaller cap cut short structured answers down to an empty response (production, 2026-06-19).
   const maxTokens = Math.max(opts.maxTokens ?? 1500, 512) + (spec.reasoningTokens ?? 0);
   const userText = typeof opts.user === "string" ? opts.user : JSON.stringify(opts.user);
   const request: ReceiptRequest = {
@@ -213,6 +214,10 @@ async function chatOnce<S extends z.ZodType>(opts: ChatJsonOptions<S>, circuit =
         if (!json || typeof json !== "object" || Array.isArray(json)) throw new Error("Expected a response object");
       } catch {
         json = { unparsable: text.slice(0, 20000) };
+      }
+      const finishReason = (json.choices as Array<{ finish_reason?: string }> | undefined)?.[0]?.finish_reason;
+      if (finishReason === "content_filter" || finishReason === "sensitive") {
+        throw new ProviderRejectedError(`${spec.service} finish_reason=${finishReason}: content_filter`, 200, false, false);
       }
       const usage = (json.usage as Record<string, unknown> | undefined) ?? null;
       return {

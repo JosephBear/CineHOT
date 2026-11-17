@@ -1,7 +1,7 @@
 // Fixed renditions use the existing signed mode parameter. Responsive candidates reuse the same
 // mode as previews and full-size viewers, so identical pixels have one browser/CDN address.
 export const IMAGE_WIDTHS = {
-  avatar: 96, card: 336, thumb: 720, full: 1600, og: 1200,
+  avatar: 96, card: 336, thumb: 720, full: 1600,
   "avatar-48": 48,
   "image-1200": 1200,
 } as const;
@@ -15,3 +15,6 @@ export const RESPONSIVE_MODES = {
   body: ["thumb", "image-1200", "full"],
   hero: ["thumb", "image-1200", "full"],
 } as const satisfies Record<ResponsiveImageKind, readonly ProxyMode[]>;
+
+/** Renditions the pages also offer as AVIF (contracts' AVIF_MODE_SUFFIX): the responsive sets, not avatars. */
+export const AVIF_MODES: readonly ProxyMode[] = [...new Set([...RESPONSIVE_MODES.card, ...RESPONSIVE_MODES.body, ...RESPONSIVE_MODES.hero])];

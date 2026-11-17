@@ -67,7 +67,7 @@ async function collect() {
     while (next < sources.length) {
       const seed = sources[next++]!;
       if (seed.kind === "external") continue;
-      const source = { ...seed, first_party: seed.tier === "T1", enabled: true, cursor: null, fail_count: 0 } as SourceRow;
+      const source = { ...seed, enabled: true, cursor: null, fail_count: 0 } as SourceRow;
       try {
         assertSupportedConfig(source.kind, source.config);
         const raw = source.kind === "rss" ? (await fetchRss(source, { force: true })).candidates : source.kind === "json_list" ? await fetchJsonList(source) : await fetchWebList(source);

@@ -101,6 +101,9 @@ function rejectionDetail(body: string): { code: string; message: string } {
   };
 }
 
+// Codes from the vendors' references: https://help.aliyun.com/en/model-studio/error-code,
+// https://docs.bigmodel.cn/cn/api/api-code, https://help.openai.com/en/articles/5955604-troubleshooting-api-rate-limits-and-429-errors,
+// https://github.com/anomalyco/opencode/blob/8c173a8f3805d8e749d44311054b07e37a1b2ce1/packages/ai/src/provider-error.ts (GoUsageLimitError).
 /** Account or spending refusals, shared by live requests and their saved alert evidence. */
 export function providerAccessRefused(service: string, error: string): boolean {
   const http = /(?:^| )HTTP (\d{3})(?:: ?| )([\s\S]*)$/.exec(error);
@@ -132,6 +135,15 @@ export function providerSpendingRefused(service: string, error: string): boolean
   if (status === 402) return true;
   if (status !== 429) return false;
   return providerAccessRefused(service, error);
+}
+
+/**
+ * A provider's safety or content-inspection filter declined this input or output (Zhipu 1301,
+ * DashScope DataInspectionFailed, DeepSeek Content Exists Risk, OpenAI-compatible content_filter).
+ */
+export function providerContentRefused(error: unknown): boolean {
+  return failureKind(error) === "refused"
+    && /contentFilter|"1301"|DataInspectionFailed|data_inspection_failed|content_filter|Content Exists Risk/i.test((error as Error).message);
 }
 
 /** A temporary rate limit can pass; account/spending refusals need access restored first. */
@@ -207,19 +219,17 @@ async function stopUntil(tx: Db, key: string): Promise<number | null> {
   return Number.isFinite(until) && until > Date.now() ? until : null;
 }
 
-/** Record the stop an access refusal implies, and drop the ones that expired a day ago while here. */
+/** Record the stop an access refusal implies; refusedAt is on the database's clock, like the attempts' started_at. */
 async function stopForRefusal(tx: Db, key: string): Promise<void> {
-  const now = Date.now();
-  const until = new Date(now + PROVIDER_STOP_SECONDS * 1000).toISOString();
-  await tx`INSERT INTO settings (key, value, updated_by) VALUES (${key}, ${tx.json({ until, refusedAt: new Date(now).toISOString() })}, 'receipts')
+  const until = new Date(Date.now() + PROVIDER_STOP_SECONDS * 1000).toISOString();
+  await tx`INSERT INTO settings (key, value, updated_by) VALUES (${key}, jsonb_build_object('until', ${until}::text, 'refusedAt', now()), 'receipts')
            ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
-  await tx`DELETE FROM settings WHERE key LIKE 'provider.stop.%'
-           AND coalesce((value->>'until')::timestamptz, 'epoch') < now() - interval '1 day'`;
 }
 
-/** A received answer proves access is back: the stop can go. */
-async function clearStop(tx: Db, key: string): Promise<void> {
-  await tx`DELETE FROM settings WHERE key = ${key}`;
+/** An answer to a call sent after the refusal proves access is back; one already in flight may have had the last of the quota. */
+async function clearStop(tx: Db, key: string, attemptId: number): Promise<void> {
+  await tx`DELETE FROM settings WHERE key = ${key}
+           AND coalesce((value->>'refusedAt')::timestamptz, 'epoch') < (SELECT started_at FROM receipt_attempts WHERE id = ${attemptId})`;
 }
 
 async function checkBudget(tx: Db, service: string, model?: string | null): Promise<void> {
@@ -342,7 +352,7 @@ export async function paidRequest(req: ReceiptRequest, call: () => Promise<CallO
         latency_ms = ${Math.round(performance.now() - started)}, finished_at = now()
       WHERE id = ${attemptId}`;
     // A real answer is the only proof that access is back; it releases a stop without waiting for it.
-    await clearStop(tx, providerStopKey(req.service, req.model));
+    await clearStop(tx, providerStopKey(req.service, req.model), attemptId);
   });
   return { receiptId, response: outcome.response, reused: false };
 }
@@ -399,8 +409,10 @@ export async function releaseUnknownReceipt(db: Db, id: number, error: string): 
   return released ?? null;
 }
 
-export async function completeReceipt(db: Db, receiptId: number): Promise<void> {
+/** `storedElsewhere`: a top-level field of the answer the caller's write now keeps (embeddings: the vectors), dropped from the receipt. */
+export async function completeReceipt(db: Db, receiptId: number, storedElsewhere?: string): Promise<void> {
   await db`UPDATE receipts SET status = 'completed', completed_at = coalesce(completed_at, now()), updated_at = now() WHERE id = ${receiptId}`;
+  if (storedElsewhere) await db`UPDATE receipts SET response = response - ${storedElsewhere}::text WHERE id = ${receiptId}`;
 }
 
 /** Marks a received response that could not be used (e.g. unparsable) so a fresh attempt can be made. */

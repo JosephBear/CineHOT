@@ -85,15 +85,17 @@ function SiteShell({ changelogVersion, children }: { changelogVersion: string | 
   const [interactive, setInteractive] = useState(false);
   useEffect(() => setInteractive(true), []);
   return (
-    <div className="flex min-h-dvh">
+    // The desktop shell also opens on large phones held sideways, where the notch takes a side: the whole
+    // shell keeps clear of it (the phone shell does so through its gutters).
+    <div className="flex min-h-dvh lg:pl-[env(safe-area-inset-left)] lg:pr-[env(safe-area-inset-right)]">
       <NavigationProgress active={navigation.state === "loading"} />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[70] focus:rounded-control focus:bg-surface focus:px-3 focus:py-2">
         跳到正文
       </a>
       <Sidebar changelogVersion={changelogVersion} />
-      {/* Phone shell (≤ 960px): each page's top bar (PhoneBar), one centred column, the tab bar below.
+      {/* Phone shell (≤ 699px): each page's top bar (PhoneBar), one centred column, the tab bar below.
           Desktop: the page fills the main area up to the list width (--page-max-wide), centred beyond it. */}
-      <main id="main" className="min-w-0 flex-1 pb-[calc(72px+env(safe-area-inset-bottom))] lg:px-7 lg:pb-[72px] lg:pt-6">
+      <main id="main" className="min-w-0 flex-1 pb-[calc(72px+env(safe-area-inset-bottom))] lg:px-5 lg:pb-[72px] lg:pt-6 wide:px-7">
         <div className="mx-auto w-full max-w-[640px] pl-[var(--gutter-l)] pr-[var(--gutter-r)] lg:max-w-[var(--page-max-wide)] lg:px-0">
           {webModules().map((m) => m.root?.Top && <m.root.Top key={m.name} />)}
           {children}
@@ -120,7 +122,7 @@ export default function App() {
     document.addEventListener("touchstart", noop, { passive: true });
     return () => document.removeEventListener("touchstart", noop);
   }, []);
-  // The admin has its own chrome.
+  // The admin pages, the engine's and the modules', have their own chrome.
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return <Outlet />;
   return (
     <>
@@ -162,7 +164,13 @@ export function ErrorBoundary() {
       </div>
     </div>
   );
-  // Admin errors stay inside the admin's own chrome.
+  // Admin errors stay out of the site's shell too.
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return body;
-  return <SiteShell changelogVersion={site?.changelogVersion ?? null}>{body}</SiteShell>;
+  // The modules' parts after the page stay: a gray page's 404 is where someone on the preview list signs in.
+  return (
+    <>
+      <SiteShell changelogVersion={site?.changelogVersion ?? null}>{body}</SiteShell>
+      {webModules().map((m) => m.root?.Bottom && <m.root.Bottom key={m.name} />)}
+    </>
+  );
 }

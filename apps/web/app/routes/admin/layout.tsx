@@ -1,17 +1,24 @@
-import { motion } from "motion/react";
 import { Suspense } from "react";
-import { SITE } from "@aihot/site";
-import { Await, NavLink, Outlet, useLocation, useNavigation, type ShouldRevalidateFunction } from "react-router";
+import { ADMIN, SITE } from "@aihot/site";
+import { Await, data, NavLink, Outlet, useLocation, useNavigation, type ShouldRevalidateFunction } from "react-router";
 import type { Route } from "./+types/layout";
 import { RingMark } from "@aihot/site/brand/Logo.tsx";
 import { NavigationProgress } from "../../components/shell/Chrome";
 import type { AdminMe, AdminNavCounts } from "@aihot/contracts/admin";
 import { Toaster } from "../../features/admin/toast";
 import { adminGet } from "../../lib/admin.server";
-import type { AdminNavEntry } from "../../modules";
-import { webModules } from "../../site-modules";
+
+interface AdminNavEntry {
+  to: string;
+  label: string;
+  /** The badge: one of the navigation counts. */
+  count?: keyof AdminNavCounts;
+  tone?: "bad" | "accent";
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
+  // A site without admin pages (null ADMIN settings) has no admin API behind them either.
+  if (!ADMIN) throw data({ message: "not_found" }, { status: 404 });
   const counts = adminGet<AdminNavCounts>(request, "/api/admin/nav-counts").catch((): AdminNavCounts => ({}));
   const me = await adminGet<AdminMe>(request, "/api/admin/me");
   // Reset the badge boundaries so a navigation transition never keeps the old page waiting on them.
@@ -25,15 +32,12 @@ export const meta: Route.MetaFunction = () => [{ title: `${SITE.name} 后台` },
 
 export const headers: Route.HeadersFunction = () => ({ "Cache-Control": "no-store", "X-Robots-Tag": "noindex, nofollow", "X-Accel-Buffering": "no" });
 
-/** The admin navigation: the modules' own groups first, their content entries after 信源. */
 const nav = (): Array<{ group: string; items: AdminNavEntry[] }> => [
-  ...webModules().flatMap((m) => m.admin?.groups ?? []),
   {
     group: "内容",
     items: [
       { to: "/admin/content", label: "内容诊断" },
       { to: "/admin/sources", label: "信源", count: "sources", tone: "bad" },
-      ...webModules().flatMap((m) => m.admin?.content ?? []),
       { to: "/admin/feedback", label: "反馈", count: "feedback", tone: "accent" },
     ],
   },
@@ -51,7 +55,7 @@ const nav = (): Array<{ group: string; items: AdminNavEntry[] }> => [
 
 type Counts = Pick<Route.ComponentProps["loaderData"], "counts" | "countsKey">;
 
-function NavCount({ counts, countsKey, name, className }: Counts & { name: string | undefined; className: string }) {
+function NavCount({ counts, countsKey, name, className }: Counts & { name: keyof AdminNavCounts | undefined; className: string }) {
   if (!name) return null;
   return (
     <Suspense key={countsKey} fallback={null}>
@@ -64,14 +68,14 @@ function NavCount({ counts, countsKey, name, className }: Counts & { name: strin
 
 function NavItem({ to, label, count, counts, countsKey, tone }: AdminNavEntry & Counts) {
   return (
-    <NavLink to={to} className="group relative block">
-      {({ isActive }) => (
-        <span className={`relative flex items-center justify-between rounded-control px-3 py-[7px] text-[13.5px] transition-colors ${isActive ? "font-medium text-ink" : "text-ink-3 hover:text-ink"}`}>
-          {isActive && <motion.span layoutId="admin-nav" className="absolute inset-0 rounded-control bg-surface shadow-sm ring-1 ring-line" transition={{ type: "spring", stiffness: 520, damping: 38 }} />}
-          <span className="relative">{label}</span>
-          <NavCount counts={counts} countsKey={countsKey} name={count} className={`num relative min-w-5 rounded-full px-1.5 text-center text-[11px] font-semibold leading-5 ${tone === "bad" ? "bg-hot text-white" : "bg-accent-soft text-accent"}`} />
-        </span>
-      )}
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `flex items-center justify-between rounded-control px-3 py-[7px] text-[13.5px] transition-colors ${isActive ? "bg-surface font-medium text-ink shadow-sm ring-1 ring-line" : "text-ink-3 hover:text-ink"}`
+      }
+    >
+      <span>{label}</span>
+      <NavCount counts={counts} countsKey={countsKey} name={count} className={`num min-w-5 rounded-full px-1.5 text-center text-[11px] font-semibold leading-5 ${tone === "bad" ? "bg-hot text-white" : "bg-accent-soft text-accent"}`} />
     </NavLink>
   );
 }
@@ -119,7 +123,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
             <span className="text-[14px] font-semibold text-ink">{`${SITE.name} 后台`}</span>
             {me.dev && <span className="rounded-mark bg-amber/15 px-1.5 text-[11px] font-medium text-amber">开发</span>}
           </div>
-          <nav className="no-scrollbar flex gap-1 overflow-x-auto px-3 py-2">
+          <nav className="scrollbar-none flex gap-1 overflow-x-auto px-3 py-2">
             {flat.map((i) => {
               const active = location.pathname === i.to || location.pathname.startsWith(`${i.to}/`);
               return (

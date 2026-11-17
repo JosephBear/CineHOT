@@ -13,7 +13,8 @@ import { publicSourceName } from "./rules.ts";
 import { latestHotRanking, rankingExtras } from "./hot.ts";
 import { storyTexts } from "./story-text.ts";
 import { topicsOfStory } from "./topics.ts";
-import { itemUrl, storyUrl, v1StoryApiUrl, v1StoryUrl } from "./links.ts";
+import { mentionsIn } from "./mentions.ts";
+import { itemUrl, storyUrl, v1StoryApiUrl } from "./links.ts";
 
 export type StoryLookup = { kind: "found"; storyId: number; publicId: string } | { kind: "merged"; target: string } | { kind: "not_found" };
 
@@ -35,15 +36,14 @@ export async function resolveStory(publicId: string): Promise<StoryLookup> {
     targetId = alias.story_id;
   }
   if (targetId) {
-    // Follow merge chains to the surviving story.
-    for (let i = 0; i < 10; i++) {
-      const rows: Array<{ id: number; public_id: string; merged_into: number | null }> = await sql`SELECT id, public_id::text, merged_into FROM stories WHERE id = ${targetId}`;
-      const t = rows[0];
-      if (!t) return { kind: "not_found" };
-      if (!t.merged_into) return { kind: "merged", target: t.public_id };
-      targetId = t.merged_into;
-    }
-    return { kind: "not_found" };
+    const [target] = await sql<{ public_id: string }[]>`
+      WITH RECURSIVE chain AS (
+        SELECT id, public_id, merged_into FROM stories WHERE id = ${targetId}
+        UNION ALL
+        SELECT s.id, s.public_id, s.merged_into FROM stories s JOIN chain c ON s.id = c.merged_into
+      )
+      SELECT public_id::text FROM chain WHERE merged_into IS NULL`;
+    return target ? { kind: "merged", target: target.public_id } : { kind: "not_found" };
   }
   return { kind: "found", storyId: s!.id, publicId };
 }
@@ -168,6 +168,7 @@ export async function loadStoryDetail(storyId: number, now = new Date()): Promis
   const latestAt = latest.at;
   // Without a digest or a summary of its own, the story opens with its first development's representative report.
   const origin = developments[developments.length - 1]?.representative;
+  const excerpt = !text.digest && !text.summary && origin?.summary ? { text: origin.summary, sourceName: publicSourceName(origin.source_name) } : null;
   return {
     publicId: s.public_id,
     title: s.title,
@@ -179,7 +180,7 @@ export async function loadStoryDetail(storyId: number, now = new Date()): Promis
     digest: text.digest,
     digestUpdatedAt: text.digestUpdatedAt?.toISOString() ?? null,
     summary: text.summary,
-    excerpt: !text.digest && !text.summary && origin?.summary ? { text: origin.summary, sourceName: publicSourceName(origin.source_name) } : null,
+    excerpt,
     latest: latest.title,
     latestReport: { id: latest.id },
     whyHot: {
@@ -195,6 +196,7 @@ export async function loadStoryDetail(storyId: number, now = new Date()): Promis
     heat: heat.map((h): HeatPoint => ({ hour: h.hour.toISOString(), heat: Number(h.heat), participants: h.participants })),
     related: related.map((r) => ({ publicId: r.public_id, title: r.title, relation: r.relation })),
     topics,
+    mentions: await mentionsIn([text.digest ?? text.summary ?? excerpt?.text]),
   };
 }
 
@@ -234,7 +236,7 @@ async function queryHotCovers({ entries }: HotRanking) {
       SELECT m FROM jsonb_array_elements(coalesce(a.media, '[]'::jsonb)) m
       WHERE m->>'kind' = 'image' AND coalesce((m->>'width')::numeric, 800) >= 480 LIMIT 1
     ) img
-    WHERE p.story_id = ANY(${ids}::bigint[]) AND ${listedCondition(at)} AND p.body_mode <> 'summary'
+    WHERE p.story_id = ANY(${ids}::bigint[]) AND ${listedCondition(at)} AND p.body_mode <> 'summary' AND NOT p.suppress_original
     ORDER BY p.story_id, (p.article_id::text = ANY(${reps}::text[])) DESC, p.first_party DESC, p.selected DESC, coalesce(p.score, 0) DESC, p.article_id`;
   const covers = new Map(rows.map((c) => [Number(c.story_id), { url: c.m.url, width: typeof c.m.width === "number" ? c.m.width : null, height: typeof c.m.height === "number" ? c.m.height : null }]));
   return covers;
@@ -289,7 +291,7 @@ export async function v1HotTopics() {
     const links = {
       aihot: e.representativeItemId ? itemUrl(e.representativeItemId) : storyUrl(e.storyPublicId),
       original: e.representativeUrl ?? storyUrl(e.storyPublicId),
-      story: v1StoryUrl(e.storyPublicId),
+      story: storyUrl(e.storyPublicId),
     };
     return {
       rank: e.rank,

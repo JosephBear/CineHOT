@@ -1,6 +1,6 @@
-// What a module's web.tsx (modules/<name>/web.tsx) may add to the engine's pages: navigation entries, admin
-// entries and the parts of a few pages that leave room for them. Its own pages come from its module.ts
-// (routes.ts). The site's list is read through site-modules.ts.
+// What a module's web.tsx (modules/<name>/web.tsx) may add to the engine's pages: navigation entries and
+// the parts of a few pages that leave room for them. Its own pages come from its module.ts (routes.ts).
+// The site's list is read through site-modules.ts.
 //
 // Every page loads web.tsx. A part only one page draws is given as its loader (`Part`), so it ships with that
 // page's code: the page waits for its parts while its own code loads (site-modules.ts `loadParts`) and then
@@ -8,14 +8,6 @@
 import type { ComponentType, ReactNode } from "react";
 import type { TopicSummary } from "@aihot/contracts/site";
 import type { NavItem, Tab } from "./components/shell/nav";
-
-export interface AdminNavEntry {
-  to: string;
-  label: string;
-  /** The badge: a key of the admin's navigation counts (its server module's admin.counts). */
-  count?: string;
-  tone?: "bad" | "accent";
-}
 
 export type Part<T> = () => Promise<{ default: T }>;
 
@@ -25,8 +17,6 @@ export interface AgentPanelProps {
   base: string;
   /** The value of the tag on what visitors copy (AgentPart.tag) as it is now; null on a site without one. */
   tag: string | null;
-  /** The page's time (ms), read on the server like `base`: what depends on it reads the same in the browser. */
-  now: number;
 }
 
 /** A way in on the agent page: a card in its chooser and a tab (`?tab=<key>`) with its panel. */
@@ -113,27 +103,22 @@ export interface TopicPagePart {
   news: (data: unknown) => string[];
 }
 
+/** Where the reader's account shows: the 我的 page's first row, the desktop sidebar's foot, the 收藏 page's note, the 卡册. */
+export type AccountPlace = "me" | "sidebar" | "starred" | "album";
+
 export interface WebModule {
   /** Its folder under modules/. */
   name: string;
+  /** The reader's account, from a module that offers one, drawn where the place asks (before hydration: signed out). */
+  account?: ComponentType<{ place: AccountPlace }>;
+  /** The email of the reader signed in in this browser, or null (read after hydration). */
+  signedInEmail?: () => string | null;
   /** Desktop sidebar: entries in a section between the engine's 内容 and 更多; modules naming the same section share it. */
   sidebar?: { section: string; items: NavItem[] };
   /** Phone tab bar: tabs before 我的. */
   tabs?: Tab[];
   /** The 我的 page: rows ahead of the engine's tools. */
   tools?: Array<{ to: string; label: string; icon: ReactNode }>;
-  admin?: {
-    /** Navigation groups of its own, ahead of the engine's. */
-    groups?: Array<{ group: string; items: AdminNavEntry[] }>;
-    /** Entries in the 内容 group, after the engine's 信源. */
-    content?: AdminNavEntry[];
-    /** Its part of the runs page, drawn from what its server module's admin.runs returns. */
-    runs?: Part<ComponentType<{ data: unknown }>>;
-    /** The page the admin opens on instead of the sources (routes/admin/index.tsx); the first module's wins. */
-    landing?: string;
-    /** Where the model prices are kept: the models page links its 未定价 there (routes/admin/models.tsx). */
-    prices?: string;
-  };
   /** Parts of every public page (root.tsx); the admin has its own chrome and gets none of them. */
   root?: {
     /** An inline script in <head>, after the theme's: it runs before the page paints. */
@@ -156,6 +141,14 @@ export interface WebModule {
    * keeps none of its own ({ content, email, pageUrl }), and cleared once its own is saved or sent.
    */
   feedbackDraft?: { read: () => unknown; clear: () => void };
+  /**
+   * The feedback page opened from one of its buttons, a link carrying `state: { feedbackFor: <its name> }`: the
+   * heading, the line under it, the example in the box and the tips beside the form, in place of the site's.
+   * The link may also carry `content`, what the reader has already typed there: the page's box starts with it.
+   */
+  feedbackGuide?: { title: string; lead: string; example: string; tips: string[] };
+  /** A press a page reports for the site's own counts (lib/clicks.ts): what was pressed, nothing about the reader. */
+  onClick?: (target: string) => void;
   /** The terms page's footer: links after the engine's (routes/terms.tsx). */
   termsLinks?: Array<{ to: string; label: string }>;
   /** Its ways into the agent page (AgentPart.tracks) by their short names: the 我的 page's row names the first three (routes/more.tsx). */

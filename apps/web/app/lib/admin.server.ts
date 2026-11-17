@@ -7,11 +7,16 @@ function adminHeaders(request: Request) {
 }
 
 export async function adminGet<T>(request: Request, path: string): Promise<T> {
+  return get<T>(request, path, false);
+}
+
+async function get<T>(request: Request, path: string, gray: boolean): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     headers: adminHeaders(request),
     signal: AbortSignal.any([request.signal, AbortSignal.timeout(30_000)]),
   });
   if (res.status === 401) {
+    if (gray) throw data({ message: "not_found" }, { status: 404 });
     const url = new URL(request.url);
     throw redirect(`/api/auth/login?${new URLSearchParams({ return: url.pathname + url.search })}`);
   }
@@ -26,6 +31,26 @@ export async function adminGet<T>(request: Request, path: string): Promise<T> {
     throw data({ message: detail }, { status: res.status >= 500 ? 503 : res.status });
   }
   return (await res.json()) as T;
+}
+
+/** No cache keeps a gray page: a loader using grayGet answers with these headers. */
+export const GRAY_HEADERS = { "Cache-Control": "private, no-store" };
+
+/** Gray data (ModulePage.gray): only signed-in admins or module-approved previewers; everyone else gets the site's 404. */
+export async function grayGet<T>(request: Request, path: string): Promise<T> {
+  await get(request, "/api/admin/preview", true);
+  return get<T>(request, path, true);
+}
+
+/** The signed-in admin page reader; everyone else gets the site's 404. */
+export function adminPageAccess(request: Request): Promise<{ name: string }> {
+  return get(request, "/api/admin/page-access", true);
+}
+
+/** Read-only admin page data, hidden from everyone else. */
+export async function adminPageGet<T>(request: Request, path: string): Promise<T> {
+  await adminPageAccess(request);
+  return get<T>(request, path, true);
 }
 
 /** Whether this request already carries an admin session (or the development stand-in). */

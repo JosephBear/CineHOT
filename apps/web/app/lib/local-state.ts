@@ -7,6 +7,7 @@ import { beijingDate } from "@aihot/contracts/time";
 export const KEYS = {
   starred: "aihot-starred-items",
   read: "aihot-read-items",
+  unreadOnly: "aihot-unread-only",
   theme: "aihot-theme",
   font: "aihot-font",
   changelogSeen: "aihot-changelog-seen-version",
@@ -93,6 +94,7 @@ function emit(key?: string) {
 function onStorage(event: StorageEvent) {
   if (event.storageArea && event.storageArea !== storage("local")) return;
   if (event.key === null || event.key === KEYS.font) unsavedFont = undefined;
+  if (event.key === null || event.key === KEYS.unreadOnly) unsavedUnreadOnly = undefined;
   if (event.key === null) cache.clear();
   else cache.delete(event.key);
   // Clear the snapshot once, before notifying all cards. Each key is parsed at most once.
@@ -113,6 +115,7 @@ function subscribeKey(key: string) {
 }
 const subscribeStarred = subscribeKey(KEYS.starred);
 const subscribeRead = subscribeKey(KEYS.read);
+const subscribeUnreadOnly = subscribeKey(KEYS.unreadOnly);
 const subscribeTheme = subscribeKey(KEYS.theme);
 const subscribeFont = subscribeKey(KEYS.font);
 const subscribeChangelog = subscribeKey(KEYS.changelogSeen);
@@ -170,7 +173,7 @@ function normalizeStarred(v: Record<string, unknown>): LocalStarredItem {
 export function getStarred(): LocalStarredItem[] {
   return cached(KEYS.starred, () => {
     const parsed = readJson(KEYS.starred);
-    return Array.isArray(parsed) ? parsed.filter(isStarredItem).map((v) => normalizeStarred(v as unknown as Record<string, unknown>)).slice(0, STARRED_LIMIT) : [];
+    return Array.isArray(parsed) ? parsed.filter(isStarredItem).map((v) => normalizeStarred(v as unknown as Record<string, unknown>)) : [];
   });
 }
 
@@ -189,10 +192,23 @@ export function toggleStar(item: Omit<LocalStarredItem, "savedAt">): boolean {
     if (starredUnreadable()) return false;
     const list = getStarred();
     const exists = list.some((s) => s.id === item.id);
-    const next = exists ? list.filter((s) => s.id !== item.id) : [{ ...item, savedAt: new Date().toISOString() }, ...list].slice(0, STARRED_LIMIT);
+    const next = exists ? list.filter((s) => s.id !== item.id) : [{ ...item, savedAt: new Date().toISOString() }, ...list].slice(0, (list.length > STARRED_LIMIT ? list.length + 1 : STARRED_LIMIT));
     const saved = writeRaw(KEYS.starred, JSON.stringify(next));
     invalidate(KEYS.starred);
     return saved && !exists;
+  });
+}
+
+/** Calls `listener` whenever the stars change, in this tab or another, for code outside React (a sync). */
+export const watchStarred = (listener: () => void) => subscribeStarred(listener);
+
+/** Stores this list as the stars, newest first; false when nothing was saved. */
+// Account merges can exceed the ordinary 500-item local window; never trim an imported account snapshot.
+export function replaceStarred(items: LocalStarredItem[]): boolean {
+  return editLocalData(() => {
+    const saved = writeRaw(KEYS.starred, JSON.stringify(items));
+    invalidate(KEYS.starred);
+    return saved;
   });
 }
 
@@ -231,6 +247,19 @@ export function markRead(id: string) {
     writeRaw(KEYS.read, JSON.stringify(next));
     invalidate(KEYS.read);
   });
+}
+
+// Keep a reader's filter choice independently of a particular list's saved scroll position.
+let unsavedUnreadOnly: boolean | undefined;
+function getUnreadOnly(): boolean {
+  return unsavedUnreadOnly ?? (readRaw(KEYS.unreadOnly) === "true");
+}
+export function setUnreadOnly(value: boolean) {
+  unsavedUnreadOnly = writeRaw(KEYS.unreadOnly, value ? "true" : null) ? undefined : value;
+  emit(KEYS.unreadOnly);
+}
+export function useUnreadOnly(): boolean {
+  return useSyncExternalStore(subscribeUnreadOnly, getUnreadOnly, () => false);
 }
 
 // appearance

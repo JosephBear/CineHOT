@@ -1,8 +1,8 @@
 // Shared admin building blocks: page frame, cards, stats, badges, tables, buttons, fields and a
 // reason dialog (manual changes always carry a reason for the audit log).
-import { AnimatePresence, motion } from "motion/react";
 import { createContext, useContext, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router";
+import { Presence } from "../../components/ui/Presence";
 import { ago, bj } from "./format";
 
 export function AdminPage({ title, subtitle, actions, children }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode }) {
@@ -211,8 +211,8 @@ export function Select({ children, ...props }: React.ComponentProps<"select">) {
   );
 }
 
-/** Link-based filter chips bound to one query parameter. */
-export function FilterChips({ param, options }: { param: string; options: Array<{ value: string; label: ReactNode; count?: number }> }) {
+/** Link-based filter chips bound to one query parameter; `resets` names the filters that depend on it. */
+export function FilterChips({ param, options, resets = [] }: { param: string; options: Array<{ value: string; label: ReactNode; count?: number }>; resets?: string[] }) {
   const [sp] = useSearchParams();
   const current = sp.get(param) ?? "";
   return (
@@ -221,7 +221,7 @@ export function FilterChips({ param, options }: { param: string; options: Array<
         const next = new URLSearchParams(sp);
         if (o.value) next.set(param, o.value);
         else next.delete(param);
-        next.delete("page");
+        for (const name of ["page", ...resets]) next.delete(name);
         const active = current === o.value;
         return (
           <Link
@@ -270,6 +270,7 @@ export function Json({ value, collapsed = true, label = "原始数据" }: { valu
 /**
  * A modal that collects a reason (and optional extra fields) before a manual change. The submit
  * handler receives the reason; returning true closes the dialog.
+ * Without `requireReason` there is no text field.
  */
 export function ReasonDialog({
   open,
@@ -309,43 +310,39 @@ export function ReasonDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div className="fixed inset-0 z-[75] flex items-end justify-center p-3 sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]" onClick={onClose} />
-          <motion.form
-            role="dialog"
-            aria-modal="true"
-            initial={{ y: 16, scale: 0.98, opacity: 0 }}
-            animate={{ y: 0, scale: 1, opacity: 1 }}
-            exit={{ y: 10, scale: 0.98, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
-            className="relative w-full max-w-lg rounded-sheet bg-raised p-5 shadow-2xl ring-1 ring-line-strong"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (requireReason && !reason.trim()) return;
-              const closed = await onSubmit(reason.trim());
-              if (closed !== false) onClose();
-            }}
-          >
-            <h2 className="text-[16px] font-semibold text-ink">{title}</h2>
-            {description && <div className="mt-1.5 text-[13px] leading-relaxed text-ink-3">{description}</div>}
-            {children && <div className="mt-4 space-y-3">{children}</div>}
+    <Presence show={open} enter="anim-fade-in" exit="anim-fade-out" duration={220}>
+      <div className="fixed inset-0 z-[75] flex items-end justify-center p-3 sm:items-center">
+        <div className="absolute inset-0 bg-ink/30 backdrop-blur-[2px]" onClick={onClose} />
+        <form
+          role="dialog"
+          aria-modal="true"
+          className="sheet-panel anim-sheet-in relative w-full max-w-lg rounded-sheet bg-raised p-5 shadow-2xl ring-1 ring-line-strong"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (requireReason && !reason.trim()) return;
+            const closed = await onSubmit(reason.trim());
+            if (closed !== false) onClose();
+          }}
+        >
+          <h2 className="text-[16px] font-semibold text-ink">{title}</h2>
+          {description && <div className="mt-1.5 text-[13px] leading-relaxed text-ink-3">{description}</div>}
+          {children && <div className="mt-4 space-y-3">{children}</div>}
+          {requireReason && (
             <div className="mt-4">
-              <Field label={requireReason ? "原因（写进审计记录）" : "备注（可选）"}>
-                <Textarea ref={ref} value={reason} onChange={(e) => setReason(e.target.value)} placeholder={requireReason ? "为什么做这个改动" : ""} rows={2} />
+              <Field label="原因（写进审计记录）">
+                <Textarea ref={ref} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="为什么做这个改动" rows={2} />
               </Field>
             </div>
-            <div className="mt-5 flex justify-end gap-2">
-              <Button tone="ghost" onClick={onClose}>取消</Button>
-              <Button type="submit" tone={danger ? "danger" : "primary"} busy={busy} disabled={requireReason && !reason.trim()}>
-                {confirmLabel}
-              </Button>
-            </div>
-          </motion.form>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          )}
+          <div className="mt-5 flex justify-end gap-2">
+            <Button tone="ghost" onClick={onClose}>取消</Button>
+            <Button type="submit" tone={danger ? "danger" : "primary"} busy={busy} disabled={requireReason && !reason.trim()}>
+              {confirmLabel}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Presence>
   );
 }
 
