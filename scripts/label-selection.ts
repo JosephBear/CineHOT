@@ -35,6 +35,8 @@ interface Item {
   split: "development" | "holdout";
   /** The site's own judgement when the item came from the database: mean score (null when the prefilter refused it). */
   stored?: { score: number | null; selected: boolean };
+  /** The site's Chinese title and summary, shown so English items read faster (null where the model never wrote one). */
+  zh?: { title: string | null; summary: string | null };
 }
 interface Label { decision: "select" | "reject" | "either"; reason: string; at: string }
 
@@ -128,13 +130,14 @@ async function collectDb() {
   const days = arg("days", 60), max = arg("max", 400);
   const t = SELECTION.thresholds.T1 ?? 32;
   const rows = await sql<Array<{ id: string; source_id: string; source_name: string; kind: string; tier: string | null; tags: string[]; title: string; url: string;
-    published_at: Date | null; discovered_at: Date; body: string | null; score: number | null; selected: boolean; band: number }>>`
+    published_at: Date | null; discovered_at: Date; body: string | null; score: number | null; selected: boolean; band: number;
+    title_zh: string | null; summary_zh: string | null }>>`
     WITH latest AS (
-      SELECT DISTINCT ON (an.article_id) an.article_id, an.score, an.selected, an.relevance
+      SELECT DISTINCT ON (an.article_id) an.article_id, an.score, an.selected, an.relevance, an.title_zh, an.summary_zh
       FROM analyses an ORDER BY an.article_id, an.input_revision DESC),
     banded AS (
       SELECT a.id::text, a.source_id, s.name AS source_name, s.kind, s.tier, coalesce(s.tags, '{}') AS tags, a.title, a.url,
-        a.published_at, a.discovered_at, coalesce(nullif(a.body_text, ''), a.excerpt) AS body, l.score, l.selected,
+        a.published_at, a.discovered_at, coalesce(nullif(a.body_text, ''), a.excerpt) AS body, l.score, l.selected, l.title_zh, l.summary_zh,
         CASE WHEN l.score IS NULL THEN 0 WHEN l.score < ${t - 12} THEN 1 WHEN l.score < ${t + 12} THEN 2 ELSE 3 END AS band
       FROM latest l JOIN articles a ON a.id = l.article_id JOIN sources s ON s.id = a.source_id
       WHERE a.discovered_at > now() - make_interval(days => ${days}) AND NOT a.backfill AND a.title <> ''),
@@ -154,7 +157,7 @@ async function collectDb() {
     out.push({ caseId, sourceId: r.source_id, sourceName: r.source_name, sourceKind: r.kind, tier: r.tier ?? "", tags: r.tags,
       title: r.title, url: r.url, publishedAt: (r.published_at ?? r.discovered_at).toISOString(), language: language(`${r.title} ${body.slice(0, 2000)}`),
       body, bodySource: "page", split: parseInt(hash(caseId).slice(0, 8), 16) % 4 === 0 ? "holdout" : "development",
-      stored: { score: r.score === null ? null : Number(r.score), selected: r.selected } });
+      stored: { score: r.score === null ? null : Number(r.score), selected: r.selected }, zh: { title: r.title_zh, summary: r.summary_zh } });
   }
   writeAtomic(ITEMS, JSON.stringify(out, null, 1));
   console.log(`${out.length} items → .data/labeling/items.json (${rows.length} judged articles in the last ${days} days)`);
@@ -258,7 +261,7 @@ header b{font-size:16px}.bar{flex:1;min-width:120px;height:6px;background:var(--
 select,button,textarea{font:inherit;color:inherit}select,button{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
 main{max-width:860px;margin:0 auto;padding:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
 .meta{color:var(--ink2);font-size:13px;display:flex;flex-wrap:wrap;gap:4px 12px}.tag{border:1px solid var(--line);border-radius:999px;padding:0 8px}
-h1{font-size:20px;line-height:1.4;margin:10px 0}h1 a{color:inherit}.body{white-space:pre-wrap;max-height:46vh;overflow:auto;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;font-size:14px}
+h1{font-size:20px;line-height:1.4;margin:10px 0}.zh{margin:10px 0;font-size:15px}h1 a{color:inherit}.body{white-space:pre-wrap;max-height:46vh;overflow:auto;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;font-size:14px}
 .note{color:var(--ink2);font-size:12px}.choices{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 8px}.choices button{flex:1;min-width:110px;padding:10px;font-weight:600}
 .choices button.on[data-d=select]{background:var(--sel);color:#fff;border-color:var(--sel)}.choices button.on[data-d=reject]{background:var(--rej);color:#fff;border-color:var(--rej)}.choices button.on[data-d=either]{background:var(--eit);color:#fff;border-color:var(--eit)}
 textarea{width:100%;min-height:64px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}nav{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
@@ -282,7 +285,8 @@ function stats(){const n=Object.keys(labels).filter(k=>items.some(i=>i.caseId===
 function render(){stats();const i=view[pos];if(!i){$("#card").innerHTML='<p>这个筛选下没有条目了。'+(items.length?'':'先运行 collect 抓取样本。')+'</p>';return}
  const l=labels[i.caseId]||{};const date=new Date(i.publishedAt).toLocaleDateString("zh-CN");
  $("#card").innerHTML='<div class="meta"><span>'+(pos+1)+' / '+view.length+'</span><span>'+esc(i.sourceName)+'</span><span class="tag">'+esc(i.tier)+'</span>'+i.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join("")+'<span>'+date+'</span></div>'+
- '<h1><a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.title)+'</a></h1>'+
+ '<h1><a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.zh?.title||i.title)+'</a></h1>'+(i.zh?.title&&i.zh.title!==i.title?'<div class="note">原题：'+esc(i.title)+'</div>':'')+
+ (i.zh?.summary?'<p class="zh">'+esc(i.zh.summary)+'</p>':'')+
  '<div class="note">'+(i.bodySource==="excerpt"?"只取到摘要，建议点标题读原文后再判断":"正文摘自原文页面")+'</div>'+
  '<div class="body">'+esc(i.body||"（没有正文，请打开原文）")+'</div>'+
  '<div class="choices">'+["select","reject","either"].map(d=>'<button data-d="'+d+'" class="'+(l.decision===d?"on":"")+'">'+NAMES[d]+'</button>').join("")+'</div>'+
