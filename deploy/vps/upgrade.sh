@@ -9,15 +9,33 @@
 set -euo pipefail
 v="${1:?usage: upgrade.sh v0.3.0}"
 [[ "$v" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "版本号格式应为 v0.3.0" >&2; exit 1; }
+# This legacy workflow only understands its unmodified named-volume deployment.
+# Refuse Oracle and layered installs before stopping any writers.
 dir=/opt/cinemahot
 image="ghcr.io/josephbear/cinehot-app:$v"
 cd "$dir"
 dc() { docker compose -f "$dir/compose.yml" "$@"; }
 set_env() { sed -i "/^$1=/d" .env && echo "$1=$2" >> .env; }
 
+if [[ -e compose.override.yml || -e compose.override.yaml || -n "${COMPOSE_FILE:-}" ]]; then
+  echo "Layered deployment: use the deployment-specific upgrade procedure" >&2
+  exit 1
+fi
+db_mount=$(docker inspect cinemahot-db-1 --format '{{range .Mounts}}{{if eq .Destination "/var/lib/postgresql/data"}}{{.Type}}:{{.Name}}{{end}}{{end}}')
+for service in api worker; do
+  mount=$(docker inspect "cinemahot-$service-1" --format '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Type}}:{{.Name}}{{end}}{{end}}')
+  [[ "$mount" == volume:cinemahot_data && "$db_mount" == volume:cinemahot_db ]] || { echo "Unexpected persistent storage; stopped before upgrade" >&2; exit 1; }
+done
+umask 077
 echo "== 1 拉取镜像（网站照常运行）"
 docker pull "$image"
 old_image=$(docker inspect cinemahot-api-1 --format '{{.Config.Image}}')
+# Do not overwrite an operator's custom model, ports, mounts or Compose layers.
+files=$(docker inspect cinemahot-api-1 --format '{{index .Config.Labels "com.docker.compose.project.config_files"}}')
+[[ "$files" == "$dir/compose.yml" ]] || { echo "Unexpected active Compose files" >&2; exit 1; }
+docker run --rm --network none --entrypoint cat "$old_image" deploy/vps/compose.yml | cmp -s - compose.yml || {
+  echo "Customized Compose file; use a configuration-preserving upgrade" >&2; exit 1;
+}
 echo "当前镜像 $old_image → $image"
 
 echo "== 2 停写并备份"
@@ -26,7 +44,7 @@ backup="$dir/backups/$v-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$backup"
 trap 'echo "!! 第 $LINENO 行出错，已停止。备份在 $backup；回退：cp $backup/compose.yml $backup/env.backup 回原处（env.backup 改名为 .env），再 docker compose -f compose.yml up -d api web worker" >&2' ERR
 docker exec cinemahot-db-1 pg_dump -U cinemahot -d cinemahot -Fc > "$backup/database.dump"
-docker run --rm --user root --entrypoint tar -v cinemahot_data:/data:ro "$old_image" -C /data -czf - . > "$backup/files.tar.gz"
+docker run --rm --user root --entrypoint tar --volumes-from cinemahot-api-1:ro "$old_image" -C /data -czf - . > "$backup/files.tar.gz"
 cp compose.yml "$backup/compose.yml"
 cp .env "$backup/env.backup"
 chmod 600 "$backup"/*
