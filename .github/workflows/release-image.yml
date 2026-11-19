@@ -51,8 +51,10 @@ jobs:
         run: |
           docker buildx build --platform linux/${{ matrix.arch }} --load -f deploy/vps/Dockerfile -t cinehot:test .
           docker run --rm cinehot:test node -e "if (process.arch !== ({amd64:'x64',arm64:'arm64'})['${{ matrix.arch }}']) process.exit(1)"
+      - name: Start release services and rehearse Oracle upgrade and restore
+        run: bash deploy/oracle/test-upgrade.sh
       - name: Push architecture image
-        if: github.event_name != 'pull_request'
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -63,7 +65,7 @@ jobs:
 
   publish:
     needs: image
-    if: github.event_name != 'pull_request'
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - name: Publish one tag for both architectures
