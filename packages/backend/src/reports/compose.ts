@@ -35,6 +35,8 @@ export function dailyMetrics(main: EditionEntry[]) {
   };
 }
 
+class UnjudgedDailyError extends Error {}
+
 type ReportKind = "daily" | "weekly" | "monthly";
 
 /** How many events an issue already published carries; nothing when it does not exist yet. */
@@ -97,7 +99,7 @@ export async function composeDaily(date: string, reason?: string): Promise<{ key
   const start = new Date(end.getTime() - 86400000);
   const edition = await dailyEdition(date, start, end);
   // Nothing judged in the window is a failure upstream, not a quiet day: the run fails and is caught up later.
-  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new Error(`daily ${date}: nothing judged in its window`);
+  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new UnjudgedDailyError(`daily ${date}: nothing judged in its window`);
   const issue = arrangeDaily(edition.entries);
   const [lead, ...rest] = issue.main;
   const highlights = rest.slice(0, DAILY_HIGHLIGHTS).map((e) => e.entry.itemId);
@@ -312,6 +314,7 @@ const nextMonth = (label: string) => {
 export async function composeDueReports(now = new Date(), limit = 8): Promise<{ generated: string[]; failed: string[] }> {
   const generated: string[] = [];
   const failed: string[] = [];
+  const historicalDailyGaps = new Set((process.env.REPORT_HISTORICAL_DAILY_GAPS ?? "").split(",").map(date => date.trim()));
   const kinds: Array<{ kind: ReportKind; due: string; next: (k: string) => string; end: (k: string) => string; compose: (k: string) => Promise<unknown> }> = [
     { kind: "daily", due: dueDaily(now), next: (k) => addDays(k, 1), end: (k) => k, compose: composeDaily },
     { kind: "weekly", due: dueWeekly(now), next: nextWeek, end: (k) => isoWeekRange(k)!.end, compose: composeWeekly },
@@ -332,6 +335,7 @@ export async function composeDueReports(now = new Date(), limit = 8): Promise<{ 
       } catch (error) {
         // An issue interrupted by the stop is not a failure: it is written after the restart.
         if (shutdownSignal.signal.aborted) break kinds;
+        if (k.kind === "daily" && key < k.due && historicalDailyGaps.has(key) && error instanceof UnjudgedDailyError) continue;
         failed.push(`${k.kind}:${key}`);
         console.error(JSON.stringify({ level: "error", msg: "report failed", report: `${k.kind}:${key}`, error: logError(error) }));
       }
