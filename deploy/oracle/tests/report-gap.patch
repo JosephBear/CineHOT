@@ -1,0 +1,37 @@
+--- a/packages/backend/src/reports/compose.ts
++++ b/packages/backend/src/reports/compose.ts
+@@ -36,6 +36,8 @@
+ }
+ 
+ type ReportKind = "daily" | "weekly" | "monthly";
++
++class UnjudgedDailyError extends Error {}
+ 
+ /** How many events an issue already published carries; nothing when it does not exist yet. */
+ async function savedReport(kind: ReportKind, key: string) {
+@@ -93,7 +95,7 @@
+   const start = new Date(end.getTime() - 86400000);
+   const edition = await dailyEdition(date, start, end);
+   // Nothing judged in the window is a failure upstream, not a quiet day: the run fails and is caught up later.
+-  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new Error(`daily ${date}: nothing judged in its window`);
++  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new UnjudgedDailyError(`daily ${date}: nothing judged in its window`);
+   const issue = arrangeDaily(edition.entries);
+   const [lead, ...rest] = issue.main;
+   const content = {
+@@ -305,6 +307,7 @@
+ export async function composeDueReports(now = new Date(), limit = 8): Promise<{ generated: string[]; failed: string[] }> {
+   const generated: string[] = [];
+   const failed: string[] = [];
++  const historicalDailyGaps = new Set((process.env.REPORT_HISTORICAL_DAILY_GAPS ?? "").split(",").map((date) => date.trim()));
+   const kinds: Array<{ kind: ReportKind; due: string; next: (k: string) => string; end: (k: string) => string; compose: (k: string) => Promise<unknown> }> = [
+     { kind: "daily", due: dueDaily(now), next: (k) => addDays(k, 1), end: (k) => k, compose: composeDaily },
+     { kind: "weekly", due: dueWeekly(now), next: nextWeek, end: (k) => isoWeekRange(k)!.end, compose: composeWeekly },
+@@ -325,6 +328,8 @@
+       } catch (error) {
+         // An issue interrupted by the stop is not a failure: it is written after the restart.
+         if (shutdownSignal.signal.aborted) break kinds;
++        // The site operator can record a verified historical gap without publishing a fabricated quiet issue.
++        if (k.kind === "daily" && key < k.due && historicalDailyGaps.has(key) && error instanceof UnjudgedDailyError) continue;
+         failed.push(`${k.kind}:${key}`);
+         console.error(JSON.stringify({ level: "error", msg: "report failed", report: `${k.kind}:${key}`, error: logError(error) }));
+       }
