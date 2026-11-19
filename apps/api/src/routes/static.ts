@@ -8,7 +8,7 @@ import { EDITION_TIMES, SITE } from "@aihot/site";
 import { CONTACT_ALIASES, PUBLIC_INTERFACE_VERSION } from "@aihot/contracts/http-policy";
 import { PUBLIC_API_CATEGORY_KEYS } from "@aihot/contracts/taxonomy";
 import { REPO_ROOT, config } from "@aihot/backend/config";
-import { applyPublicHeaders, sendTextWithEtag } from "../http/respond.ts";
+import { applyPublicHeaders, etagMatches, sendTextWithEtag } from "../http/respond.ts";
 import { loadSitemap } from "@aihot/backend/publication/sitemap";
 import { llmsTxt, loadLlmsAvailability } from "@aihot/backend/publication/llms";
 import { loadContact } from "@aihot/backend/site/contact";
@@ -91,7 +91,7 @@ function sendEntry(req: FastifyRequest, reply: FastifyReply, entry: Entry, opts:
   reply.header("Content-Type", opts.type);
   reply.header("Cache-Control", opts.cacheControl);
   reply.header("ETag", entry.etag);
-  if (req.headers["if-none-match"] === entry.etag) return reply.code(304).send();
+  if (etagMatches(req.headers["if-none-match"], entry.etag)) return reply.code(304).send();
   return reply.send(entry.body);
 }
 
@@ -107,16 +107,20 @@ export async function sendFile(req: FastifyRequest, reply: FastifyReply, file: s
 }
 
 export function registerStatic(app: FastifyInstance) {
-  app.get("/sitemap.xml", async (req, reply) => {
+  const sendSitemap = async (req: FastifyRequest, reply: FastifyReply, file: string) => {
     try {
-      const { xml, expiresAt } = await loadSitemap();
+      const { files, expiresAt } = await loadSitemap();
+      const xml = files[file];
+      if (xml === undefined) return reply.code(404).type("text/plain; charset=utf-8").send("Not found");
       const seconds = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
       return sendTextWithEtag(req, reply, xml, { etagPrefix: "sitemap", cacheControl: seconds > 0 ? `public, max-age=0, s-maxage=${seconds}, must-revalidate` : "no-store", contentType: "application/xml" });
     } catch (error) {
       req.log.error({ err: error }, "sitemap unavailable");
       return reply.code(503).header("Retry-After", "300").header("Cache-Control", "no-store").send("Sitemap temporarily unavailable");
     }
-  });
+  };
+  app.get("/sitemap.xml", (req, reply) => sendSitemap(req, reply, "sitemap.xml"));
+  app.get<{ Params: { file: string } }>("/sitemaps/:file", (req, reply) => sendSitemap(req, reply, req.params.file));
 
   app.get("/llms.txt", async (req, reply) => {
     const text = llmsTxt(await loadLlmsAvailability());
@@ -128,7 +132,8 @@ export function registerStatic(app: FastifyInstance) {
   // The site's public files (site/public/), placeholders filled in; one the site does not have is a 404.
   app.get("/robots.txt", (req, reply) => sendFile(req, reply, path.join(PUBLIC, "robots.txt"), { cacheControl: "public, max-age=3600", fill: true }));
   app.get("/.well-known/security.txt", (req, reply) => sendFile(req, reply, path.join(PUBLIC, ".well-known/security.txt"), { cacheControl: "public, max-age=86400", fill: true }));
-  app.get("/manifest.webmanifest", (req, reply) => sendFile(req, reply, path.join(PUBLIC, "manifest.webmanifest"), { cacheControl: "public, max-age=86400, stale-while-revalidate=604800", fill: true }));
+  // Cached as long as the icons it names: every page links it, so a day's lifetime was a request per reader a day.
+  app.get("/manifest.webmanifest", (req, reply) => sendFile(req, reply, path.join(PUBLIC, "manifest.webmanifest"), { cacheControl: ICON_CACHE, fill: true }));
   app.get("/openapi-v1.json", (req, reply) => sendFile(req, reply, path.join(PUBLIC, "openapi-v1.json"), { cacheControl: "public, max-age=300, must-revalidate", publicApi: true, fill: true }));
 
   // IndexNow proves the key by a file at the site root named after it (INDEXNOW_KEY).

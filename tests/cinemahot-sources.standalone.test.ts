@@ -21,7 +21,7 @@ const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
 const previous = config.allowPrivateNetworkFetch;
 config.allowPrivateNetworkFetch = true;
 after(async () => { config.allowPrivateNetworkFetch = previous; await new Promise<void>(resolve => server.close(() => resolve())); });
-const source: SourceRow = { id: "web-cinehello", name: "CineHello fixture", kind: "web_list", config: { url: base, adapter: "cinehello_home" }, tier: "T2", participation_mode: "editorial", first_party: false, interval_minutes: 120, enabled: true, cursor: null, fail_count: 0 };
+const source: SourceRow = { id: "web-cinehello", name: "CineHello fixture", kind: "web_list", config: { url: base, adapter: "cinehello_home" }, tier: "T2", participation_mode: "editorial", uses: [], interval_minutes: 120, enabled: true, cursor: null, fail_count: 0 };
 
 test("CineHello uses the public post's exact date for both stream and morning articles", async () => {
   const items = await fetchWebList(source);

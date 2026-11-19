@@ -1,10 +1,13 @@
-// Signed image proxy. Validate before reading prepared bytes or returning 304; calculate a fresh
+// Signed image proxy. Only addresses this site signed are served; a missing, wrong or expired signature
+// is refused without any upstream fetch, so the proxy can never serve as a free image host.
+// Validate before reading prepared bytes or returning 304; calculate a fresh
 // remaining lifetime on every request so the CDN never inherits an aged HTTP response's max-age.
 import type { FastifyInstance } from "fastify";
 import { createHash } from "node:crypto";
 import { enqueue, QUEUES } from "@aihot/backend/jobs/queue";
-import { ImageBudgetExceeded, produceImage } from "@aihot/backend/media/images";
-import { LONGEST_CACHE_SECONDS, verifyProxyRequest } from "@aihot/backend/media/imgproxy";
+import { failureSeconds, ImageBudgetExceeded, produceAvif, produceImage } from "@aihot/backend/media/images";
+import { AVIF_MODE_SUFFIX } from "@aihot/contracts/site";
+import { LONGEST_CACHE_SECONDS, X_VIDEO_MODE, verifyProxyRequest } from "@aihot/backend/media/imgproxy";
 import { etagMatches, looseQuery } from "../http/respond.ts";
 
 function imageCacheControl(exp: string, limit: number): string {
@@ -25,14 +28,15 @@ export function registerMedia(app: FastifyInstance) {
     }
     reply.header("X-Img-Proxy-Sig", "valid");
     try {
-      const { body, type, pendingAnimation } = await produceImage(verdict.url, verdict.mode);
+      const { body, type, pendingAnimation, pendingAvif } = await (verdict.avif ? produceAvif : produceImage)(verdict.url, verdict.mode);
+      const pending = pendingAnimation || pendingAvif;
       let queued = false;
-      if (pendingAnimation) {
+      if (pending) {
         try {
           // Readers can arrive before selection, so article preparation alone is insufficient.
           // A null id means a job with this singleton key is already queued.
-          const key = createHash("sha256").update(`${verdict.mode}|${verdict.url}`).digest("hex");
-          await enqueue(QUEUES.prepareMedia, { url: verdict.url, mode: verdict.mode }, { singletonKey: `rendition:${key}` });
+          const key = createHash("sha256").update(`${verdict.mode}${pendingAvif ? AVIF_MODE_SUFFIX : ""}|${verdict.url}`).digest("hex");
+          await enqueue(QUEUES.prepareMedia, { url: verdict.url, mode: verdict.mode, ...(pendingAvif ? { format: "avif" as const } : {}) }, { singletonKey: `rendition:${key}` });
           queued = true;
         } catch (error) {
           req.log.warn({ err: error }, "img-proxy preparation enqueue failed");
@@ -43,18 +47,31 @@ export function registerMedia(app: FastifyInstance) {
       const etag = `"${createHash("sha256").update(type).update("\0").update(body).digest("hex")}"`;
       reply
         .header("Content-Type", type)
-        .header("Cache-Control", pendingAnimation && !queued ? "no-store" : imageCacheControl(q.exp!, pendingAnimation ? 60 : LONGEST_CACHE_SECONDS))
+        .header("Cache-Control", pending && !queued ? "no-store" : imageCacheControl(q.exp!, pending ? 60 : LONGEST_CACHE_SECONDS))
         .header("ETag", etag)
         .header("X-Content-Type-Options", "nosniff")
         .header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox");
       if (etagMatches(req.headers["if-none-match"], etag)) return reply.code(304).send();
+      if (verdict.mode === X_VIDEO_MODE) {
+        reply.header("Accept-Ranges", "bytes");
+        // Safari probes the first two bytes before requesting the media. Serve single ranges from
+        // the same cached representation, so seeks don't fetch the upstream MP4 again.
+        const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? "");
+        const ifRange = req.headers["if-range"];
+        if (range && (range[1] || range[2]) && (!ifRange || ifRange === etag)) {
+          const start = range[1] ? Number(range[1]) : Math.max(0, body.length - Number(range[2]));
+          const end = range[1] && range[2] ? Math.min(body.length - 1, Number(range[2])) : body.length - 1;
+          if (start > end) return reply.code(416).header("Cache-Control", "no-store").header("Content-Range", `bytes */${body.length}`).send();
+          return reply.code(206).header("Content-Range", `bytes ${start}-${end}/${body.length}`).send(body.subarray(start, end + 1));
+        }
+      }
       return reply.send(body);
     } catch (error) {
       if (error instanceof ImageBudgetExceeded) {
         return reply.code(503).header("Retry-After", "60").header("Cache-Control", "no-store").type("text/plain; charset=utf-8").send("Image proxy is busy; try again later");
       }
       req.log.warn({ err: error, host: new URL(verdict.url).hostname, imageKey: createHash("sha256").update(verdict.url).digest("hex"), mode: verdict.mode }, "img-proxy upstream failed");
-      return reply.code(502).header("Cache-Control", imageCacheControl(q.exp!, 60)).type("text/plain; charset=utf-8").send("Upstream image unavailable");
+      return reply.code(502).header("Cache-Control", imageCacheControl(q.exp!, failureSeconds(error))).type("text/plain; charset=utf-8").send("Upstream image unavailable");
     }
   });
 }

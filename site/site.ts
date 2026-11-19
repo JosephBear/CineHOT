@@ -51,6 +51,11 @@ export const SITE = {
   tagline: "值得关注的影像行业动态",
   /** 搜索引擎读到的关键词（首页结构化数据）。 */
   keywords: ["电影摄影", "影像", "摄影器材", "影视技术", "影像行业周报", "电影教育", "影展", "动画", "视效", "AI影视创作"] as string[],
+  /**
+   * 搜索引擎站长平台的网站验证（选填）：meta 名 → 平台给的验证码，放在首页的 head 里。
+   * 比如 "baidu-site-verification": "codeva-…"、"msvalidate.01": "…"。验证通过后也要留着，平台会定期复查。
+   */
+  siteVerification: {} as Record<string, string>,
   /** 网站开始收录的年份（结构化数据的时间范围，选填）。 */
   since: null as string | null,
   /** 界面语言（HTML lang、og:locale）。 */
@@ -81,6 +86,8 @@ export const SITE = {
   github: null as string | null,
   /** 上游开源项目的署名（必填）：一直显示在侧栏最底部和“我的”页底部，链接到上游仓库。版权方与许可以 NOTICE 为准。 */
   credit: { label: "基于数字生命卡兹克开源的 AIHOT · MIT", url: "https://github.com/KKKKhazix/AIHOT" },
+  /** 页脚的“由 X 驱动”（选填）。CineHOT 用上面的 credit 署名，这里关掉，免得重复。 */
+  poweredBy: null as { name: string; url: string } | null,
   /** 结构化数据里的网站运营者（搜索引擎用）。 */
   organization: {
     name: "全球影像动态",
@@ -230,6 +237,8 @@ export const REPORTS = {
 export const ALERTS = {
   /** 多少分钟没有收录新文章就告警“网站停止收录新内容”（最多一天）；环境变量 ALERT_QUIET_MINUTES 优先。 */
   quietMinutes: 360,
+  /** 编辑信源一直抓取成功、只是没有新文章时，多少分钟才告警（最多一天）。 */
+  quietWhileFetchingMinutes: 720,
   /** 同一条告警里，“没有”后面补一句平时的收录量；null 就不写。 */
   usualFlow: null as string | null,
   /** worker 停了的告警里，怎么看它的日志。 */
@@ -308,7 +317,7 @@ export const DEPLOYMENT = {
 
 /** RSS 订阅源的说明里随站点而变的说法。 */
 export const FEED_COPY = {
-  /** “全部动态”源的说明里，除了未审内容、低相关条目和已合并重复条目，还写明不含的内容（选填）。 */
+  /** “全部动态”源的说明里，除了未审内容、低相关条目、低分条目和已合并重复条目，还写明不含的内容（选填）。 */
   allLeavesOut: [] as string[],
 };
 
@@ -338,3 +347,24 @@ function spokenTime(time: string): string {
   const [hour, minute] = time.split(":").map(Number) as [number, number];
   return `${hour} 点${minute ? ` ${minute} 分` : ""}`;
 }
+
+/**
+ * 入口页在搜索结果里的标题：读者会搜的词放前面，页面自动在最后接上“ · 站名”（首页用 SITE.homeTitle）。
+ * 日期一律是这一期、这一页内容的日期，不是今天的日期。换行业时把里面的说法一起换掉。
+ */
+export const SEO_TITLES = {
+  /** 热点榜（/hot）。 */
+  hot: `${withSubject("热点榜")}：今日热门事件排行`,
+  /** 全部动态（/all），不含搜索和筛选结果。 */
+  all: `${subjectAfter("最新", "动态")}：实时更新`,
+  /** Agent 接入页（/agent）。 */
+  agent: `${withSubject("资讯")} API、MCP 与 RSS：接进你的 Agent`,
+  /** 关于页（/about）的完整标题，已含站名。 */
+  about: `关于 ${SITE.name}：${SITE.tagline}`,
+  /** 日报、周报、月报的最新一期（/daily、/weekly、/monthly）；date 是这一期的日期：“11月7日”“10月26日—11月1日”“2026年10月”。 */
+  latestReport: (kind: "daily" | "weekly" | "monthly", date: string): string =>
+    ({ daily: `${withSubject("日报")}：${subjectAfter("每日", "新闻")}（${date}）`, weekly: `${withSubject("周报")}：一周大事回顾（${date}）`, monthly: `${withSubject("月报")}：${date} 大事回顾` })[kind],
+  /** 主题页第一页：公司搜“最新消息”，方向和内容类型搜“最新进展”；updated 是最新一篇精选的日期（“11月7日”），没有时为 null。 */
+  topic: (name: string, group: "company" | "field" | "genre", updated: string | null): string =>
+    `${name} ${group === "company" ? "最新消息与动态" : "最新动态与进展"}${updated ? `（${updated}更新）` : ""}`,
+};

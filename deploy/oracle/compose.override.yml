@@ -1,0 +1,10 @@
+# Overlay for deploy/vps/compose.yml. Requires Docker Compose 2.24.4+.
+services:
+  web:
+    ports: !override
+      - "127.0.0.1:${CINEHOT_WEB_PORT:-13000}:3000"
+  worker:
+    environment:
+      LLM_BASE_URL: ${LLM_BASE_URL:?set the provider endpoint}
+      LLM_MODEL: ${LLM_MODEL:?set the provider model}
+      REPORT_HISTORICAL_DAILY_GAPS: ${REPORT_HISTORICAL_DAILY_GAPS:-}

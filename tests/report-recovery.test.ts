@@ -191,3 +191,23 @@ test("quiet first periods start at the site's first daily, while later missing d
   await assert.rejects(composeWeekly("2024-W06"), /no daily entries/);
   await assert.rejects(composeMonthly("2024-02"), /no daily entries/);
 });
+
+test("only an explicitly listed historical unjudged daily can be skipped by the scheduler", async () => {
+  const old = process.env.REPORT_HISTORICAL_DAILY_GAPS;
+  try {
+    await daily("2024-02-06");
+    const due = editionAt("daily", "2024-02-08", 60);
+    await item("2024-02-08");
+    delete process.env.REPORT_HISTORICAL_DAILY_GAPS;
+    await assert.rejects(composeDueReports(due), /daily:2024-02-07/);
+    process.env.REPORT_HISTORICAL_DAILY_GAPS = "2024-02-07";
+    await assert.rejects(composeDueReports(editionAt("daily", "2024-02-07", 60)), /daily:2024-02-07/);
+    await assert.rejects(composeDaily("2024-02-07"), /nothing judged/);
+    assert.deepEqual(await composeDueReports(due), { generated: [], failed: [] });
+    assert.equal(await report("daily", "2024-02-07"), undefined);
+    assert.ok(await report("daily", "2024-02-08"));
+  } finally {
+    if (old === undefined) delete process.env.REPORT_HISTORICAL_DAILY_GAPS;
+    else process.env.REPORT_HISTORICAL_DAILY_GAPS = old;
+  }
+});

@@ -16,7 +16,7 @@ import { chatJson } from "../providers/llm.ts";
 import { completeReceipt } from "../providers/receipts.ts";
 import { shutdownSignal } from "../jobs/queue.ts";
 import { emit } from "../modules.ts";
-import { arrangeDaily, candidates, dailyEdition, periodEntries, sectionOf, SECTION_ORDER, type Candidate, type EditionEntry } from "./edition.ts";
+import { arrangeDaily, candidates, dailyEdition, dailyPicks, periodEntries, sectionOf, SECTION_ORDER, type Candidate, type EditionEntry } from "./edition.ts";
 
 export const REPORT_VERSION = promptVersion("report-period", "report-period-sections", "report-period-no-sections");
 
@@ -35,6 +35,8 @@ export function dailyMetrics(main: EditionEntry[]) {
   };
 }
 
+class UnjudgedDailyError extends Error {}
+
 type ReportKind = "daily" | "weekly" | "monthly";
 
 /** How many events an issue already published carries; nothing when it does not exist yet. */
@@ -50,10 +52,10 @@ async function savedReport(kind: ReportKind, key: string) {
  * it is. With a reason (an explicit regeneration) the issue is replaced and the edition it replaces is
  * kept as a revision. Says whether the issue was written.
  */
-async function saveReport(kind: ReportKind, key: string, start: Date, end: Date, content: Record<string, unknown>, reason: string | undefined, model: string | null, receiptIds: number[]): Promise<boolean> {
+async function saveReport(kind: ReportKind, key: string, start: Date, end: Date, content: Record<string, unknown>, reason: string | undefined, receiptIds: number[]): Promise<boolean> {
   return sql.begin(async (tx) => {
-    const insert = async () => (await tx`INSERT INTO reports (kind, key, window_start, window_end, content, generated_at, model, origin)
-      VALUES (${kind}, ${key}, ${start}, ${end}, ${tx.json(content as never)}, now(), ${model}, 'model') ON CONFLICT (kind, key) DO NOTHING`).count > 0;
+    const insert = async () => (await tx`INSERT INTO reports (kind, key, window_start, window_end, content, generated_at)
+      VALUES (${kind}, ${key}, ${start}, ${end}, ${tx.json(content as never)}, now()) ON CONFLICT (kind, key) DO NOTHING`).count > 0;
     let written: boolean;
     if (reason === undefined) written = await insert();
     else {
@@ -63,7 +65,7 @@ async function saveReport(kind: ReportKind, key: string, start: Date, end: Date,
         await tx`INSERT INTO report_revisions (report_id, revision, content, generated_at, reason)
                  VALUES (${existing.id}, ${existing.revision}, ${tx.json(existing.content as never)}, ${existing.generated_at}, ${reason}) ON CONFLICT DO NOTHING`;
         await tx`UPDATE reports SET content = ${tx.json(content as never)}, window_start = ${start}, window_end = ${end}, generated_at = now(),
-                   model = ${model}, revision = revision + 1, origin = 'model', updated_at = now() WHERE id = ${existing.id}`;
+                   revision = revision + 1, updated_at = now() WHERE id = ${existing.id}`;
         written = true;
       } else written = await insert();
     }
@@ -80,11 +82,15 @@ function windowPoint(at: Date): string {
   return `${Number(day.slice(5, 7))} 月 ${Number(day.slice(8, 10))} 日 ${beijingTime(at)}`;
 }
 
+/** The highlights a daily's front page lists after its lead (今日看点). */
+const DAILY_HIGHLIGHTS = 3;
+
 /**
  * Daily report for Beijing date D covers the 24 hours up to the site's edition time on D (EDITION_TIMES).
- * Its most important entry leads, in its own words, and the next three are today's highlights. A window
- * the editors judged with nothing new in it still has its issue: no entries, and a lead that says so
- * (REPORTS.quiet).
+ * Its most important entry leads, in its own words, and the next three are today's highlights; a thin issue
+ * (a weekend's often carries a single entry) fills the rest with the window's best reports it left out
+ * (`picks`, dailyPicks), which are neither entries nor counted in its metrics. A window the editors judged
+ * with nothing new in it still has its issue: no entries, no highlights, and a lead that says so (REPORTS.quiet).
  */
 export async function composeDaily(date: string, reason?: string): Promise<{ key: string; entries: number }> {
   const previous = await savedReport("daily", date);
@@ -93,16 +99,19 @@ export async function composeDaily(date: string, reason?: string): Promise<{ key
   const start = new Date(end.getTime() - 86400000);
   const edition = await dailyEdition(date, start, end);
   // Nothing judged in the window is a failure upstream, not a quiet day: the run fails and is caught up later.
-  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new Error(`daily ${date}: nothing judged in its window`);
+  if (edition.entries.length === 0 && edition.stats.judgedReports === 0) throw new UnjudgedDailyError(`daily ${date}: nothing judged in its window`);
   const issue = arrangeDaily(edition.entries);
   const [lead, ...rest] = issue.main;
+  const highlights = rest.slice(0, DAILY_HIGHLIGHTS).map((e) => e.entry.itemId);
+  const picks = lead ? await dailyPicks(date, start, end, [...issue.main, ...issue.flashes], DAILY_HIGHLIGHTS - highlights.length) : [];
   const content = {
     date,
     lead: lead
       ? { title: lead.entry.title, leadParagraph: lead.entry.summary }
       : { title: REPORTS.quiet.title, leadParagraph: REPORTS.quiet.paragraph.replace("{start}", windowPoint(start)).replace("{end}", windowPoint(end)) },
     leadItemId: lead?.entry.itemId ?? null,
-    highlights: rest.slice(0, 3).map((e) => e.entry.itemId),
+    highlights: [...highlights, ...picks.map((p) => p.itemId)],
+    ...(picks.length ? { picks } : {}),
     sections: SECTION_ORDER
       .map((label) => ({ label, items: issue.main.filter((e) => sectionOf(e.category) === label).map((e) => e.entry) }))
       .filter((s) => s.items.length > 0),
@@ -112,7 +121,7 @@ export async function composeDaily(date: string, reason?: string): Promise<{ key
     windowEnd: end.toISOString(),
     generator: { version: REPORT_VERSION, ...edition.stats, ...issue.stats },
   };
-  await saveReport("daily", date, start, end, content, reason, null, []);
+  await saveReport("daily", date, start, end, content, reason, []);
   return { key: date, entries: issue.main.length };
 }
 
@@ -251,7 +260,7 @@ async function composePeriod(kind: "weekly" | "monthly", key: string, startDate:
     metrics: { totalStories: top.length, selectedCount: selected.length, reportsCovered: issues },
     generator: { version: REPORT_VERSION, model, written: overview !== null },
   };
-  await saveReport(kind, key, start, end, content, reason, model, receiptId === null ? [] : [receiptId]);
+  await saveReport(kind, key, start, end, content, reason, receiptId === null ? [] : [receiptId]);
   return { key, entries: top.length };
 }
 
@@ -305,6 +314,7 @@ const nextMonth = (label: string) => {
 export async function composeDueReports(now = new Date(), limit = 8): Promise<{ generated: string[]; failed: string[] }> {
   const generated: string[] = [];
   const failed: string[] = [];
+  const historicalDailyGaps = new Set((process.env.REPORT_HISTORICAL_DAILY_GAPS ?? "").split(",").map(date => date.trim()));
   const kinds: Array<{ kind: ReportKind; due: string; next: (k: string) => string; end: (k: string) => string; compose: (k: string) => Promise<unknown> }> = [
     { kind: "daily", due: dueDaily(now), next: (k) => addDays(k, 1), end: (k) => k, compose: composeDaily },
     { kind: "weekly", due: dueWeekly(now), next: nextWeek, end: (k) => isoWeekRange(k)!.end, compose: composeWeekly },
@@ -325,6 +335,7 @@ export async function composeDueReports(now = new Date(), limit = 8): Promise<{ 
       } catch (error) {
         // An issue interrupted by the stop is not a failure: it is written after the restart.
         if (shutdownSignal.signal.aborted) break kinds;
+        if (k.kind === "daily" && key < k.due && historicalDailyGaps.has(key) && error instanceof UnjudgedDailyError) continue;
         failed.push(`${k.kind}:${key}`);
         console.error(JSON.stringify({ level: "error", msg: "report failed", report: `${k.kind}:${key}`, error: logError(error) }));
       }

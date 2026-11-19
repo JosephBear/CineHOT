@@ -11,6 +11,8 @@ import { analyzeArticle } from "../editorial/analyze.ts";
 import { isHistorical } from "../content/materials.ts";
 import { publishArticle } from "../publication/publish.ts";
 import { BudgetExceededError, failedReceiptId, failureKind } from "../providers/receipts.ts";
+import { editorialPolicy } from "../modules.ts";
+import { readsWhole } from "../sources/uses.ts";
 import { enqueue, QUEUES, shutdownSignal, work } from "./queue.ts";
 
 /** Minutes to wait after the n-th failed attempt; one more failure after the last ends in "failed". */
@@ -35,20 +37,22 @@ interface Route {
  * The article's next step: its body first while none is confirmed and the source asks for full text,
  * when there is only a title or a feed summary (the analysis judges the whole article), or when an X
  * post links an X Article (fetched before judging; a discussion post only while it is news, as
- * history adds no heat).
+ * history adds no heat). A post of a source a module reads (sources.uses) is fetched like a report
+ * while it is news: the module reads all of it.
  */
 async function route(articleId: string, db: Db): Promise<Route | null> {
-  const [row] = await db<{ body_status: string; participation_mode: string; kind: string; config: Record<string, unknown>; url: string; bare: boolean; backfill: boolean; published_at: Date | null; discovered_at: Date }[]>`
-    SELECT a.body_status, s.participation_mode, s.kind, s.config, a.url, (coalesce(a.body_text, '') = '' AND a.x_post IS NULL) AS bare,
+  const [row] = await db<{ body_status: string; participation_mode: string; kind: string; config: Record<string, unknown>; uses: string[]; url: string; bare: boolean; backfill: boolean; published_at: Date | null; discovered_at: Date }[]>`
+    SELECT a.body_status, s.participation_mode, s.kind, s.config, s.uses, a.url, (coalesce(a.body_text, '') = '' AND a.x_post IS NULL) AS bare,
            a.backfill, a.published_at, a.discovered_at
     FROM articles a JOIN sources s ON s.id = a.source_id WHERE a.id = ${articleId}`;
   if (!row) return null;
   const historical = isHistorical(row);
   const signal = row.participation_mode !== "editorial";
+  const whole = readsWhole(row) && (!signal || !historical);
   const pending = row.body_status === "pending";
   const wantsBody = row.config.fetchPublicContent === true || !!row.config.detail || row.kind === "web_list";
-  const needsPage = !signal && pageFetchable(row.url, row.kind) && (wantsBody || row.bare);
-  const needsXArticle = row.kind === "x_search" && (!signal || (row.participation_mode === "hot_signal" && !historical));
+  const needsPage = whole && pageFetchable(row.url, row.kind) && (wantsBody || row.bare);
+  const needsXArticle = row.kind === "x_search" && (whole || (row.participation_mode === "hot_signal" && !historical));
   return { step: pending && (needsPage || needsXArticle) ? "extract" : "analyze", signal, historical };
 }
 
@@ -265,7 +269,8 @@ const ARTICLE_STEPS = new Set(["prefilter_article", "score_article", "structure_
  * back to processing: one action, not two. Returns whether it was queued.
  */
 export async function resumeAfterRelease(receipt: { purpose: string; subject: string | null }, db: Db): Promise<boolean> {
-  const article = ARTICLE_STEPS.has(receipt.purpose) ? /^article:([^@:#]+)/.exec(receipt.subject ?? "")?.[1] : undefined;
+  const isAnalysisStep = ARTICLE_STEPS.has(receipt.purpose) || Boolean(editorialPolicy().analysisPurposes?.includes(receipt.purpose));
+  const article = isAnalysisStep ? /^article:([^@:#]+)/.exec(receipt.subject ?? "")?.[1] : undefined;
   if (!article) return false;
   const [a] = await db`UPDATE articles SET processing_state = 'new', processing_attempts = 0, processing_retry_at = NULL, processing_error = NULL
                         WHERE id = ${article} AND processing_state = 'failed' RETURNING id`;

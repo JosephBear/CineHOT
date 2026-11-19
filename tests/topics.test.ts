@@ -8,6 +8,7 @@
 // - a technical-direction topic stops taking its tags;
 // - withdrawn or not yet released articles appear in a list or a count;
 // - an article or story page names a topic its reports do not belong to;
+// - an article page cannot tell which of its tags are a topic's own, so they link to filtered lists;
 // - a topic without content has no page, or an unknown slug or a page past the end has one.
 import { tag } from "./setup.ts";
 import assert from "node:assert/strict";
@@ -26,9 +27,9 @@ const MEDIA = `test-topics-media-${T}`;
 const app = await buildApp();
 
 before(async () => {
-  await sql`INSERT INTO sources (id, name, kind, tier, participation_mode, first_party, next_fetch_at) VALUES
-    (${OFFICIAL}, 'Official', 'rss', 'T1', 'editorial', true, '2100-01-01'),
-    (${MEDIA}, 'Media', 'rss', 'T2', 'editorial', false, '2100-01-01')`;
+  await sql`INSERT INTO sources (id, name, kind, tier, participation_mode, next_fetch_at) VALUES
+    (${OFFICIAL}, 'Official', 'rss', 'T1', 'editorial', '2100-01-01'),
+    (${MEDIA}, 'Media', 'rss', 'T2', 'editorial', '2100-01-01')`;
 });
 after(async () => {
   await app.close();
@@ -122,6 +123,26 @@ test("a company topic takes the articles about it, not the ones that only mentio
   assert.deepEqual(await topicsOf(subpoena), ["sony", "gear-releases"]);
   assert.deepEqual(await topicsOf(pact), ["gear-releases"]);
   assert.deepEqual(await topicsOf(agent), ["virtual-production", "gear-releases"]);
+});
+
+test("an article page says which of its tags are a topic's own", async () => {
+  // A direction's or a form's tags, and the tag cards show for a company (its subject tag is never shown).
+  const id = await report({ at: hoursAgo(3), title: `ARRI 发布虚拟制作镜头 ${T}`, subjects: ["arri", "sony"], tags: ["虚拟制作", "镜头", "ARRI", "Sony", "框架"] });
+  const res = await app.inject({ method: "GET", url: `/api/site/items/${id}` });
+  const body = JSON.parse(res.body) as { tags: string[]; tagTopics: Record<string, string>; topics: Array<{ slug: string }> };
+  assert.deepEqual(body.tags, ["器材发布", "虚拟制作", "镜头", "ARRI", "Sony", "框架"]);
+  assert.deepEqual(body.tagTopics, { "器材发布": "gear-releases", "虚拟制作": "virtual-production", "镜头": "lenses", ARRI: "arri", Sony: "sony" });
+  // The company its title does not name is a topic of the tag, not of the article.
+  assert.deepEqual(body.topics.map((t) => t.slug), ["arri", "lenses", "virtual-production", "gear-releases"]);
+});
+
+test("a company topic's other names stay usable for search", async () => {
+  const id = await report({at: hoursAgo(2), title: `VENICE 新固件上线 ${T}`, subjects: ['sony'], selected: false});
+  for (const query of ['Sony 索尼', 'CineAlta']) {
+    const res = await app.inject({method: 'GET', url: `/api/site/pool?q=${encodeURIComponent(query)}`});
+    assert.equal(res.statusCode, 200);
+    assert.ok(ids(JSON.parse(res.body).items).includes(id), 'full company names must still find subject-tagged reports');
+  }
 });
 
 test("a story page names the topics of its reports", async () => {

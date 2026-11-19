@@ -17,7 +17,7 @@ for (const seed of sources.filter(s => !ids || ids.has(s.id))) {
   if (seed.kind === "external") { console.log(JSON.stringify({ id: seed.id, status: "skipped", kind: seed.kind })); continue; }
   try {
     assertSupportedConfig(seed.kind, seed.config);
-    const source = { ...seed, first_party: seed.tier === "T1", enabled: true, cursor: null, fail_count: 0 };
+    const source = { ...seed, enabled: true, cursor: null, fail_count: 0 };
     const raw = seed.kind === "rss" ? (await fetchRss(source)).candidates : seed.kind === "json_list" ? await fetchJsonList(source) : await fetchWebList(source);
     const items = admitListing(raw, source);
     // Detail rules fill the sample as collection would: a missing date, and a title the listing cannot give.

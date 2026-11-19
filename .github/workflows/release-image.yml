@@ -6,6 +6,8 @@ name: Release image
 on:
   push:
     tags: ["v*"]
+  pull_request:
+    paths: [".github/workflows/release-image.yml", "deploy/vps/Dockerfile*", "deploy/oracle/**"]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +16,12 @@ permissions:
 
 jobs:
   image:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { arch: amd64, runner: ubuntu-latest }
+          - { arch: arm64, runner: ubuntu-24.04-arm }
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -24,16 +31,47 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Validate Oracle Compose template
+        env:
+          CINEMAHOT_IMAGE: cinehot:test
+          SITE_URL: https://cinehot.example.org
+          POSTGRES_PASSWORD: compose-test
+          LLM_BASE_URL: https://model.example.org/v1
+          LLM_MODEL: test-model
+        run: |
+          cp deploy/vps/compose.yml "$RUNNER_TEMP/compose.yml"
+          touch "$RUNNER_TEMP/.env"
+          docker compose -f "$RUNNER_TEMP/compose.yml" -f deploy/oracle/compose.override.yml config --format json |
+            jq -e '.services.web.ports | length == 1 and .[0].published == "13000" and .[0].host_ip == "127.0.0.1"'
       - name: Install
         run: npm ci --no-audit --no-fund
       - name: Build web
         run: npm run build -w @aihot/web
-      - name: Build and push
+      - name: Build and verify native image
+        run: |
+          docker buildx build --platform linux/${{ matrix.arch }} --load -f deploy/vps/Dockerfile -t cinehot:test .
+          docker run --rm cinehot:test node -e "if (process.arch !== ({amd64:'x64',arm64:'arm64'})['${{ matrix.arch }}']) process.exit(1)"
+      - name: Push architecture image
+        if: github.event_name != 'pull_request'
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # shortcut: amd64 only (the VPS is x86); an ARM server needs a second platform here.
-          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinehot-app:${GITHUB_REF_NAME}"
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinehot-app:build-${GITHUB_RUN_ID}-${{ matrix.arch }}"
           echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
-          docker buildx build --platform linux/amd64 -f deploy/vps/Dockerfile -t "$image" --push .
-          echo "pushed $image" >> "$GITHUB_STEP_SUMMARY"
+          docker tag cinehot:test "$image"
+          docker push "$image"
+
+  publish:
+    needs: image
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish one tag for both architectures
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          repo="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/cinehot-app"
+          prefix="$repo:build-${GITHUB_RUN_ID}"
+          docker buildx imagetools create -t "$repo:$GITHUB_REF_NAME" "$prefix-amd64" "$prefix-arm64"
+          docker buildx imagetools inspect "$repo:$GITHUB_REF_NAME"
