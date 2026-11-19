@@ -30,6 +30,12 @@ umask 077
 echo "== 1 拉取镜像（网站照常运行）"
 docker pull "$image"
 old_image=$(docker inspect cinemahot-api-1 --format '{{.Config.Image}}')
+# Do not overwrite an operator's custom model, ports, mounts or Compose layers.
+files=$(docker inspect cinemahot-api-1 --format '{{index .Config.Labels "com.docker.compose.project.config_files"}}')
+[[ "$files" == "$dir/compose.yml" ]] || { echo "Unexpected active Compose files" >&2; exit 1; }
+docker run --rm --network none --entrypoint cat "$old_image" deploy/vps/compose.yml | cmp -s - compose.yml || {
+  echo "Customized Compose file; use a configuration-preserving upgrade" >&2; exit 1;
+}
 echo "当前镜像 $old_image → $image"
 
 echo "== 2 停写并备份"

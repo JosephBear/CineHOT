@@ -151,9 +151,24 @@ def main():
         cid = output(*compose("ps", "-q", name))
         require(bool(cid) and "\n" not in cid, f"Expected one running {name}")
         live[name] = inspect(cid)
-        conf_hash = output(*compose("config", "--hash", name)).split()[-1]
-        require(live[name]["Config"]["Labels"]["com.docker.compose.config-hash"] == conf_hash,
-                f"{name} configuration drift: reconcile before upgrade")
+        service = original["services"][name]
+        container = live[name]
+        require(container["Config"]["Image"] == service["image"], f"{name} image drift")
+        runtime_env = env(container)
+        for key, value in service.get("environment", {}).items():
+            require(runtime_env.get(key) == value, f"{name} environment drift at {key}")
+        for volume in service.get("volumes", []):
+            if volume["type"] not in ("bind", "volume"):
+                continue
+            actual = mount(container, volume["target"])
+            source = volume["source"]
+            if volume["type"] == "volume":
+                source = original["volumes"][source]["name"]
+            observed = actual.get("Name") if actual["Type"] == "volume" else actual["Source"]
+            require(volume["type"] == actual["Type"] and observed == source,
+                    f"{name} mount drift at {volume['target']}")
+        if service.get("command") is not None:
+            require(service["command"] == container["Config"]["Cmd"], f"{name} command drift")
     require(live["api"]["Id"] == anchor["Id"], "Wrong project")
     data = mount(anchor, "/data")
     require(data["Source"] == mount(live["worker"], "/data")["Source"], "API/worker data differs")
@@ -166,6 +181,11 @@ def main():
         require(value and value == worker_env.get(key), f"Check effective {key}")
     ports = live["web"]["NetworkSettings"]["Ports"].get("3000/tcp") or []
     require(len(ports) == 1 and ports[0]["HostIp"] == "127.0.0.1", "Expected loopback-only web")
+    configured = [p for p in original["services"]["web"]["ports"] if p["target"] == 3000]
+    require(len(configured) == 1 and configured[0].get("host_ip") == "127.0.0.1" and
+            str(configured[0]["published"]) == ports[0]["HostPort"], "Web port drift")
+    require(all(env(live[n]).get("AIHOT_DATA_DIR", "/data") == "/data" for n in ("worker", "api")),
+            "Check application data path")
     url = "http://127.0.0.1:" + ports[0]["HostPort"]
     def healthy():
         with urllib.request.urlopen(url + "/api/health", timeout=5) as r:
