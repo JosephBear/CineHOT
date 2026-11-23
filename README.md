@@ -1,6 +1,6 @@
 # CineHOT
 
-**仓库版本 v0.3.4 · Oracle 主站与校园只读镜像**
+**仓库版本 v0.3.5 · Oracle 主站与校园只读镜像**
 
 ARM64 部署见 [Oracle 模板](deploy/oracle/README.md)。
 
