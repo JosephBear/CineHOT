@@ -34,7 +34,7 @@ export const SITE = {
   /** 全部资讯页及导航的名称。 */
   allTitle: "影像行业动态",
   /** 首页的完整标题（浏览器标签、搜索结果）。 */
-  homeTitle: "CineHOT 全球影像动态 — 电影与影像资讯 · 每周精选与周报",
+  homeTitle: "CineHOT 全球影像动态 — 电影与影像资讯 · 每日精选、日报与周报",
   /** 主题目录页（/topics）的标题。 */
   topicsTitle: "影像行业主题：厂商与机构、院校与影展、影像技术、AI影视创作的最新动态",
   /** 反馈表单输入框里的示例。 */
@@ -44,7 +44,7 @@ export const SITE = {
   /** 反馈表单邮箱框里的提示。 */
   feedbackEmailHint: "留下邮箱，我们可以回信联系你",
   /** 一句话介绍：搜索引擎、分享卡片、RSS、llms.txt 会用。 */
-  description: `从电影与影像领域的官方机构、院校、影展、专业媒体和创作者的信源里挑出值得看的动态，把同一件事的多篇报道归到一起，${EDITION_WHEN.weekly} 出一份周报。`,
+  description: `从电影与影像领域的官方机构、院校、影展、专业媒体和创作者的信源里挑出值得看的动态，把同一件事的多篇报道归到一起；每天更新精选，${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.weekly} 出周报。`,
   /** llms.txt 里一句话介绍下面的一段详细介绍（选填）。 */
   llmsIntro: null as string | null,
   /** 一行小字：分享图、海报下方。 */
@@ -165,14 +165,14 @@ export const ABOUT = {
   /** 大标题：第一行正常颜色，第二行强调色。 */
   headline: ["器材、技术、影展、剧组，", "值得跟的，只有几条。"] as [string, string],
   /** 标题下面的一段话。{sources} 会换成实时的信源数（两边自动加空格，所以 {sources} 两边不写空格）；统计没取到时换成 sourcesFallback。 */
-  lead: `${SITE.name} 替你盯着{sources}个信源：抓取、归并、打分、精选，${EDITION_WHEN.weekly} 出一份周报。当前仅本地试运行，精选门槛尚未人工标注校准。`,
-  sourcesFallback: "十几",
+  lead: `${SITE.name} 替你盯着{sources}个信源：抓取、归并、打分、精选，${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.weekly} 出周报。精选门槛按站长对线上文章的人工标注校准。`,
+  sourcesFallback: "数十",
   /** 信源河动画下面的四个环节。 */
   steps: {
     collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；每小时检查一次信源更新。",
     store: "抓到的都存下来，同一件事的报道归到一起，热点榜就是从这里算出来的。",
-    select: `模型先看是否与电影、泛影像或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；以压制器材商软文和重复转发为目标；实际效果仍需人工标注校准。`,
-    publish: `${EDITION_WHEN.weekly} 出周报；${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.monthly} 出月报，用来回看。`,
+    select: `模型先看是否与电影、泛影像或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；压制器材商软文和重复转发。`,
+    publish: `${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.weekly} 出周报，${EDITION_WHEN.monthly} 出月报。`,
   },
   /**
    * 作者块（选填），null 就不显示。
