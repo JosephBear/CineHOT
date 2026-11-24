@@ -1,6 +1,6 @@
 # CineHOT 校园镜像
 
-2026-10-24 起的分工：**AWS VPS 是主站**，负责采集、模型处理和全部数据；**校园服务器只做镜像**，不运行程序和数据库，只用 Nginx 把校内访问转发到主站并缓存公开页面。这样校园服务器不需要跟着升级版本，也不会出现两边同时采集。
+分工：**Oracle 主机是主站**，负责采集、模型处理和全部数据；**校园服务器只做镜像**，不运行程序和数据库，只用 Nginx 把校内访问转发到主站（`https://cinehot.bear.opik.net`）并缓存公开页面。这样校园服务器不需要跟着升级版本，也不会出现两边同时采集。2026-10-24 至 11 月中旬主站在 AWS VPS 上，之后迁到 Oracle。
 
 ## 配置
 
@@ -8,7 +8,7 @@
 2. 把 [Nginx 镜像模板](../../deploy/campus/nginx.conf.example) 放进 `/etc/nginx/conf.d/`，替换监听端口、访问名单（模板里的 `192.0.2.0/24` 只是文档示例，要换成信息中心确认的校园网段）和主站地址。
 3. `sudo nginx -t && sudo systemctl reload nginx`，从校内打开首页，响应头 `X-Mirror-Cache` 为 `MISS` 后再刷新应变为 `HIT`。
 
-公开页面最多比主站晚 5 分钟；主站出错或连不上时继续提供缓存的旧页面（保留 7 天）。后台和登录路径在镜像上一律 404，后台只经 SSH 隧道在 VPS 上使用。
+公开页面最多比主站晚 5 分钟；主站出错或连不上时继续提供缓存的旧页面（保留 7 天）。后台和登录路径在镜像上一律 404，后台只经 SSH 隧道在主站上使用。主站换域名时，模板里 `proxy_pass` 和 `Host` 两处一起改。
 
 ## 网络前提
 
@@ -18,7 +18,7 @@
 
 参考：[Nginx 反向代理缓存](https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache)、[按 IP 和 CIDR 控制访问](https://nginx.org/en/docs/http/ngx_http_access_module.html)。
 
-## 交给负责校园服务器的 Agent（2026-10-27）
+## 交给负责校园服务器的 Agent（2026-10-27，当时主站在 AWS VPS）
 
 校园服务器在 2026-10-22 到 10-24 曾作为主站运行完整的 CineHOT，现在改为镜像。按顺序处理，每步先确认 VPS 主站正常（`check.sh` 通过）：
 

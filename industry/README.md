@@ -11,4 +11,5 @@
 | `selection.ts` | 入选门槛 |
 | `gold.example.jsonl` | 精选评测样本的格式示例 |
 | `relation-gold.example.jsonl` | 事件关系评测样本的格式示例 |
+| `relation-gold.cinehot.jsonl` | 本站的同事件去重评测样本（SHX1、可灵的真实报道对），见 [事件归组](../docs/grouping.md) |
 | `story-digest-eval.example.jsonl` | 事件综述评测案例的格式示例 |
