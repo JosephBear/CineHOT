@@ -9,6 +9,27 @@
 - `UNRELATED`：不同的事，即使主体、产品或话题相同。
 - `ROUNDUP`：其中一方是包含多个话题的汇总。
 
+## CineHOT 的同事件去重（2026-11-24）
+
+**现象**：2026-11-17 松下 LUMIX SHX1 发布后，发布、PetaPixel 评测、CineD 实验室测试、CineD 专访和两个配件在精选里各占一张卡片（6 张，首页 20 张里占 4 张）；可灵 Image 4.0 的预告和正式发布也各占一张。
+
+**原因**：两段都有短板。
+1. **召回**：没配向量服务时，候选按标题和摘要的文字重合度找（`LEXICAL_MIN = 0.25`）。中英混排、同一产品从不同角度写的报道，字面重合低，召回不到一起。
+2. **判断**：关系定义里没有器材行业的例子，模型容易把“评测、专访、同期配件”判成 `UNRELATED`。
+
+**做法**：引擎本身不改。
+1. `industry/prompts/group-definitions.md` 补了器材与 AI 工具的常见情形：发布与首发评测、实验室测试、专访是 `SAME_STORY`；同期配件是 `SAME_OCCURRENCE`；同周不同机型仍是 `UNRELATED`。
+2. 配一个向量服务（`.env.example` 的“让事件归组更准”一节），召回改用向量相似度。按需二选一：金山云等平台的 OpenAI 兼容向量接口（`EMBEDDING_*`），或阿里云百炼（`DASHSCOPE_API_KEY`）。本站每天新增约百条，向量费用很低。
+3. 上线前用真实案例评测：`industry/relation-gold.cinehot.jsonl` 收了上面 SHX1、可灵的 6 对报道（含 1 对同日不相关的对照），运行
+
+   ```bash
+   node --env-file=.env scripts/eval-relations.ts --gold industry/relation-gold.cinehot.jsonl
+   ```
+
+   看发布与评测、专访、配件几对是否判对，同日不相关的那对是否没被误合。样本少，只用来确认方向；更多边界样本放 `.data/relation-gold.jsonl`。
+
+改动的效果只对改后新归组的报道生效；已有的事件不会自动重组。
+
 ## 用自己的标注样本评测两两关系判断
 
 `scripts/eval-relations.ts` 只评测模型对两篇报道之间关系的判断。它直接复用站点归组时用的 `PAIR_SYSTEM`、`pairUser()`、`PairSchema` 和提示词版本，因此提示词变了，评测也跟着变。它不重新跑候选召回，也不把结果写回事件归组。

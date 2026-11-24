@@ -4,6 +4,10 @@
 #   docker buildx build -f deploy/vps/Dockerfile -t cinehot-app:<版本> .
 FROM node:24-trixie-slim
 WORKDIR /app
+# pg_dump for the engine's optional database backups (Debian's client matches the PostgreSQL 17 server in compose).
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends postgresql-client ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 COPY . .
 RUN test -f apps/web/build/server/index.js \
   && npm ci --omit=dev --ignore-scripts --no-audit --no-fund && mkdir -p /data && chown node:node /data

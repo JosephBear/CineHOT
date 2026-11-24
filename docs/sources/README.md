@@ -47,7 +47,7 @@
 
 ## 指定创作者账号
 
-影视飓风、调色师手册、数字生命卡兹克的链接、收录范围及接入障碍见[创作者账号清单](creator-accounts.md)，结构化清单在 `industry/source-watchlist.json`。目前均为待接入，不计入已启用的19个信源。
+影视飓风、调色师手册、数字生命卡兹克的链接、收录范围及接入障碍见[创作者账号清单](creator-accounts.md)，结构化清单在 [`source-watchlist.json`](source-watchlist.json)。目前均为待接入，不计入已启用的19个信源。
 
 ## AI影视创作来源
 

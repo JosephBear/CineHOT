@@ -1,5 +1,5 @@
-# CineHOT 校园镜像：校园服务器不运行程序和数据库，只把校内访问转发到 VPS 主站并缓存公开页面；
-# VPS 暂时连不上时继续提供缓存的旧页面。后台和登录路径与主站一样不对外。详见 docs/deployment/campus.md。
+# CineHOT 校园镜像：校园服务器不运行程序和数据库，只把校内访问转发到 Oracle 主站并缓存公开页面；
+# 主站暂时连不上时继续提供缓存的旧页面。后台和登录路径与主站一样不对外。详见 docs/deployment/campus.md。
 # 替换监听端口、访问名单（192.0.2.0/24 只是文档示例）和主站地址后放进 /etc/nginx/conf.d/。
 proxy_cache_path /var/cache/nginx/cinehot levels=1:2 keys_zone=cinehot:20m max_size=2g inactive=7d use_temp_path=off;
 
@@ -13,11 +13,11 @@ server {
     location ~ ^/(admin|api/admin|api/auth)(/|$) { return 404; }
 
     location / {
-        proxy_pass https://cinemahot.35-90-86-224.sslip.io;
+        proxy_pass https://cinehot.bear.opik.net;
         proxy_ssl_server_name on;
         proxy_ssl_verify on;
         proxy_ssl_trusted_certificate /etc/pki/tls/certs/ca-bundle.crt;
-        proxy_set_header Host cinemahot.35-90-86-224.sslip.io;
+        proxy_set_header Host cinehot.bear.opik.net;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_http_version 1.1;
         proxy_set_header Connection "";

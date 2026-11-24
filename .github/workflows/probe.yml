@@ -1,0 +1,32 @@
+# Off-site probe: from GitHub's servers, not the main host, so a dead host, a lost network or a stalled
+# collector all fail this run, and GitHub emails the repository owner about the failed run.
+# The URL comes from the repository variable PROBE_URL (Settings → Secrets and variables → Actions → Variables).
+name: Probe
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SITE: ${{ vars.PROBE_URL || 'https://cinehot.bear.opik.net' }}
+      # The site stops collecting once nothing new arrives for this long (the alert's quiet window is 360 minutes).
+      MAX_QUIET_HOURS: "6"
+    steps:
+      - name: Site answers and is still collecting
+        run: |
+          curl -fsS --retry 3 --retry-delay 20 --max-time 30 "$SITE/api/health" | jq -e '.ok == true and .db == "ok"'
+          newest=$(curl -fsS --retry 3 --retry-delay 20 --max-time 60 "$SITE/api/v1/items?mode=all&limit=1" | jq -r '.items[0].discoveredAt // empty')
+          test -n "$newest" || { echo "::error::no articles in the public list"; exit 1; }
+          age=$(( $(date -u +%s) - $(date -u -d "$newest" +%s) ))
+          echo "newest article discovered $newest ($((age / 3600)) h ago)"
+          if [ "$age" -gt $(( MAX_QUIET_HOURS * 3600 )) ]; then
+            echo "::error::no new article for $((age / 3600)) hours (limit $MAX_QUIET_HOURS)"
+            exit 1
+          fi

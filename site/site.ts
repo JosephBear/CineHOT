@@ -169,7 +169,7 @@ export const ABOUT = {
   sourcesFallback: "数十",
   /** 信源河动画下面的四个环节。 */
   steps: {
-    collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；每小时检查一次信源更新。",
+    collect: "关注器材厂商、影视技术媒体、影展、电影教育和AI影视创作；每小时检查一次信源更新。",
     store: "抓到的都存下来，同一件事的报道归到一起，热点榜就是从这里算出来的。",
     select: `模型先看是否与电影、电影制作、电影教育或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；压制器材商软文和重复转发。`,
     publish: `${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.weekly} 出周报，${EDITION_WHEN.monthly} 出月报。`,

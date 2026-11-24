@@ -52,6 +52,7 @@ jobs:
         run: |
           docker buildx build --platform linux/${{ matrix.arch }} --load -f deploy/vps/Dockerfile -t cinehot:test .
           docker run --rm cinehot:test node -e "if (process.arch !== ({amd64:'x64',arm64:'arm64'})['${{ matrix.arch }}']) process.exit(1)"
+          docker run --rm cinehot:test pg_dump --version
       - name: Start release services and rehearse Oracle upgrade and restore
         run: bash deploy/oracle/test-upgrade.sh
       - name: Push architecture image
