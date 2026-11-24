@@ -233,3 +233,24 @@ X（推特）账号可通过 `x_search` 接入，但需SocialData按请求付费
 未接入：Angénieux（官网证书链不完整，采集程序无法验证；Google News 结果混有站点被注入的赌博页面）、Vantage/Hawk（新闻无发布日期）、Sony、Canon、Atomos、Senses of Cinema、Bright Lights（拒绝采集程序；索尼佳能新品可经 ASC、CineD、Newsshooter 获得）。
 
 验证：本机当日无法连接 Cloudflare DNS（本机代理设置），未能联网实测；用当日下载的真实订阅与页面在本地回放，15个来源均经同一套采集代码解析出标题、链接和日期。
+
+### 2026-11-24 影像教育单元与领域收窄
+
+新增 6 个影像教育来源，移出 1 个，给 3 个加标题过滤。理由与评审数据见[信源评审记录](reviews.md#2026-11-24-决定收窄领域加影像教育)。当前共 93 个信源。
+
+| 来源 | ID | 读取方式 |
+|---|---|---|
+| YouTube：Film Riot | `rss-yt-filmriot` | YouTube频道RSS（channel_id=UC6P24bhhCmMPOcujA9PKPTA） |
+| YouTube：Film Courage | `rss-yt-filmcourage` | YouTube频道RSS（channel_id=UCiYmiz5t4ZJ__CQMHMYSITA），滤掉 #shorts |
+| YouTube：BFI 英国电影协会 | `rss-yt-bfi` | YouTube频道RSS（channel_id=UC9dGqMAPJRpA7M0oSdgtQgg），只留 Screen Talk、大师班与问答 |
+| YouTube：Gnomon School of VFX | `rss-yt-gnomon` | YouTube频道RSS（channel_id=UCteKsm1IktL9sO_eQc5wsjw），滤掉招生与游戏美术 |
+| YouTube：Curious Refuge | `rss-yt-curious-refuge` | YouTube频道RSS（channel_id=UClnFtyUEaxQOCd1s5NKYGFA）；它的网站博客 `rss-curious-refuge` 已接入 |
+| Go Into The Story | `rss-gointothestory` | 官方RSS，滤掉剧本交易新闻 |
+
+移出：World Press Photo（`web-wpp-news`），纯新闻摄影。已有部署要清掉它的历史文章，运行 `node --env-file=.env scripts/purge-sources.ts --ids web-wpp-news`（先预览，确认后加 `--apply`）。
+
+加标题过滤：Fstoppers、PetaPixel、80.lv 增加 `ingestNoiseFilter`，先在采集时滤掉修图、风光人像、游戏美术等标题，含 cinema、film、video 的保留。
+
+已有部署：`scripts/seed.ts` 只添加新 ID，不覆盖已有信源，所以 6 个新来源会自动加入；Fstoppers、PetaPixel、80.lv 的过滤要在后台“信源”页把配置改成与 `industry/sources.json` 一致。
+
+验证：2026-11-24 经本机代理用 `scripts/check-cinehot-sources.ts` 实测，9 个来源都能抓到带日期的条目。
