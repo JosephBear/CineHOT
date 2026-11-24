@@ -1315,7 +1315,11 @@
         "_aihot": {
           "initialBackfillLimit": 8
         },
-        "feedUrl": "https://petapixel.com/feed/"
+        "feedUrl": "https://petapixel.com/feed/",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["lightroom", "photoshop", "wedding", "portrait", "landscape photo", "street photo", "print", "photo contest", "photography contest", "deals", "sale", "smartphone", "iphone 1", "pixel 1", "galaxy s"],
+          "keepIfMatches": ["cinema", "film", "video", "cinematograph", "filmmak"]
+        }
       },
       "tier": "T2",
       "owner_entity_id": null,
@@ -1336,7 +1340,11 @@
         "_aihot": {
           "initialBackfillLimit": 8
         },
-        "feedUrl": "https://fstoppers.com/feed"
+        "feedUrl": "https://fstoppers.com/feed",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["lightroom", "photoshop", "wedding", "portrait", "landscape", "street photo", "headshot", "print", "photo contest", "sunset", "sunrise", "macbook", "deals", "bag review", "tripod"],
+          "keepIfMatches": ["cinema", "film", "video", "cinematograph", "filmmak"]
+        }
       },
       "tier": "T2",
       "owner_entity_id": null,
@@ -1421,7 +1429,11 @@
         "_aihot": {
           "initialBackfillLimit": 8
         },
-        "feedUrl": "https://80.lv/feed"
+        "feedUrl": "https://80.lv/feed",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["game", "gaming", "godot", "indie dev", "weapon", "level design", "stylized", "low poly", "low-poly", "fan art", "remake of"],
+          "keepIfMatches": ["film", "cinema", "virtual production", "movie", "animated short", "series"]
+        }
       },
       "tier": "T2",
       "owner_entity_id": null,
@@ -1622,36 +1634,6 @@
       "tags": [
         "官方",
         "院校"
-      ],
-      "site_fulltext": false,
-      "syndicate_fulltext": false,
-      "enabled": true
-    },
-    {
-      "id": "web-wpp-news",
-      "name": "World Press Photo 荷赛",
-      "kind": "web_list",
-      "config": {
-        "_aihot": {
-          "initialBackfillLimit": 8
-        },
-        "url": "https://www.worldpressphoto.org/news",
-        "itemSelector": "a.article-list-widget__item",
-        "titleSelector": "h4",
-        "publishedAtSelector": ".article-list-widget__item-posted",
-        "publishedAtUtcOffset": "+01:00",
-        "allowUrlPrefixes": [
-          "https://www.worldpressphoto.org/news/"
-        ],
-        "sortByPublishedAt": true
-      },
-      "tier": "T1",
-      "owner_entity_id": null,
-      "participation_mode": "editorial",
-      "interval_minutes": 60,
-      "tags": [
-        "官方",
-        "摄影"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,
@@ -2202,6 +2184,170 @@
       "interval_minutes": 60,
       "tags": [
         "评论"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-filmriot",
+      "name": "YouTube：Film Riot",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 3
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6P24bhhCmMPOcujA9PKPTA",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["#shorts", "a short story narrated", "official trailer", "giveaway"]
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "影像教育",
+        "教程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-filmcourage",
+      "name": "YouTube：Film Courage",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 3
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCiYmiz5t4ZJ__CQMHMYSITA",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["#shorts", "#shortsfeed", "#shortfeed", "#shortvideo", "#youtubeshort"]
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "影像教育",
+        "访谈"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-bfi",
+      "name": "YouTube：BFI 英国电影协会",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 3
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC9dGqMAPJRpA7M0oSdgtQgg",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["trailer", "highlights", "#shorts", "reviews "],
+          "keepIfMatches": ["screen talk", "masterclass", "in conversation", "q&a", "interviewed by"]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "机构",
+        "视频频道",
+        "影像教育"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-gnomon",
+      "name": "YouTube：Gnomon School of VFX",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 3
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCteKsm1IktL9sO_eQc5wsjw",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["learn 3d", "learn from", "this fall", "this spring", "this winter", "this summer", "hits los angeles", "game art", "#shorts"]
+        }
+      },
+      "tier": "T1",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "院校",
+        "视频频道",
+        "影像教育"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-yt-curious-refuge",
+      "name": "YouTube：Curious Refuge",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 3
+        },
+        "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UClnFtyUEaxQOCd1s5NKYGFA",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["new courses", "conspiracy", "check out my", "#shorts"]
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "视频频道",
+        "影像教育",
+        "AI影视创作"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "enabled": true
+    },
+    {
+      "id": "rss-gointothestory",
+      "name": "Go Into The Story（Black List 编剧教学博客）",
+      "kind": "rss",
+      "config": {
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "initialBackfillMonths": 2
+        },
+        "feedUrl": "https://gointothestory.blcklst.com/feed",
+        "ingestNoiseFilter": {
+          "dropMarkersTitleOnly": ["spec script deal", "spec deal", "pitch deal", "book deal"]
+        }
+      },
+      "tier": "T2",
+      "owner_entity_id": null,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "影像教育",
+        "编剧"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false,

@@ -36,7 +36,7 @@ export const SITE = {
   /** 首页的完整标题（浏览器标签、搜索结果）。 */
   homeTitle: "CineHOT 全球影像动态 — 电影与影像资讯 · 每日精选、日报与周报",
   /** 主题目录页（/topics）的标题。 */
-  topicsTitle: "影像行业主题：厂商与机构、院校与影展、影像技术、AI影视创作的最新动态",
+  topicsTitle: "影像行业主题：厂商与机构、院校与影展、影像技术、影像教育、AI影视创作的最新动态",
   /** 反馈表单输入框里的示例。 */
   feedbackExample: "例如：我在搜索某款镜头时遇到……我原本想……",
   /** 反馈页标题下面的一句话。 */
@@ -171,7 +171,7 @@ export const ABOUT = {
   steps: {
     collect: "关注器材厂商、影视技术媒体、影展和AI影视创作；每小时检查一次信源更新。",
     store: "抓到的都存下来，同一件事的报道归到一起，热点榜就是从这里算出来的。",
-    select: `模型先看是否与电影、泛影像或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；压制器材商软文和重复转发。`,
+    select: `模型先看是否与电影、电影制作、电影教育或AI影视创作有关、有没有实际信息，再写中文标题、摘要和${ITEM_COPY.reasonLabel}；压制器材商软文和重复转发。`,
     publish: `${EDITION_WHEN.daily} 出日报，${EDITION_WHEN.weekly} 出周报，${EDITION_WHEN.monthly} 出月报。`,
   },
   /**

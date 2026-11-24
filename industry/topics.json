@@ -208,6 +208,44 @@
       "definition": "胶片拍摄的复兴：片基与型号、冲印流程与胶片转数字的实践。"
     },
     {
+      "slug": "screenwriting",
+      "name": "编剧",
+      "group": "field",
+      "tags": [
+        "编剧"
+      ],
+      "definition": "剧本写作的方法：结构、人物、对白与改写，以及编剧讲自己的工作方式。"
+    },
+    {
+      "slug": "directing",
+      "name": "导演",
+      "group": "field",
+      "tags": [
+        "导演"
+      ],
+      "definition": "导演的方法：调度、与演员和摄影的协作、从剧本到画面的决策。"
+    },
+    {
+      "slug": "editing",
+      "name": "剪辑",
+      "group": "field",
+      "tags": [
+        "剪辑"
+      ],
+      "definition": "剪辑的方法与思路：节奏、结构、声画关系与剪辑师的工作流程。"
+    },
+    {
+      "slug": "film-education",
+      "name": "影像教育",
+      "group": "genre",
+      "tags": [
+        "课程/教学",
+        "大师班",
+        "影视院校"
+      ],
+      "definition": "学电影的人能直接用的内容：成体系的课程与公开课、创作者的大师班与讲座、影视院校的教学方法与学生作品复盘，以及AI进入电影课堂的变化。"
+    },
+    {
       "slug": "gear-releases",
       "name": "器材发布",
       "group": "genre",
