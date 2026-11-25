@@ -53,15 +53,16 @@ class BadRequest extends Error {}
 
 /** Hashed build assets are immutable; anything else from the client build gets a short cache. */
 async function serveStatic(pathname: string, res: import("node:http").ServerResponse): Promise<boolean> {
-  if (pathname.includes("..") || pathname.endsWith("/")) return false;
+  if (pathname.endsWith("/")) return false;
   let decoded: string;
   try {
     decoded = decodeURIComponent(pathname);
   } catch {
     throw new BadRequest("malformed percent-encoding");
   }
+  if (decoded.includes("..") || decoded.includes("\0") || decoded.endsWith("/")) return false;
   const file = path.join(CLIENT_DIR, decoded);
-  if (!file.startsWith(CLIENT_DIR)) return false;
+  if (!file.startsWith(CLIENT_DIR + path.sep)) return false;
   const info = await stat(file).catch(() => null);
   if (!info?.isFile()) return false;
   const immutable = pathname.startsWith("/assets/");

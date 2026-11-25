@@ -127,6 +127,81 @@
       "definition": "ASC 的全部动态：奖项评选、行业标准与《American Cinematographer》的技术内容。"
     },
     {
+      "slug": "kling",
+      "name": "可灵",
+      "group": "company",
+      "entityId": "kling",
+      "aliases": [
+        "Kling AI",
+        "快手可灵"
+      ],
+      "definition": "可灵的影视创作动态：视频生成模型版本、镜头控制与影视工作流实践。"
+    },
+    {
+      "slug": "jimeng",
+      "name": "即梦",
+      "group": "company",
+      "entityId": "jimeng",
+      "aliases": [
+        "即梦AI",
+        "Jimeng"
+      ],
+      "definition": "即梦的影视创作动态：图像与视频生成能力更新及创作工具进展。"
+    },
+    {
+      "slug": "runway",
+      "name": "Runway",
+      "group": "company",
+      "entityId": "runway",
+      "aliases": [
+        "RunwayML"
+      ],
+      "definition": "Runway 的影视创作动态：视频生成模型、角色与镜头控制工具及行业合作。"
+    },
+    {
+      "slug": "google",
+      "name": "Google",
+      "group": "company",
+      "entityId": "google",
+      "aliases": [
+        "Veo",
+        "Google Flow"
+      ],
+      "definition": "Google 在影视与视频生成领域的动态：Veo、Flow 与相关创作工具更新。"
+    },
+    {
+      "slug": "comfy",
+      "name": "ComfyUI",
+      "group": "company",
+      "entityId": "comfy",
+      "aliases": [
+        "Comfy-Org"
+      ],
+      "definition": "ComfyUI 的开源影像工作流动态：核心版本发布、视频生成节点与生态更新。"
+    },
+    {
+      "slug": "ltx",
+      "name": "LTX",
+      "group": "company",
+      "entityId": "ltx",
+      "aliases": [
+        "LTX-Video",
+        "Lightricks"
+      ],
+      "definition": "LTX 的影视创作动态：LTX-Video 模型、开源权重与分镜预演工具更新。"
+    },
+    {
+      "slug": "wan",
+      "name": "Wan",
+      "group": "company",
+      "entityId": "wan",
+      "aliases": [
+        "通义万相",
+        "Wan2.2"
+      ],
+      "definition": "Wan 通义万相的开源视频生成模型更新与影视创作工作流进展。"
+    },
+    {
       "slug": "lenses",
       "name": "镜头",
       "group": "field",
@@ -233,6 +308,17 @@
         "剪辑"
       ],
       "definition": "剪辑的方法与思路：节奏、结构、声画关系与剪辑师的工作流程。"
+    },
+    {
+      "slug": "ai-filmmaking",
+      "name": "AI影视创作",
+      "group": "field",
+      "tags": [
+        "AI影视创作",
+        "视频生成",
+        "AI配音"
+      ],
+      "definition": "生成式AI在影视创作中的应用：视频生成、分镜预演、角色与镜头一致性、AI配音与视效工作流。"
     },
     {
       "slug": "film-education",

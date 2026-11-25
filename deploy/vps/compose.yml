@@ -70,6 +70,7 @@ services:
     <<: *app
     mem_limit: 300m
     cpus: 0.35
+    stop_grace_period: 515s
     env_file: .env
     environment:
       <<: *backend-env
