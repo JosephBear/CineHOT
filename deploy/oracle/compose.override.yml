@@ -7,4 +7,5 @@ services:
     environment:
       LLM_BASE_URL: ${LLM_BASE_URL:?set the provider endpoint}
       LLM_MODEL: ${LLM_MODEL:?set the provider model}
+      LLM_EXTRA_JSON: ${LLM_EXTRA_JSON:-}
       REPORT_HISTORICAL_DAILY_GAPS: ${REPORT_HISTORICAL_DAILY_GAPS:-}

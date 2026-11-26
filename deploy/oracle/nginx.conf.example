@@ -5,6 +5,15 @@ server {
     ssl_certificate /etc/letsencrypt/live/cinehot.example.org/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/cinehot.example.org/privkey.pem;
 
+    # Match the feedback endpoint's 12 MB screenshot upload limit plus multipart overhead.
+    client_max_body_size 15m;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+
     location ~ ^/(admin|api/admin|api/auth)(/|$) { return 404; }
     location / {
         proxy_pass http://127.0.0.1:13000;
