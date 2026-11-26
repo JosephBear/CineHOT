@@ -139,6 +139,7 @@ export const IDENTITY_LEXICON: ReadonlyArray<{ id: string; name: string; pattern
   { id: "cooke", name: "Cooke Optics", patterns: [/cooke|库克/i] },
   { id: "angenieux", name: "Angénieux", patterns: [/ang[eé]nieux|安琴/i] },
   { id: "aputure", name: "Aputure", patterns: [/aputure|爱图仕/i] },
+  { id: "nanlux", name: "Nanlux", patterns: [/\bNanlux\b|南光/i] },
   { id: "atomos", name: "Atomos", patterns: [/\bAtomos\b/i] },
   { id: "kodak", name: "Kodak", patterns: [/\bKodak\b|柯达|\bVISION3\b/i] },
   { id: "unreal", name: "Unreal Engine", patterns: [/unreal\s?engine|虚幻引擎|\bUE5\b/i] },
@@ -149,13 +150,15 @@ export const IDENTITY_LEXICON: ReadonlyArray<{ id: string; name: string; pattern
 
 /** 这些域名上的文章，发布方就是对应的公司（媒体和聚合站不算）。 */
 export const PUBLISHER_DOMAINS: ReadonlyArray<{ entityId: string; domains: readonly string[] }> = [
+  { entityId: "runway", domains: ["runway.com", "runwayml.com"] },
+  { entityId: "google", domains: ["blog.google", "deepmind.google"] },
   { entityId: "arri", domains: ["arri.com"] },
   { entityId: "red", domains: ["red.com"] },
   { entityId: "sony", domains: ["sonycine.com", "pro.sony"] },
   { entityId: "blackmagic", domains: ["blackmagicdesign.com"] },
   { entityId: "canon", domains: ["canon.com", "usa.canon.com"] },
   { entityId: "nikon", domains: ["nikon.com"] },
-  { entityId: "fujifilm", domains: ["fujifilm.com"] },
+  { entityId: "fujifilm", domains: ["fujifilm.com", "fujifilm-x.com"] },
   { entityId: "dji", domains: ["dji.com"] },
   { entityId: "panavision", domains: ["panavision.com"] },
   { entityId: "zeiss", domains: ["zeiss.com"] },
